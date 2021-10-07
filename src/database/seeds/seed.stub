@@ -1,0 +1,16 @@
+exports.seed = async (knex) => {
+  const tableName = 'users';
+  // remove all existing data from table
+  await knex(tableName).del();
+  // insert new data into table
+  await knex(tableName).insert([
+    {
+      id: 1,
+      name: 'Leanne Graham',
+      username: 'Bret',
+      email: 'Sincere@april.biz',
+      phone: '1-770-736-8031 x56442',
+      website: 'hildegard.org',
+    }
+  ]);
+};
