@@ -1,5 +1,5 @@
 import { BaseModel } from './base.model';
-// import { Model } from 'objection';
+import { Model } from 'objection';
 
 export class ClientModel extends BaseModel {
   static tableName = 'clients';

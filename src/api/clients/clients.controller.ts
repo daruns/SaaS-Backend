@@ -4,8 +4,11 @@ import {
   Param,
   ParseIntPipe,
   Body,
+  Put,
+  Delete,
   Post,
 } from '@nestjs/common';
+import { UpdateClientDto } from './dto/update-client.dto';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 
@@ -27,5 +30,17 @@ export class ClientsController {
   @Post()
   create(@Body() client: CreateClientDto) {
     return this.postsService.create(client);
+  }
+
+  @Post('update')
+  // update commnet on post
+  update(@Body() payload: UpdateClientDto) {
+    return this.postsService.update(payload);
+  }
+
+  @Delete(':postId')
+  // delete post by id
+  deleteById(@Param('postId') postId: number) {
+    return this.postsService.deleteById(postId);
   }
 }

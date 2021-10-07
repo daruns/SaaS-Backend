@@ -9,7 +9,7 @@ import { PostModel } from './models/post.model';
 import { CommentModel } from './models/comment.model';
 import { ClientModel } from './models/client.model';
 
-const models = [UserModel, PostModel, CommentModel, ClientModel];
+const models = [UserModel, PostModel, CommentModel];
 
 const modelProvider = map(models, model => {
   return {
@@ -20,6 +20,10 @@ const modelProvider = map(models, model => {
 
 const providers = [
   ...modelProvider,
+  {
+    provide: ClientModel.name,
+    useValue: ClientModel,
+  },
   {
     provide: 'KnexConnection',
     useFactory: async () => {
