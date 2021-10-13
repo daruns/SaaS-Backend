@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientModel } from 'src/database/models/client.model';
 import { ModelClass } from 'objection';
+import { Client } from 'knex';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -62,26 +63,28 @@ export class ClientsService {
     }
   }
   async update(payload): Promise<ResponseData> {
-    const client = await this.modelClass.query().findById(payload.clientId);
+    const client = await this.modelClass.query().findById(payload.id);
     if (client) {
       const updatedClient = await this.modelClass
         .query()
         .update({
           name: payload.name ? payload.name : client.name,
-          phoneNumber: payload.phoneNumber ? payload.phoneNumber : client.phoneNumber,
-          businessPhoneNumber1: payload.businessPhoneNumber1 ? payload.businessPhoneNumber1 : client.businessPhoneNumber1,
-          businessPhoneNumber2: payload.businessPhoneNumber2 ? payload.businessPhoneNumber2 : client.businessPhoneNumber2,
+          logo: payload.logo ? payload.logo : client.logo,
+          phoneNumbers: payload.phoneNumbers ? payload.phoneNumbers : client.phoneNumbers,
+          phoneNumber1: payload.phoneNumber1 ? payload.phoneNumber1 : client.phoneNumber1,
+          phoneNumber2: payload.phoneNumber2 ? payload.phoneNumber2 : client.phoneNumber2,
+          clientType: payload.clientType ? payload.clientType : client.clientType,
+          businessType: payload.businessType ? payload.businessType : client.businessType,
           email: payload.email ? payload.email : client.email,
           website: payload.website ? payload.website : client.website,
           address: payload.address ? payload.address : client.address,
           rate: payload.rate ? payload.rate : client.rate,
+          zipCode: payload.zipCode ? payload.zipCode : client.zipCode,
           status: payload.status ? payload.status : client.status,
-          description: payload.description ? payload.description : client.description,
-          clientType: payload.clientType ? payload.clientType : client.clientType,
-          businessType: payload.businessType ? payload.businessType : client.businessType,
           deleted: payload.deleted ? payload.deleted : client.deleted,
           createdBy: payload.createdBy ? payload.createdBy : client.createdBy,
           updatedBy: payload.updatedBy ? payload.updatedBy : client.updatedBy,
+          userId: payload.userId ? payload.userId : client.userId,
         })
         .where({ id: payload.clientId });
       return {

@@ -8,20 +8,21 @@ export class UpdateClientDto {
   // @IsNotEmpty({ message: 'Title is required' })
   // @MinLength(5, { message: 'Title must have 6 chars' })
   // @MaxLength(40, { message: 'Title is too long. only 40 chars allow.' })
-  name: string;
-  phoneNumber:string
-  businessPhoneNumber1:string
-  businessPhoneNumber2:string
-  email:string
-  website:string
-  address:string
-  rate:number
-  status:string
-  description:string
-  clientType:string
-  businessType:string
+  name: string
+  logo: string
+  phoneNumbers: string
+  phoneNumber1: string
+  phoneNumber2: string
+  clientType: string
+  businessType: string
+  email: string
+  website: string
+  address: string
+  rate: number
+  zipCode: string
+  status: string
   deleted:number
   createdBy:string
   updatedBy:string
-
+  userId: number
 }

@@ -5,11 +5,12 @@ import { Model } from 'objection';
 
 import * as knexConfig from './knex';
 import { UserModel } from './models/user.model';
-import { PostModel } from './models/post.model';
-import { CommentModel } from './models/comment.model';
+import { GroupModel } from './models/group.model';
 import { ClientModel } from './models/client.model';
+import { PermissionModel } from './models/permission.model';
+import { ClientContactModel } from './models/clientContact.model';
 
-const models = [UserModel, PostModel, CommentModel];
+const models = [UserModel, GroupModel, PermissionModel, ClientModel, ClientContactModel];
 
 const modelProvider = map(models, model => {
   return {
@@ -20,10 +21,10 @@ const modelProvider = map(models, model => {
 
 const providers = [
   ...modelProvider,
-  {
-    provide: ClientModel.name,
-    useValue: ClientModel,
-  },
+  // {
+  //   provide: ClientModel.name,
+  //   useValue: ClientModel,
+  // },
   {
     provide: 'KnexConnection',
     useFactory: async () => {

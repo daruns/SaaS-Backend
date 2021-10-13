@@ -1,39 +1,46 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
+import { UserModel } from './user.model';
+import { ClientContactModel } from "./clientContact.model";
 
 export class ClientModel extends BaseModel {
   static tableName = 'clients';
 
-  name:string
-  phoneNumber:string
-  businessPhoneNumber1:string
-  businessPhoneNumber2:string
-  email:string
-  website:string
-  address:string
-  rate:number
-  status:string
-  description:string
-  clientType:string
-  businessType:string
-  deleted:number
-  createdBy:string
-  updatedBy:string
+  name: string
+  logo: string
+  phoneNumbers: string
+  phoneNumber1: string
+  phoneNumber2: string
+  clientType: string
+  businessType: string
+  email: string
+  website: string
+  address: string
+  rate: number
+  zipCode: string
+  userId: number
 
-//   fullName() {
-//     return this.firstName + ' ' + this.lastName;
-//   }
+  user: UserModel;
+  clientContacts: ClientContactModel[];
 
-
-//   static relationMappings = {
-//     // list of all post on current user
-//     posts: {
-//       modelClass: `${__dirname}/post.model`,
-//       relation: Model.HasManyRelation,
-//       join: {
-//         from: 'users.id',
-//         to: 'posts.id',
-//       },
-//     },
-//   };
+  static relationMappings = {
+    // list of all user on current user
+    user: {
+      modelClass: `${__dirname}/user.model`,
+      relation: Model.BelongsToOneRelation,
+      join: {
+        from: 'clients.userId',
+        to: 'users.id',
+      },
+    },
+    // list of all clientContacts on current user
+    clientContacts: {
+      modelClass: `${__dirname}/clientContact.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: 'clients.id',
+        to: 'clientContacts.clientId',
+      },
+    },
+  };
 }

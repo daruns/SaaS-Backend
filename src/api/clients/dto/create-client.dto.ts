@@ -2,21 +2,22 @@ import { IsEmail, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
 
 export class CreateClientDto {
   @IsNotEmpty({ message: 'Name is required' })
-  name: string;
-  phoneNumber:string
-  businessPhoneNumber1:string
-  businessPhoneNumber2:string
-  email:string
-  website:string
-  address:string
-  rate:number
-  status:string
-  description:string
-  clientType:string
-  businessType:string
+  name: string
+  logo: string
+  phoneNumbers: string
+  phoneNumber1: string
+  phoneNumber2: string
+  clientType: string
+  businessType: string
+  email: string
+  website: string
+  address: string
+  rate: number
+  zipCode: string
+  userId: number
+  status
   deleted:number
   createdBy:string
-  updatedBy:string
 
   // @IsNotEmpty({ message: 'Email is required' })
   // @IsEmail({}, { message: 'Email address is invalid' })
