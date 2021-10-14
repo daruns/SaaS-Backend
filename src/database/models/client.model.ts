@@ -48,7 +48,7 @@ export class ClientModel extends BaseModel {
     },
     // list of all clientContacts on current user
     meetings: {
-      modelClass: `${__dirname}/meetings.model`,
+      modelClass: `${__dirname}/meeting.model`,
       relation: Model.HasManyRelation,
       join: {
         from: 'clients.id',

@@ -14,7 +14,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
-const create_user_dto_1 = require("../users/dto/create-user.dto");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
 const local_auth_guard_1 = require("./guards/local-auth.guard");
 let AuthController = class AuthController {
@@ -36,7 +35,7 @@ __decorate([
     common_1.Post('/signup'),
     __param(0, common_1.Body(common_1.ValidationPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signUp", null);
 __decorate([

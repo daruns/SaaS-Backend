@@ -19,7 +19,7 @@ import {
     
     @Post('/signup')
     async signUp(
-      @Body(ValidationPipe) createUserDto: CreateUserDto
+      @Body(ValidationPipe) createUserDto
     ) {
         const savedUser = await this.authService.signUp(createUserDto);
         return savedUser

@@ -47,26 +47,16 @@ let MeetingsService = class MeetingsService {
     }
     async create(payload, currentUser) {
         let meetingPayload = payload;
-        const newMeeting = await this.modelClass.query();
-        if (!newMeeting.length) {
-            meetingPayload.createdBy = currentUser.username;
-            delete meetingPayload.date;
-            delete meetingPayload.nextMeetingDate;
-            const identifiers = await this.modelClass.query().insert(meetingPayload);
-            const createMeeting = await this.modelClass.query().findById(identifiers.id);
-            return {
-                success: true,
-                message: 'Meeting created successfully.',
-                data: createMeeting,
-            };
-        }
-        else {
-            return {
-                success: false,
-                message: 'Meeting already exists with this email address!!!',
-                data: {},
-            };
-        }
+        meetingPayload.createdBy = currentUser.username;
+        delete meetingPayload.date;
+        delete meetingPayload.nextMeetingDate;
+        const identifiers = await this.modelClass.query().insert(meetingPayload);
+        const createMeeting = await this.modelClass.query().findById(identifiers.id);
+        return {
+            success: true,
+            message: 'Meeting created successfully.',
+            data: createMeeting,
+        };
     }
     async update(payload, currentUser) {
         let meetingPayload = payload;

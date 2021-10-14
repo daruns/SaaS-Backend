@@ -24,7 +24,7 @@ ClientModel.relationMappings = {
         },
     },
     meetings: {
-        modelClass: `${__dirname}/meetings.model`,
+        modelClass: `${__dirname}/meeting.model`,
         relation: objection_1.Model.HasManyRelation,
         join: {
             from: 'clients.id',

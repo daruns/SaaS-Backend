@@ -20,11 +20,14 @@ export class ClientsService {
     const CUser = await this.getUserById(currentUser.id)
     const clients = await this.modelClass
       .query()
-      .select('users.*', 'clients.*')
+      .select('clients.*')
       .join('users', 'clients.userId', 'users.id')
       .where('users.subdomain', CUser.subdomain)
       .withGraphFetched({
+        user: true,
         clientContacts: {},
+        meetings: {},
+        socialMedias: {},
       });
     if (clients.length) {
       return {
@@ -52,6 +55,8 @@ export class ClientsService {
       .findById(id)
       .withGraphFetched({
         clientContacts: {},
+        meetings: {},
+        socialMedias: {},
       });
     if (client) {
       return {
