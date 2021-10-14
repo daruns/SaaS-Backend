@@ -1,10 +1,10 @@
 export declare class UpdateClientDto {
-    clientId: number;
+    id: number;
     name: string;
     logo: string;
-    phoneNumbers: string;
     phoneNumber1: string;
     phoneNumber2: string;
+    phoneNumbers: string;
     clientType: string;
     businessType: string;
     email: string;
@@ -14,7 +14,6 @@ export declare class UpdateClientDto {
     zipCode: string;
     status: string;
     deleted: number;
-    createdBy: string;
     updatedBy: string;
     userId: number;
 }

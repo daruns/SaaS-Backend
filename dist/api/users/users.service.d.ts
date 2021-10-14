@@ -11,31 +11,8 @@ export declare class UsersService {
     findAll(): Promise<ResponseData>;
     findById(id: number): Promise<ResponseData>;
     findByUsername(username: string): Promise<ResponseData>;
-    create(payload: any): Promise<{
-        success: boolean;
-        message: string;
-        data: UserModel;
-    } | {
-        success: boolean;
-        message: string;
-        data: {};
-    }>;
-    update(payload: any): Promise<{
-        success: boolean;
-        message: string;
-        data: number;
-    } | {
-        success: boolean;
-        message: string;
-        data: {};
-    }>;
-    delete(payload: any): Promise<{
-        success: boolean;
-        message: string;
-        data: number;
-    } | {
-        success: boolean;
-        message: string;
-        data: {};
-    }>;
+    findByEmail(email: string): Promise<ResponseData>;
+    create(payload: any): Promise<ResponseData>;
+    update(payload: any): Promise<ResponseData>;
+    delete(payload: any): Promise<ResponseData>;
 }

@@ -1,0 +1,13 @@
+export declare class CreateClientContactDto {
+    name: string;
+    businessPhoneNumber1: string;
+    businessPhoneNumber2: string;
+    email: string;
+    position: string;
+    description: string;
+    department: string;
+    status: string;
+    deleted: number;
+    createdBy: string;
+    clientId: number;
+}

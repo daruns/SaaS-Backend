@@ -1,30 +1,30 @@
-import { IsEmail, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength, MaxLength, IsString, Matches, IsInt, Length, Max, Min } from 'class-validator';
+import { max, min } from 'rxjs/operators';
+import { PhoneNumberRegex } from 'src/app/app.service';
 
 export class CreateClientDto {
-  @IsNotEmpty({ message: 'Name is required' })
+  @IsNotEmpty()
   name: string
   logo: string
-  phoneNumbers: string
+  // @Matches(PhoneNumberRegex.reg)
+  @IsString()
+  @IsNotEmpty()
   phoneNumber1: string
   phoneNumber2: string
+  phoneNumbers: string
   clientType: string
   businessType: string
-  email: string
+  @IsEmail({})
+  email: string;
   website: string
   address: string
+  @IsInt()
+  @Min(0)
+  @Max(10)
   rate: number
   zipCode: string
   userId: number
-  status
+  status: string
   deleted:number
   createdBy:string
-
-  // @IsNotEmpty({ message: 'Email is required' })
-  // @IsEmail({}, { message: 'Email address is invalid' })
-  // email: string;
-
-  // @IsNotEmpty({ message: 'Password is required' })
-  // @MinLength(5, { message: 'Password must have 6 chars' })
-  // @MaxLength(30, { message: 'Password is too long. only 30 chars allow.' })
-  // password: string;
 }

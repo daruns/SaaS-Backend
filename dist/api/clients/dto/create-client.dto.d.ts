@@ -1,9 +1,9 @@
 export declare class CreateClientDto {
     name: string;
     logo: string;
-    phoneNumbers: string;
     phoneNumber1: string;
     phoneNumber2: string;
+    phoneNumbers: string;
     clientType: string;
     businessType: string;
     email: string;
@@ -12,7 +12,7 @@ export declare class CreateClientDto {
     rate: number;
     zipCode: string;
     userId: number;
-    status: any;
+    status: string;
     deleted: number;
     createdBy: string;
 }

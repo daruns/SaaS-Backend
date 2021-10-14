@@ -21,10 +21,6 @@ const modelProvider = map(models, model => {
 
 const providers = [
   ...modelProvider,
-  // {
-  //   provide: ClientModel.name,
-  //   useValue: ClientModel,
-  // },
   {
     provide: 'KnexConnection',
     useFactory: async () => {

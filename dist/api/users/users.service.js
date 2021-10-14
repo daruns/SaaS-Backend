@@ -14,6 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const user_model_1 = require("../../database/models/user.model");
+const bcrypt = require("bcrypt");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let UsersService = class UsersService {
     constructor(modelClass) {
         this.modelClass = modelClass;
@@ -21,14 +23,10 @@ let UsersService = class UsersService {
     async findAll() {
         const users = await this.modelClass.query().withGraphFetched({
             clients: {
-                user: true,
-                clientContacts: { client: true }
+                clientContacts: {}
             },
             groups: {
-                user: true,
-                permissions: {
-                    user: true,
-                }
+                permissions: {}
             },
         });
         return {
@@ -43,14 +41,10 @@ let UsersService = class UsersService {
             .findById(id)
             .withGraphFetched({
             clients: {
-                user: true,
                 clientContacts: true,
             },
             groups: {
-                user: true,
-                permissions: {
-                    user: true,
-                }
+                permissions: true
             },
         });
         if (user) {
@@ -99,23 +93,67 @@ let UsersService = class UsersService {
             };
         }
     }
-    async create(payload) {
-        const newUser = await this.modelClass.query().findOne({
-            email: payload.email,
+    async findByEmail(email) {
+        const user = await this.modelClass
+            .query()
+            .findOne({ email: email })
+            .withGraphFetched({
+            clients: {
+                user: true,
+                clientContacts: true,
+            },
+            groups: {
+                user: true,
+                permissions: {
+                    user: true,
+                }
+            },
         });
-        if (!newUser) {
-            const identifiers = await this.modelClass.query().insert(payload);
-            const createUser = await this.modelClass.query().findById(identifiers.id);
+        if (user) {
             return {
                 success: true,
-                message: 'User created successfully.',
-                data: createUser,
+                message: 'User details fetch successfully.',
+                data: user,
             };
         }
         else {
             return {
+                success: true,
+                message: 'No user details found.',
+                data: {},
+            };
+        }
+    }
+    async create(payload) {
+        const newUser = await this.modelClass.query().where({
+            email: payload.email
+        }).orWhere({
+            username: payload.username
+        });
+        if (!newUser.length) {
+            const hashedPassword = await bcrypt.hash(payload.password, 10);
+            payload.password = hashedPassword;
+            try {
+                const identifiers = await this.modelClass.query().insert(payload);
+                const createUser = await this.modelClass.query().findById(identifiers.id);
+                return {
+                    success: true,
+                    message: 'User created successfully.',
+                    data: createUser,
+                };
+            }
+            catch (err) {
+                return {
+                    success: false,
+                    message: 'User didnt created',
+                    data: (err.nativeError && err.nativeError.sqlMessage) ? err.nativeError.sqlMessage : err,
+                };
+            }
+        }
+        else {
+            return {
                 success: false,
-                message: 'User already exists with this email address!!!',
+                message: 'User already exists with this username or email address!',
                 data: {},
             };
         }
@@ -160,7 +198,7 @@ let UsersService = class UsersService {
         if (user) {
             return {
                 success: true,
-                message: 'Comment deleted successfully.',
+                message: 'User deleted successfully.',
                 data: user,
             };
         }
@@ -174,6 +212,7 @@ let UsersService = class UsersService {
     }
 };
 UsersService = __decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Injectable(),
     __param(0, common_1.Inject('UserModel')),
     __metadata("design:paramtypes", [Object])

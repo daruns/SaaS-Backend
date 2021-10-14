@@ -10,11 +10,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const class_validator_1 = require("class-validator");
+const app_service_1 = require("../../../app/app.service");
 class CreateClientDto {
 }
 __decorate([
-    class_validator_1.IsNotEmpty({ message: 'Name is required' }),
+    class_validator_1.IsNotEmpty(),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "name", void 0);
+__decorate([
+    class_validator_1.IsString(),
+    class_validator_1.IsNotEmpty(),
+    __metadata("design:type", String)
+], CreateClientDto.prototype, "phoneNumber1", void 0);
+__decorate([
+    class_validator_1.IsEmail({}),
+    __metadata("design:type", String)
+], CreateClientDto.prototype, "email", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(0),
+    class_validator_1.Max(10),
+    __metadata("design:type", Number)
+], CreateClientDto.prototype, "rate", void 0);
 exports.CreateClientDto = CreateClientDto;
 //# sourceMappingURL=create-client.dto.js.map

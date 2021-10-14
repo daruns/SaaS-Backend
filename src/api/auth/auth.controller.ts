@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Post,
+    Req,
     Request,
     UseGuards,
     ValidationPipe,
@@ -11,16 +12,11 @@ import {
   import { CreateUserDto } from '../users/dto/create-user.dto';
   import { JwtAuthGuard } from './guards/jwt-auth.guard';
   import { LocalAuthGuard } from './guards/local-auth.guard';
-  
-  export interface ResponseData {
-    readonly success: boolean;
-    readonly message: string;
-    readonly data: any;
-  }
+
   @Controller('auth')
   export class AuthController {
     constructor(private authService: AuthService) {}
-  
+    
     @Post('/signup')
     async signUp(
       @Body(ValidationPipe) createUserDto: CreateUserDto

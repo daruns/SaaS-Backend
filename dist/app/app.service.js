@@ -7,6 +7,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
+const class_transformer_1 = require("class-transformer");
+const libphonenumber_js_1 = require("libphonenumber-js");
+class PhoneNumberRegex {
+}
+exports.PhoneNumberRegex = PhoneNumberRegex;
+PhoneNumberRegex.reg = /^\+964\d{1,12}$/;
+const validCountries = ['IQ'];
+exports.ToPhone = class_transformer_1.Transform((value) => {
+    if (typeof value.value !== 'string')
+        return false;
+    const parsed = libphonenumber_js_1.parsePhoneNumberFromString(value.value);
+    if (!parsed)
+        return false;
+    if (!validCountries.includes(parsed.country))
+        return false;
+    return parsed.number;
+}, { toClassOnly: true });
 let AppService = class AppService {
     async getHello() {
         return {

@@ -1,20 +1,13 @@
 import { UpdateClientDto } from './dto/update-client.dto';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
+import { CreateClientUserDto } from './dto/create-client-user.dto';
 export declare class ClientsController {
-    private readonly postsService;
-    constructor(postsService: ClientsService);
-    findAll(): Promise<import("./clients.service").ResponseData>;
-    findOne(id: number): Promise<import("./clients.service").ResponseData>;
-    create(client: CreateClientDto): Promise<{
-        success: boolean;
-        message: string;
-        data: import("../../database/models/client.model").ClientModel;
-    } | {
-        success: boolean;
-        message: string;
-        data: {};
-    }>;
-    update(payload: UpdateClientDto): Promise<import("./clients.service").ResponseData>;
-    deleteById(postId: number): Promise<import("./clients.service").ResponseData>;
+    private readonly clientsService;
+    constructor(clientsService: ClientsService);
+    findAll(req: any): Promise<import("../../app/app.service").ResponseData>;
+    findOne(id: number, req: any): Promise<import("../../app/app.service").ResponseData>;
+    create(client: CreateClientDto, user: CreateClientUserDto, req: any): Promise<import("../../app/app.service").ResponseData>;
+    update(payload: UpdateClientDto, req: any): Promise<import("../../app/app.service").ResponseData>;
+    deleteById(payload: any, req: any): Promise<import("../../app/app.service").ResponseData>;
 }

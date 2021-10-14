@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const passport_local_1 = require("passport-local");
-const app_service_1 = require("../../../app/app.service");
 const auth_service_1 = require("../auth.service");
 let LocalStrategy = class LocalStrategy extends passport_1.PassportStrategy(passport_local_1.Strategy) {
     constructor(authService) {

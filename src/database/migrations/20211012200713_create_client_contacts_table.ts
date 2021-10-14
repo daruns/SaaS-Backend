@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<any> {
     table.string("position")
     table.string('businessPhoneNumber1')
     table.string('businessPhoneNumber2')
-    table.string("email")
+    table.string("email").index()
     table.string("description")
     table.string("department")
     table

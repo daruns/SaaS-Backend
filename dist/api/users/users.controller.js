@@ -19,11 +19,11 @@ let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
     }
-    async findAll() {
+    async findAll(req) {
         const users = await this.usersService.findAll();
         return users;
     }
-    async findOne(id) {
+    async findOne(id, req) {
         const post = await this.usersService.findById(id);
         return post;
     }
@@ -39,15 +39,16 @@ let UsersController = class UsersController {
 };
 __decorate([
     common_1.Get(),
+    __param(0, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
-    __param(0, common_1.Param('id', new common_1.ParseIntPipe())),
+    __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findOne", null);
 __decorate([

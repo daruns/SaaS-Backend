@@ -13,7 +13,9 @@ import { LocalStrategy } from './strategies/local.strategy';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1000s' },
+      signOptions: { expiresIn: '10000s' },
+      // privateKey: process.env.KEY_PRIVATEKEY,
+      // publicKey: process.env.KEY_PUBLICKEY,
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, UsersService],

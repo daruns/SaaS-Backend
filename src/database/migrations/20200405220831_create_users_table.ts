@@ -15,6 +15,7 @@ export async function up(knex: Knex): Promise<any> {
     table.string('name');
     table.string('phoneNumber');
     table.string('website');
+    table.string('subdomain');
     table.string('avatar');
     table.string('userType');
     table.string('department');

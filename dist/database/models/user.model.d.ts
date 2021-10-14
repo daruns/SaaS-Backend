@@ -10,6 +10,7 @@ export declare class UserModel extends BaseModel {
     password: string;
     phoneNumber: string;
     website: string;
+    subdomain: string;
     avatar: string;
     userType: string;
     department: string;

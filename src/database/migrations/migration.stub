@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import * as Knex from 'knex'
 const tableName = 'tableName'
 export async function up(knex: Knex): Promise<any> {

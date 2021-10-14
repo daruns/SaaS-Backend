@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const class_validator_1 = require("class-validator");
+const app_service_1 = require("../../../app/app.service");
 class CreateUserDto {
 }
 __decorate([
@@ -31,5 +32,23 @@ __decorate([
     class_validator_1.MaxLength(30, { message: 'Password is too long. only 30 chars allow.' }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "password", void 0);
+__decorate([
+    class_validator_1.IsString(),
+    class_validator_1.IsNotEmpty(),
+    class_validator_1.Matches(app_service_1.PhoneNumberRegex.reg),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "phoneNumber", void 0);
+__decorate([
+    class_validator_1.IsNotEmpty(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "website", void 0);
+__decorate([
+    class_validator_1.IsNotEmpty(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "subdomain", void 0);
+__decorate([
+    class_validator_1.IsNotEmpty(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "userType", void 0);
 exports.CreateUserDto = CreateUserDto;
 //# sourceMappingURL=create-user.dto.js.map

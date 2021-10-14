@@ -1,18 +1,19 @@
-import { IsNotEmpty, MinLength, MaxLength, IsInt } from 'class-validator';
+import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches } from 'class-validator';
+import { PhoneNumberRegex } from 'src/app/app.service'
 
 export class UpdateClientDto {
   @IsNotEmpty({ message: 'ClientId is required' })
   @IsInt({ message: 'Client id must be integer' })
-  clientId: number;
+  id: number;
 
-  // @IsNotEmpty({ message: 'Title is required' })
-  // @MinLength(5, { message: 'Title must have 6 chars' })
-  // @MaxLength(40, { message: 'Title is too long. only 40 chars allow.' })
   name: string
   logo: string
-  phoneNumbers: string
+  @IsString()
+  @IsNotEmpty()
+  @Matches(PhoneNumberRegex.reg)
   phoneNumber1: string
   phoneNumber2: string
+  phoneNumbers: string
   clientType: string
   businessType: string
   email: string
@@ -22,7 +23,6 @@ export class UpdateClientDto {
   zipCode: string
   status: string
   deleted:number
-  createdBy:string
   updatedBy:string
   userId: number
 }

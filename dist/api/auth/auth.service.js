@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
-const user_model_1 = require("../../database/models/user.model");
 const users_service_1 = require("../users/users.service");
 let AuthService = class AuthService {
     constructor(usersService, jwtService) {
@@ -20,31 +19,29 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async signUp(authCredentialsDto) {
-        const { username, password, email, phoneNumber } = authCredentialsDto;
+        const { password } = authCredentialsDto;
         const hashedPassword = await bcrypt.hash(password, 10);
         authCredentialsDto.password = hashedPassword;
-        const newUser = await this.usersService.findByUsername(authCredentialsDto.username);
-        if (!newUser.data.id) {
-            const createUser = await this.usersService.create(authCredentialsDto);
-            return {
-                success: true,
-                message: 'User created successfully.',
-                data: createUser.data,
-            };
-        }
-        else {
-            return {
-                success: false,
-                message: 'User already exists with this email address!!!',
-                data: {},
-            };
-        }
+        const createUser = await this.usersService.create(authCredentialsDto);
+        delete createUser.data.password;
+        return createUser;
     }
     async signIn(user) {
-        const payload = await this.usersService.findByUsername(user.username);
-        console.log("-------------payload------------");
-        console.log(user);
-        console.log("-------------payload------------");
+        const payload = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            website: user.website,
+            avatar: user.avatar,
+            subdomain: user.subdomain,
+            userType: user.userType,
+            department: user.department,
+            reportsTo: user.reportsTo,
+        };
+        console.log("------------- SIGNIN------------");
+        console.log(payload);
+        console.log("------------- SIGNIN------------");
         return {
             success: true,
             message: 'User signed in successfully.',
@@ -52,13 +49,14 @@ let AuthService = class AuthService {
         };
     }
     async validateUser(username, pass) {
-        const user = await this.usersService.findByUsername(username);
-        if (!user.data.id) {
+        const queryUser = await this.usersService.findByUsername(username);
+        const user = queryUser.data;
+        if (!user.id) {
             return null;
         }
-        const valid = await bcrypt.compare(pass, user.data.password);
+        const valid = bcrypt.compare(pass, user.password);
         if (valid) {
-            return user.data;
+            return user;
         }
         return null;
     }

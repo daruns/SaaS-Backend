@@ -16,63 +16,68 @@ const common_1 = require("@nestjs/common");
 const update_client_dto_1 = require("./dto/update-client.dto");
 const clients_service_1 = require("./clients.service");
 const create_client_dto_1 = require("./dto/create-client.dto");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const create_client_user_dto_1 = require("./dto/create-client-user.dto");
 let ClientsController = class ClientsController {
-    constructor(postsService) {
-        this.postsService = postsService;
+    constructor(clientsService) {
+        this.clientsService = clientsService;
     }
-    async findAll() {
-        const clients = await this.postsService.findAll();
+    async findAll(req) {
+        const clients = await this.clientsService.findAll(req.user);
         return clients;
     }
-    async findOne(id) {
-        const post = await this.postsService.findById(id);
-        return post;
+    async findOne(id, req) {
+        const client = await this.clientsService.findById(id, req.user);
+        return client;
     }
-    create(client) {
-        return this.postsService.create(client);
+    async create(client, user, req) {
+        const createdClient = await this.clientsService.create(client, user, req.user);
+        return createdClient;
     }
-    update(payload) {
-        return this.postsService.update(payload);
+    update(payload, req) {
+        return this.clientsService.update(payload, req.user);
     }
-    deleteById(postId) {
-        return this.postsService.deleteById(postId);
+    deleteById(payload, req) {
+        return this.clientsService.deleteById(payload.id, req.user);
     }
 };
 __decorate([
     common_1.Get(),
+    __param(0, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ClientsController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
-    __param(0, common_1.Param('id', new common_1.ParseIntPipe())),
+    __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], ClientsController.prototype, "findOne", null);
 __decorate([
-    common_1.Post(),
-    __param(0, common_1.Body()),
+    common_1.Post('create'),
+    __param(0, common_1.Body()), __param(1, common_1.Body('user')), __param(2, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_client_dto_1.CreateClientDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [create_client_dto_1.CreateClientDto, create_client_user_dto_1.CreateClientUserDto, Object]),
+    __metadata("design:returntype", Promise)
 ], ClientsController.prototype, "create", null);
 __decorate([
     common_1.Post('update'),
-    __param(0, common_1.Body()),
+    __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [update_client_dto_1.UpdateClientDto]),
+    __metadata("design:paramtypes", [update_client_dto_1.UpdateClientDto, Object]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "update", null);
 __decorate([
-    common_1.Delete(':postId'),
-    __param(0, common_1.Param('postId')),
+    common_1.Post('delete'),
+    __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "deleteById", null);
 ClientsController = __decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Controller('clients'),
     __metadata("design:paramtypes", [clients_service_1.ClientsService])
 ], ClientsController);

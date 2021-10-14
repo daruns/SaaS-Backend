@@ -3,7 +3,7 @@ import { Model } from 'objection';
 import { ClientModel } from './client.model';
 import { GroupModel } from './group.model';
 import { PermissionModel } from './permission.model';
-
+import { Exclude } from "class-transformer";
 export class UserModel extends BaseModel {
   static tableName = 'users';
 
@@ -11,9 +11,11 @@ export class UserModel extends BaseModel {
   username: string
   email: string
   name: string
+  @Exclude({ toPlainOnly: true })
   password: string
   phoneNumber: string
   website: string
+  subdomain: string
   avatar: string
   userType: string
   department: string
