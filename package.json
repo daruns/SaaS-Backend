@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "",
   "author": "",
+  "engines": {
+    "node": "12.22.x"
+  },
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
