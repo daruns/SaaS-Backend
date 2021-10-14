@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating' + tableName + 'table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
+    table.string('title')
     table.dateTime('date')
     table.integer('duration')
     table.string('type')

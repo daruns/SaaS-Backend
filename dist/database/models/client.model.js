@@ -23,5 +23,21 @@ ClientModel.relationMappings = {
             to: 'clientContacts.clientId',
         },
     },
+    meetings: {
+        modelClass: `${__dirname}/meetings.model`,
+        relation: objection_1.Model.HasManyRelation,
+        join: {
+            from: 'clients.id',
+            to: 'meetings.clientId',
+        },
+    },
+    socialMedias: {
+        modelClass: `${__dirname}/socialMedia.model`,
+        relation: objection_1.Model.HasManyRelation,
+        join: {
+            from: 'clients.id',
+            to: 'socialMedias.clientId',
+        },
+    },
 };
 //# sourceMappingURL=client.model.js.map

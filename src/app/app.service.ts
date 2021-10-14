@@ -6,6 +6,10 @@ export class PhoneNumberRegex {
   static reg = /^\+964\d{1,12}$/
 }
 
+export class linkAddressRegex {
+  static reg = /((http|https):\/\/)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)/
+}
+
 export interface ResponseData {
   readonly success: boolean;
   readonly message: string;

@@ -10,12 +10,14 @@ const common_1 = require("@nestjs/common");
 const auth_module_1 = require("./auth/auth.module");
 const clientContacts_module_1 = require("./clientContacts/clientContacts.module");
 const clients_module_1 = require("./clients/clients.module");
+const meetings_module_1 = require("./meetings/meetings.module");
+const socialMedias_module_1 = require("./socialMedias/socialMedias.module");
 const users_module_1 = require("./users/users.module");
 let ApiModule = class ApiModule {
 };
 ApiModule = __decorate([
     common_1.Module({
-        imports: [users_module_1.UsersModule, clients_module_1.ClientsModule, auth_module_1.AuthModule, clientContacts_module_1.ClientContactsModule],
+        imports: [users_module_1.UsersModule, clients_module_1.ClientsModule, auth_module_1.AuthModule, clientContacts_module_1.ClientContactsModule, meetings_module_1.MeetingsModule, socialMedias_module_1.SocialMediasModule],
         providers: [],
     })
 ], ApiModule);

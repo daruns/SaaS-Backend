@@ -16,7 +16,9 @@ const group_model_1 = require("./models/group.model");
 const client_model_1 = require("./models/client.model");
 const permission_model_1 = require("./models/permission.model");
 const clientContact_model_1 = require("./models/clientContact.model");
-const models = [user_model_1.UserModel, group_model_1.GroupModel, permission_model_1.PermissionModel, client_model_1.ClientModel, clientContact_model_1.ClientContactModel];
+const socialMedia_model_1 = require("./models/socialMedia.model");
+const meeting_model_1 = require("./models/meeting.model");
+const models = [user_model_1.UserModel, group_model_1.GroupModel, permission_model_1.PermissionModel, client_model_1.ClientModel, clientContact_model_1.ClientContactModel, socialMedia_model_1.SocialMediaModel, meeting_model_1.MeetingModel];
 const modelProvider = lodash_1.map(models, model => {
     return {
         provide: model.name,

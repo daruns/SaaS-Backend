@@ -8,15 +8,9 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating' + tableName + 'table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
-    table.string("facebook")
-    table.string("instagram")
-    table.string("twitter")
-    table.string("snapchat")
-    table.string("linkedIn")
-    table.string("youtube")
-    table.string("tikTok")
-    table.string("clubhouse")
-    table.string("Other")
+    table.string("name")
+    table.string("linkAddress").index()
+    table.string("addressDomain")
     table
       .integer('clientId')
       .unsigned()

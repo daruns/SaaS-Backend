@@ -1,6 +1,9 @@
 export declare class PhoneNumberRegex {
     static reg: RegExp;
 }
+export declare class linkAddressRegex {
+    static reg: RegExp;
+}
 export interface ResponseData {
     readonly success: boolean;
     readonly message: string;

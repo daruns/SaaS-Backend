@@ -13,6 +13,10 @@ class PhoneNumberRegex {
 }
 exports.PhoneNumberRegex = PhoneNumberRegex;
 PhoneNumberRegex.reg = /^\+964\d{1,12}$/;
+class linkAddressRegex {
+}
+exports.linkAddressRegex = linkAddressRegex;
+linkAddressRegex.reg = /((http|https):\/\/)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)/;
 const validCountries = ['IQ'];
 exports.ToPhone = class_transformer_1.Transform((value) => {
     if (typeof value.value !== 'string')

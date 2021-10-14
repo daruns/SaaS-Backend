@@ -2,6 +2,8 @@ import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { UserModel } from './user.model';
 import { ClientContactModel } from "./clientContact.model";
+import { MeetingModel } from './meeting.model';
+import { SocialMediaModel } from './socialMedia.model';
 
 export class ClientModel extends BaseModel {
   static tableName = 'clients';
@@ -22,6 +24,8 @@ export class ClientModel extends BaseModel {
 
   user: UserModel;
   clientContacts: ClientContactModel[];
+  meetings: MeetingModel[];
+  socialMedias: SocialMediaModel[];
 
   static relationMappings = {
     // list of all user on current user
@@ -40,6 +44,23 @@ export class ClientModel extends BaseModel {
       join: {
         from: 'clients.id',
         to: 'clientContacts.clientId',
+      },
+    },
+    // list of all clientContacts on current user
+    meetings: {
+      modelClass: `${__dirname}/meetings.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: 'clients.id',
+        to: 'meetings.clientId',
+      },
+    },
+    socialMedias: {
+      modelClass: `${__dirname}/socialMedia.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: 'clients.id',
+        to: 'socialMedias.clientId',
       },
     },
   };

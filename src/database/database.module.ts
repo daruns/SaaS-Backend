@@ -9,8 +9,10 @@ import { GroupModel } from './models/group.model';
 import { ClientModel } from './models/client.model';
 import { PermissionModel } from './models/permission.model';
 import { ClientContactModel } from './models/clientContact.model';
+import { SocialMediaModel } from './models/socialMedia.model';
+import { MeetingModel } from './models/meeting.model';
 
-const models = [UserModel, GroupModel, PermissionModel, ClientModel, ClientContactModel];
+const models = [UserModel, GroupModel, PermissionModel, ClientModel, ClientContactModel, SocialMediaModel, MeetingModel];
 
 const modelProvider = map(models, model => {
   return {
