@@ -19,7 +19,7 @@ export class AuthService {
     private jwtService: JwtService
     ) {}
 
-  async signUp(authCredentialsDto: {username: string, email: string, password: string}): Promise<ResponseData> {
+  async signUp(authCredentialsDto): Promise<ResponseData> {
     const { password } = authCredentialsDto;
 
     const hashedPassword = await bcrypt.hash(password, 10);

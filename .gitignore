@@ -64,7 +64,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-# .env
+.env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -77,7 +77,7 @@ typings/
 .nuxt
 
 # rollup.js default build output
-# dist/
+dist/
 
 # Storybook build outputs
 .out

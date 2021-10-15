@@ -53,7 +53,7 @@ export class CustomValidatePipe implements PipeTransform<any> {
   }
   // Validate and find error with all type
   private toValidate(metatype): boolean {
-    const types = [String, Boolean, Number, Array, Object];
+    const types = [String, Boolean, Number, Array, Object, Date];
     return !types.find(type => metatype === type);
   }
 }
