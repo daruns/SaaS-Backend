@@ -61,7 +61,7 @@ export class SocialMediasService {
     } else {
       return {
         success: false,
-        message: 'SocialMedia already exists with this email address!!!',
+        message: 'SocialMedia already exists with this link address address!!!',
         data: {},
       };
     }
