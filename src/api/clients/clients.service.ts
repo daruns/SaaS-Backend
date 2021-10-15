@@ -185,7 +185,7 @@ export class ClientsService {
     const clients = await this.modelClass
       .query()
       .delete()
-      .where({ id: payload.id });
+      .where({ id: payload })
     if (clients) {
       return {
         success: true,
