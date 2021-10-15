@@ -47,7 +47,8 @@ export class SocialMediasService {
     let socialMediaPayload = payload
     const newSocialMedia = await this.modelClass.query()
     .where({
-      linkAddress: socialMediaPayload.linkAddress
+      linkAddress: socialMediaPayload.linkAddress,
+      clientId: socialMediaPayload.clientId
     })
     if (!newSocialMedia.length) {
       socialMediaPayload.createdBy = currentUser.username
