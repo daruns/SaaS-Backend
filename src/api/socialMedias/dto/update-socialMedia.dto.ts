@@ -8,7 +8,7 @@ export class UpdateSocialMediaDto {
   @IsOptional()
   name: string  
   @IsString()
-  @Matches(linkAddressRegex.reg, { message: 'Link address is invalid' })
+  // @Matches(linkAddressRegex.reg, { message: 'Link address is invalid' })
   @IsOptional()
   linkAddress: string
   addressDomain: string
