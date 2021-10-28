@@ -1,53 +1,100 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
-import { ClientModel } from './client.model';
-import { GroupModel } from './group.model';
-import { PermissionModel } from './permission.model';
 import { Exclude } from "class-transformer";
+import { ClientModel } from './client.model';
+import { RoleModel } from './role.model';
+import { PermissionModel } from './permission.model';
+import { UserRoleModel } from './userRole.model';
+import { BrandModel } from './brand.model';
+
+const tbName = 'users'
 export class UserModel extends BaseModel {
-  static tableName = 'users';
-
-
+  static tableName = tbName;
   username: string
   email: string
-  name: string
   @Exclude({ toPlainOnly: true })
   password: string
+  name: string
   phoneNumber: string
-  website: string
-  subdomain: string
   avatar: string
   userType: string
   department: string
   reportsTo: string
+  activationToken: string
+  activationTokenExpire: Date
+  activatedAt: Date
+  passwordResetToken: string
+  passwordResetTokenExpire: Date
+  lastResetAt: Date
+  userId: string
+  brandCode: string
 
+  user: UserModel;
+  users: UserModel[];
+  brand: BrandModel;
   clients: ClientModel[];
-  groups: GroupModel[];
+  roles: RoleModel[];
+  userRoles: UserRoleModel[];
   permissions: PermissionModel[];
 
   static relationMappings = {
-    // list of all client on current user
+    user: {
+      modelClass: `${__dirname}/user.model`,
+      relation: Model.BelongsToOneRelation,
+      join: {
+        from: `${tbName}.userId`,
+        to: `${tbName}.id`,
+      },
+    },
+    users: {
+      modelClass: `${__dirname}/user.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `${tbName}.id`,
+        to: `${tbName}.userId`,
+      },
+    },
+    brand: {
+      modelClass: `${__dirname}/brand.model`,
+      relation: Model.BelongsToOneRelation,
+      join: {
+        from: `${tbName}.brandCode`,
+        to: 'brands.brandCode',
+      },
+    },
     clients: {
       modelClass: `${__dirname}/client.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'users.id',
+        from: `${tbName}.id`,
         to: 'clients.userId',
       },
     },
-    groups: {
-      modelClass: `${__dirname}/group.model`,
+    roles: {
+      modelClass: `${__dirname}/role.model`,
+      relation: Model.ManyToManyRelation,
+      join: {
+        from: `${tbName}.id`,
+        through: {
+          from: 'userRoles.userId',
+          to: 'userRoles.roleId'
+        },
+        to: 'roles.id',
+      },
+    },
+    userRoles: {
+      modelClass: `${__dirname}/userRole.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'users.id',
-        to: 'groups.userId',
+        from: `${tbName}.id`,
+        to: 'userRoles.userId',
       },
     },
     permissions: {
       modelClass: `${__dirname}/permission.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'users.id',
+        from: `${tbName}.id`,
         to: 'permissions.userId',
       },
     },

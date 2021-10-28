@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from '../users/dto/create-user.dto';
-import { UsersService } from '../users/users.service';
+import { SignupDto } from 'src/api/auth/dto/signup.dto';
+import { UsersService } from 'src/api/auth/apps/users/users.service';
 import { QueryAuthUser } from './dto/query-auth-user.dto';
-import { AuthUserDto } from "./dto/auth-user.dto";
+import { BrandsService } from '../brands/brands.service';
+import { CreateBrandDto } from 'src/api/brands/dto/create-brand.dto';
+import { CreateUserDto } from './apps/users/dto/create-user.dto';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -15,17 +17,33 @@ export interface ResponseData {
 @Injectable()
 export class AuthService {
   constructor(
+    private brandService: BrandsService,
     private usersService: UsersService,
     private jwtService: JwtService
-    ) {}
+  ) {}
 
-  async signUp(authCredentialsDto): Promise<ResponseData> {
-    const { password } = authCredentialsDto;
+  async signUp(signupDto): Promise<ResponseData> {
+    const { password } = signupDto;
+    console.log(signupDto)
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    authCredentialsDto.password = hashedPassword;
-    const createUser  = await this.usersService.create(authCredentialsDto)
+    const createBrandDto = {
+      name: signupDto.name,
+    }
+    const createBrand = await this.brandService.create(createBrandDto)
+    console.log(createBrand)
+
+    const createUserDto = {
+      username: signupDto.username,
+      password: hashedPassword,
+      email: signupDto.email,
+      brandCode: createBrand.data.brandCode,
+      name: signupDto.username,
+      userType: 'owner',
+    }
+    const createUser  = await this.usersService.create(createUserDto)
     delete createUser.data.password
+    console.log("finished")
     return createUser
   }
 
@@ -34,14 +52,7 @@ export class AuthService {
     const payload = {
       id: user.id,
       username: user.username,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      website: user.website,
-      avatar: user.avatar,
-      subdomain: user.subdomain,
-      userType: user.userType,
-      department: user.department,
-      reportsTo: user.reportsTo,
+      brandCode: user.brandCode,
     };
 
     console.log("------------- SIGNIN------------")
@@ -50,7 +61,9 @@ export class AuthService {
     return {
       success: true,
       message: 'User signed in successfully.',
-      data: {accessToken: this.jwtService.sign(payload)},
+      data: {
+        user,
+        accessToken: this.jwtService.sign(payload)},
     };
   }
 
@@ -67,6 +80,12 @@ export class AuthService {
       return user;
     }
     return null;
+  }
+
+  async me(id: number) {
+    const queryUser = await this.usersService.findById(id);
+    const user = queryUser.data;
+    return user;
   }
 }
 

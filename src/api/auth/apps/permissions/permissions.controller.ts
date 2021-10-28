@@ -9,14 +9,14 @@ import {
   Req,
   Request,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PermissionsService } from './permissions.service';
+import { CreatePermissionDto } from './dto/create-permission.dto'
+import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 
 // @UseGuards(JwtAuthGuard)
 @Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+export class PermissionsController {
+  constructor(private readonly usersService: PermissionsService) {}
 
   @Get()
   async findAll(@Request() req) {
@@ -30,7 +30,7 @@ export class UsersController {
     return post;
   }
   @Post('create')
-  create(@Body() user: CreateUserDto) {
+  create(@Body() user: CreatePermissionDto) {
     return this.usersService.create(user);
   }
 

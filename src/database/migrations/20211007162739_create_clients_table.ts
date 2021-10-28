@@ -11,8 +11,6 @@ export async function up(knex: Knex): Promise<any> {
     table.string("name")
     table.string("logo")
     table.string("phoneNumbers")
-    table.string('phoneNumber1')
-    table.string('phoneNumber2')
     table.string("clientType")
     table.string("businessType")
     table.string("email").index()
@@ -27,7 +25,6 @@ export async function up(knex: Knex): Promise<any> {
       .references('id')
       .inTable('users')
       .notNullable()
-      .onDelete('CASCADE');
 
     table.string('status');
     table.integer('deleted');

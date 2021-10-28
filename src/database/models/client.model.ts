@@ -11,8 +11,6 @@ export class ClientModel extends BaseModel {
   name: string
   logo: string
   phoneNumbers: string
-  phoneNumber1: string
-  phoneNumber2: string
   clientType: string
   businessType: string
   email: string

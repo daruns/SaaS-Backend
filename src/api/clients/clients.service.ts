@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientModel } from 'src/database/models/client.model';
 import { ModelClass } from 'objection';
-import { UsersService } from '../users/users.service';
+import { UsersService } from 'src/api/auth/apps/users/users.service';
 import { ResponseData } from 'src/app/app.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { CreateClientUserDto } from './dto/create-client-user.dto';
@@ -152,8 +152,6 @@ export class ClientsService {
           name: payload.name ? payload.name : client.name,
           logo: payload.logo ? payload.logo : client.logo,
           phoneNumbers: payload.phoneNumbers ? payload.phoneNumbers : client.phoneNumbers,
-          phoneNumber1: payload.phoneNumber1 ? payload.phoneNumber1 : client.phoneNumber1,
-          phoneNumber2: payload.phoneNumber2 ? payload.phoneNumber2 : client.phoneNumber2,
           clientType: payload.clientType ? payload.clientType : client.clientType,
           businessType: payload.businessType ? payload.businessType : client.businessType,
           // email: payload.email ? payload.email : client.email,

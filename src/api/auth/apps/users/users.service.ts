@@ -1,9 +1,10 @@
-import { Injectable, Inject, UseGuards } from '@nestjs/common';
+import { Injectable, Inject, UseGuards, Req } from '@nestjs/common';
 import { UserModel } from 'src/database/models/user.model';
 import { ModelClass } from 'objection';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
+import { Request } from 'supertest';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -14,7 +15,9 @@ export interface ResponseData {
 @UseGuards(JwtAuthGuard)
 @Injectable()
 export class UsersService {
-  constructor(@Inject('UserModel') private modelClass: ModelClass<UserModel>) {}
+  constructor(
+    @Inject('UserModel') private modelClass: ModelClass<UserModel>,
+    ) {}
 
   // user list with list of posts and comments on post
   async findAll(): Promise<ResponseData> {
@@ -22,10 +25,12 @@ export class UsersService {
       clients: {
         clientContacts: {}
       },
-      groups: {
+      roles: {
         permissions: {
         }
       },
+      permissions: {
+      }
     });
     return {
       success: true,
@@ -41,12 +46,15 @@ export class UsersService {
       // .where({subdomain: currentUser.subdomain})
       .findById(id)
       .withGraphFetched({
+        brand:{},
         clients: {
           clientContacts: true,
         },
-        groups: {
+        roles: {
           permissions: true
         },
+        permissions: {
+        }
       });
     if (user) {
       return {
@@ -68,16 +76,17 @@ export class UsersService {
       .query()
       .findOne({username: username})
       .withGraphFetched({
+        brand:{},
         clients: {
           user: true,
           clientContacts: true,
         },
-        groups: {
-          user: true,
+        roles: {
           permissions: {
-            user: true,
           }
         },
+        permissions: {
+        }
       });
     if (user) {
       return {
@@ -99,16 +108,19 @@ export class UsersService {
       .query()
       .findOne({email: email})
       .withGraphFetched({
+        brand:{},
         clients: {
           user: true,
           clientContacts: true,
+          meetings: true,
+          socialMedias: true,
         },
-        groups: {
-          user: true,
+        roles: {
           permissions: {
-            user: true,
           }
         },
+        permissions: {
+        }
       });
     if (user) {
       return {
@@ -118,7 +130,7 @@ export class UsersService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No user details found.',
         data: {},
       };
@@ -134,6 +146,7 @@ export class UsersService {
     if (!newUser.length) {
       const hashedPassword = await bcrypt.hash(payload.password, 10);
       payload.password = hashedPassword
+      // payload.createdBy = @Req().user.username
       try {
 
         const identifiers = await this.modelClass.query().insert(payload);
@@ -162,20 +175,31 @@ export class UsersService {
   // Update user before save encrypt password
   async update(payload): Promise<ResponseData> {
     const user = await this.modelClass.query().findById(payload.id);
+    const hashedPassword = await bcrypt.hash(payload.password, 10);
+    payload.password = hashedPassword
+
     if (user) {
       const updatedUser = await this.modelClass
         .query()
         .update({
-          name: payload.name ? payload.name : user.name,
           password: payload.password ? payload.password : user.password,
+          name: payload.name ? payload.name : user.name,
           phoneNumber: payload.phoneNumber ? payload.phoneNumber : user.phoneNumber,
-          website: payload.website ? payload.website : user.website,
           avatar: payload.avatar ? payload.avatar : user.avatar,
           userType: payload.userType ? payload.userType : user.userType,
           department: payload.department ? payload.department : user.department,
           reportsTo: payload.reportsTo ? payload.reportsTo : user.reportsTo,
+          activationToken: payload.activationToken ? payload.activationToken : user.activationToken,
+          activationTokenExpire: payload.activationTokenExpire ? payload.activationTokenExpire : user.activationTokenExpire,
+          activatedAt: payload.activatedAt ? payload.activatedAt : user.activatedAt,
+          passwordResetToken: payload.passwordResetToken ? payload.passwordResetToken : user.passwordResetToken,
+          passwordResetTokenExpire: payload.passwordResetTokenExpire ? payload.passwordResetTokenExpire : user.passwordResetTokenExpire,
+          lastResetAt: payload.lastResetAt ? payload.lastResetAt : user.lastResetAt,
+          userId: payload.userId ? payload.userId : user.userId,
+          brandCode: payload.brandCode ? payload.brandCode : user.brandCode,
           deleted: payload.deleted ? payload.deleted : user.deleted,
           status: payload.status ? payload.status : user.status,
+          updatedBy: '',
         })
         .where({ id: payload.id });
       return {
@@ -185,7 +209,7 @@ export class UsersService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No user found.',
         data: {},
       };

@@ -26,7 +26,7 @@ export class LoggingInterceptor implements NestInterceptor {
             Logger.log(
               `${method} ${url} ${Date.now() - now}ms`,
               context.getClass().name,
-            ),
+            )
           ),
         );
     } else {

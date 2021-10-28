@@ -58,6 +58,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migrations',
+      timezone: 'UTC',
     },
     ...knexSnakeCaseMappers(),
   },

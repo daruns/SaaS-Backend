@@ -1,12 +1,13 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
 
+const tableName = 'permissions'
 export async function up(knex: Knex): Promise<any> {
-  if (await knex.schema.hasTable('permissions')) {
+  if (await knex.schema.hasTable(tableName)) {
     return;
   }
-  Logger.log('Creating permissions table');
-  return knex.schema.createTable('permissions', (table: Knex.TableBuilder) => {
+  Logger.log('Creating' + tableName + 'table');
+  return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
     table.string('subject')
     table.string('action')
@@ -19,15 +20,13 @@ export async function up(knex: Knex): Promise<any> {
       .references('id')
       .inTable('users')
       .notNullable()
-      .onDelete('CASCADE');
     table
-      .integer('groupId')
+      .integer('roleId')
       .unsigned()
       .index()
       .references('id')
-      .inTable('groups')
+      .inTable('roles')
       .notNullable()
-      .onDelete('CASCADE');
 
     table.string('status');
     table.integer('deleted');
@@ -38,6 +37,6 @@ export async function up(knex: Knex): Promise<any> {
 }
 
 export async function down(knex: Knex): Promise<any> {
-  Logger.log('Droping permissions table');
-  return knex.schema.dropTableIfExists('permissions');
+  Logger.log('Droping' + tableName + 'table');
+  return knex.schema.dropTableIfExists(tableName);
 }

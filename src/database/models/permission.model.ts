@@ -1,20 +1,21 @@
 import { BaseModel } from './base.model';
 import { UserModel } from './user.model';
-import { GroupModel } from './group.model';
+import { RoleModel } from './role.model';
 import { Model } from 'objection';
 
+const tbName = 'permissions'
 export class PermissionModel extends BaseModel {
-  static tableName = 'permissions';
+  static tableName = tbName;
 
   subject: string
   action: string
   resource: string
   weight: number
   userId: number
-  groupId: number
+  roleId: number
 
   user: UserModel;
-  group: GroupModel;
+  role: RoleModel;
 
   static relationMappings = {
     // permission by user
@@ -22,17 +23,17 @@ export class PermissionModel extends BaseModel {
       modelClass: `${__dirname}/user.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'permissions.userId',
+        from: `${tbName}.userId`,
         to: 'users.id',
       },
     },
-    // group detail on which permission made
-    group: {
-      modelClass: `${__dirname}/group.model`,
+    // role detail on which permission made
+    role: {
+      modelClass: `${__dirname}/role.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'permissions.groupId',
-        to: 'groups.id',
+        from: `${tbName}.roleId`,
+        to: 'roles.id',
       },
     },
   };

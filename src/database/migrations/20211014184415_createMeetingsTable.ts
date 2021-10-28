@@ -23,7 +23,13 @@ export async function up(knex: Knex): Promise<any> {
       .references('id')
       .inTable('clients')
       .notNullable()
-      .onDelete('CASCADE');
+    table
+      .integer('userId')
+      .unsigned()
+      .index()
+      .references('id')
+      .inTable('users')
+      .notNullable()
 
     table.string('status');
     table.integer('deleted');
