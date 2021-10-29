@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { SignupDto } from 'src/api/auth/dto/signup.dto';
@@ -23,38 +23,39 @@ export class AuthService {
   ) {}
 
   async signUp(signupDto): Promise<ResponseData> {
-    const { password } = signupDto;
     console.log(signupDto)
-
-    const hashedPassword = await bcrypt.hash(password, 10);
     const createBrandDto = {
       name: signupDto.name,
     }
     const createBrand = await this.brandService.create(createBrandDto)
-    console.log(createBrand)
+    console.log(signupDto)
+    if (createBrand.success){
 
-    const createUserDto = {
-      username: signupDto.username,
-      password: hashedPassword,
-      email: signupDto.email,
-      brandCode: createBrand.data.brandCode,
-      name: signupDto.username,
-      userType: 'owner',
+      const createUserDto = {
+        username: signupDto.username,
+        password: signupDto.password,
+        email: signupDto.email,
+        brandCode: createBrand.data.brandCode,
+        name: signupDto.username,
+        userType: 'owner',
+      }
+      const createUser  = await this.usersService.create(createUserDto)
+      delete createUser.data.password
+      console.log("finished")
+      return createUser
+    }else
+    {
+      return createBrand
     }
-    const createUser  = await this.usersService.create(createUserDto)
-    delete createUser.data.password
-    console.log("finished")
-    return createUser
   }
 
   async signIn(user): Promise<ResponseData> {
-
+    
     const payload = {
       id: user.id,
       username: user.username,
       brandCode: user.brandCode,
     };
-
     console.log("------------- SIGNIN------------")
     console.log(payload)
     console.log("------------- SIGNIN------------")
@@ -71,10 +72,11 @@ export class AuthService {
     const queryUser = await this.usersService.findByUsername(username);
     // const queryUser = await this.usersService.findByEmail(email);
     const user = queryUser.data
-    if (!user.id) {
+    if (!queryUser.success) {
       return null;
     }
-    const valid = bcrypt.compare(pass, user.password);
+    const valid = await bcrypt.compare(pass, user.password);
+    delete(user.password)
 
     if (valid) {
       return user;
