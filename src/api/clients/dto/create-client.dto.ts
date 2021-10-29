@@ -9,8 +9,6 @@ export class CreateClientDto {
   // @Matches(PhoneNumberRegex.reg)
   @IsString()
   @IsNotEmpty()
-  phoneNumber1: string
-  phoneNumber2: string
   phoneNumbers: string
   clientType: string
   businessType: string

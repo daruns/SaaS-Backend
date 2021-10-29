@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientContactModel } from 'src/database/models/clientContact.model';
 import { ModelClass } from 'objection';
+import { ClientsService } from '../clients/clients.service';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -11,6 +12,7 @@ export interface ResponseData {
 export class ClientContactsService {
   constructor(
     @Inject('ClientContactModel') private modelClass: ModelClass<ClientContactModel>,
+    @Inject('ClientsService') private clientSerive: ClientsService,
   ) {}
 
   // clientContact list
@@ -44,6 +46,7 @@ export class ClientContactsService {
   }
   // Create clientContact before save encrypt password
   async create(payload, currentUser): Promise<ResponseData> {
+    // restrict to the client that belongs to brand or user ## IMPORTANT TODO
     let clientContactPayload = payload
     const newClientContact = await this.modelClass.query()
     .where({
@@ -52,6 +55,15 @@ export class ClientContactsService {
     .withGraphFetched({
     })
     if (!newClientContact.length) {
+      const clientFnd = await (await this.clientSerive.findById(clientContactPayload.clientId,currentUser)).data
+      if (!clientFnd.length) {
+        return {
+          success: false,
+          message: 'Client doesnt exist.',
+          data: {},
+        };
+      }
+      clientContactPayload.userId = clientContactPayload.userId ? clientContactPayload.userId : currentUser.id
       clientContactPayload.createdBy = currentUser.username
       const identifiers = await this.modelClass.query().insert(clientContactPayload);
       const createClientContact = await this.modelClass.query().findById(identifiers.id);
@@ -85,6 +97,7 @@ export class ClientContactsService {
           status: clientContactPayload.status ? clientContactPayload.status : clientContact.status,
           deleted: clientContactPayload.deleted ? clientContactPayload.deleted : clientContact.deleted,
           updatedBy: currentUser.username,
+          userId: clientContactPayload.userId ? clientContactPayload.userId : clientContact.userId,
           clientId: clientContactPayload.clientId ? clientContactPayload.clientId : clientContact.clientId,
         })
         .where({ id: clientContactPayload.id });

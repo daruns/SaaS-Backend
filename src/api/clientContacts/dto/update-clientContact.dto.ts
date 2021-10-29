@@ -41,4 +41,7 @@ export class UpdateClientContactDto {
   @IsInt({ message: 'clientId must be integer' })
   @IsOptional()
   clientId: number
+  @IsInt({ message: 'userId must be integer' })
+  @IsOptional()
+  userId: number
 }

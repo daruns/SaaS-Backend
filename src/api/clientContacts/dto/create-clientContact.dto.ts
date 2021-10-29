@@ -24,4 +24,7 @@ export class CreateClientContactDto {
   createdBy: string
   @IsInt({ message: 'ClientId must be integer' })
   clientId: number
+  @IsInt({ message: 'userId must be integer' })
+  @IsOptional()
+  userId: number
 }

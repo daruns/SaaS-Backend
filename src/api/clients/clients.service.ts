@@ -21,7 +21,8 @@ export class ClientsService {
     const clients = await this.modelClass
       .query()
       .select('clients.*')
-      .join('users', CUser.brandCode, 'users.brandCode')
+      .join('users', 'users.id', 'clients.userId')
+      .where('users.brand_code', CUser.brandCode)
       .withGraphFetched({
         user: true,
         clientContacts: {},
@@ -48,11 +49,12 @@ export class ClientsService {
     const CUser = await this.getUserById(currentUser.id)
     const client = await this.modelClass
       .query()
-      .select('users.*', 'clients.*')
-      .join('users', 'clients.userId', 'users.id')
-      .where('users.subdomain', CUser.subdomain)
+      .select('clients.*')
+      .join('users', 'users.id', 'clients.userId')
+      .where('users.brand_code', CUser.brandCode)
       .findById(id)
       .withGraphFetched({
+        user: true,
         clientContacts: {},
         meetings: {},
         socialMedias: {},
@@ -85,8 +87,8 @@ export class ClientsService {
         userParams.userType = 'partner'
         userParams.name = payload.name
         userParams.email = payload.email
-        userParams.subdomain = CUser.subdomain
-        userParams.phoneNumber = payload.phoneNumber1
+        userParams.brandCode = CUser.brandCode
+        userParams.phoneNumber = payload.phoneNumbers
         userParams.createdBy = CUser.username
         userParams.reportsTo = CUser.username
 
@@ -96,8 +98,6 @@ export class ClientsService {
         let newparamspayload = {
         name : payload.name,
         phoneNumbers : payload.phoneNumbers,
-        phoneNumber1 : payload.phoneNumber1,
-        phoneNumber2 : payload.phoneNumber2,
         clientType : payload.clientType,
         businessType : payload.businessType,
         email : payload.email,
@@ -143,6 +143,7 @@ export class ClientsService {
     }
   }
   async update(payload,currentUser): Promise<ResponseData> {
+    const CUser = await this.getUserById(currentUser.id)
     const client = await this.modelClass.query().findById(payload.id);
     if (client) {
       const updatedClient = await this.modelClass
@@ -160,8 +161,8 @@ export class ClientsService {
           zipCode: payload.zipCode ? payload.zipCode : client.zipCode,
           status: payload.status ? payload.status : client.status,
           deleted: payload.deleted ? payload.deleted : client.deleted,
-          updatedBy: payload.updatedBy ? payload.updatedBy : client.updatedBy,
           userId: payload.userId ? payload.userId : client.userId,
+          updatedBy: CUser.username,  
         })
         .where({ id: payload.id });
       return {

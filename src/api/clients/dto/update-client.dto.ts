@@ -1,4 +1,4 @@
-import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsOptional } from 'class-validator';
 import { PhoneNumberRegex } from 'src/app/app.service'
 
 export class UpdateClientDto {
@@ -9,10 +9,8 @@ export class UpdateClientDto {
   name: string
   logo: string
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @Matches(PhoneNumberRegex.reg)
-  phoneNumber1: string
-  phoneNumber2: string
   phoneNumbers: string
   clientType: string
   businessType: string

@@ -18,8 +18,6 @@ export class CreateUserDto {
   @Matches(PhoneNumberRegex.reg)
   phoneNumber: string
   @IsNotEmpty()
-  website: string
-  @IsNotEmpty()
   userType: string
   avatar: string
   department: string
