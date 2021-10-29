@@ -1,7 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { MeetingModel } from 'src/database/models/meeting.model';
 import { ModelClass } from 'objection';
-
+import { ClientsService } from '../clients/clients.service';
+import * as moment from 'moment'
 export interface ResponseData {
   readonly success: boolean;
   readonly message: string;
@@ -11,6 +12,7 @@ export interface ResponseData {
 export class MeetingsService {
   constructor(
     @Inject('MeetingModel') private modelClass: ModelClass<MeetingModel>,
+    private clientSerive: ClientsService,
   ) {}
 
   // meeting list
@@ -45,9 +47,23 @@ export class MeetingsService {
   // Create meeting before save encrypt password
   async create(payload, currentUser): Promise<ResponseData> {
     let meetingPayload = payload
+    if (meetingPayload.clientId) {
+      const clientFnd = await this.clientSerive.findById(meetingPayload.clientId,currentUser)
+      if (!clientFnd.data.id) {
+        return {
+          success: false,
+          message: 'Client doesnt exist.',
+          data: {},
+        };
+      }
+    }
+
+    meetingPayload.userId = meetingPayload.userId ? meetingPayload.userId : currentUser.id
+    meetingPayload.date = moment(meetingPayload.date).format('YYYY-MM-DD HH:mm:ss').toString()
+    meetingPayload.nextMeetingDate = moment(meetingPayload.nextMeetingDate).format('YYYY-MM-DD HH:mm:ss').toString()
     meetingPayload.createdBy = currentUser.username
-    delete meetingPayload.date
-    delete meetingPayload.nextMeetingDate
+    // delete meetingPayload.date
+    // delete meetingPayload.nextMeetingDate
     const identifiers = await this.modelClass.query().insert(meetingPayload);
     const createMeeting = await this.modelClass.query().findById(identifiers.id);
     return {
@@ -60,6 +76,18 @@ export class MeetingsService {
     let meetingPayload = payload
     const meeting = await this.modelClass.query().findById(meetingPayload.id);
     if (meeting) {
+      if (meetingPayload.clientId) {
+        const clientFnd = await this.clientSerive.findById(meetingPayload.clientId,currentUser)
+        if (!clientFnd.data.id) {
+          return {
+            success: false,
+            message: 'Client doesnt exist.',
+            data: {},
+          };
+        }
+      }
+      meetingPayload.date = moment(meetingPayload.date).format('YYYY-MM-DD HH:mm:ss').toString()
+      meetingPayload.nextMeetingDate = moment(meetingPayload.nextMeetingDate).format('YYYY-MM-DD HH:mm:ss').toString()
       const updatedMeeting = await this.modelClass
         .query()
         .update({

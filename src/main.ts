@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app/app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { CustomValidatePipe } from './shared/pipes/validation.pipes';
 
 // Read port number from env file
@@ -15,6 +15,7 @@ async function bootstrap() {
   // Custome validation on request using pipe and class-validator
   app.enableCors();
   app.useGlobalPipes(new CustomValidatePipe());
+  app.useGlobalPipes(new ValidationPipe({transform: true}));
 
   // Add prefix to all api for request
   app.setGlobalPrefix('api/v1');

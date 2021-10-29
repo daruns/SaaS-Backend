@@ -4,8 +4,8 @@ import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsEmail, Is
 export class UpdateMeetingDto {
   @IsInt()
   id: number
-  @IsDate()
   @Type(() => Date)
+  @IsDate()
   @IsOptional()
   date: Date
   @IsInt()
@@ -20,9 +20,9 @@ export class UpdateMeetingDto {
   @IsString()
   @IsOptional()
   serviceRequirements: string
-  @IsDate()
   @IsOptional()
   @Type(() => Date)
+  @IsDate()
   nextMeetingDate: Date
   @IsString()
   @IsOptional()
@@ -33,9 +33,6 @@ export class UpdateMeetingDto {
   @IsInt({ message: 'deleted must be integer' })
   @IsOptional()
   deleted: number
-  @IsString()
-  @IsOptional()
-  updatedBy:string
   @IsInt({ message: 'clientId must be integer' })
   @IsOptional()
   clientId: number

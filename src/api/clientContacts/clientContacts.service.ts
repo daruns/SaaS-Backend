@@ -55,14 +55,17 @@ export class ClientContactsService {
     .withGraphFetched({
     })
     if (!newClientContact.length) {
-      const clientFnd = await (await this.clientSerive.findById(clientContactPayload.clientId,currentUser)).data
-      if (!clientFnd.length) {
-        return {
-          success: false,
-          message: 'Client doesnt exist.',
-          data: {},
-        };
+      if (clientContactPayload.clientId) {
+        const clientFnd = await (await this.clientSerive.findById(clientContactPayload.clientId,currentUser)).data
+        if (!clientFnd.length) {
+          return {
+            success: false,
+            message: 'Client doesnt exist.',
+            data: {},
+          };
+        }
       }
+
       clientContactPayload.userId = clientContactPayload.userId ? clientContactPayload.userId : currentUser.id
       clientContactPayload.createdBy = currentUser.username
       const identifiers = await this.modelClass.query().insert(clientContactPayload);
@@ -84,6 +87,17 @@ export class ClientContactsService {
     let clientContactPayload = payload
     const clientContact = await this.modelClass.query().findById(clientContactPayload.id);
     if (clientContact) {
+      if (clientContactPayload.clientId) {
+        const clientFnd = await (await this.clientSerive.findById(clientContactPayload.clientId,currentUser)).data
+        if (!clientFnd.length) {
+          return {
+            success: false,
+            message: 'Client doesnt exist.',
+            data: {},
+          };
+        }
+      }
+
       const updatedClientContact = await this.modelClass
         .query()
         .update({

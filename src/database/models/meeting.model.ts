@@ -1,6 +1,7 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { ClientModel } from './client.model';
+import { UserModel } from './user.model';
 
 export class MeetingModel extends BaseModel {
   static tableName = 'meetings';
@@ -12,8 +13,10 @@ export class MeetingModel extends BaseModel {
   nextMeetingDate: Date
   currentServiceProvider: string
   clientId: number
+  userId: number
 
   client: ClientModel;
+  user: UserModel
 
   static relationMappings = {
     // list of all client on current user
@@ -23,6 +26,14 @@ export class MeetingModel extends BaseModel {
       join: {
         from: 'meetings.clientId',
         to: 'clients.id',
+      },
+    },
+    user: {
+      modelClass: `${__dirname}/user.model`,
+      relation: Model.BelongsToOneRelation,
+      join: {
+        from: 'meetings.userId',
+        to: 'users.id',
       },
     },
   };

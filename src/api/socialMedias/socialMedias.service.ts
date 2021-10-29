@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { SocialMediaModel } from 'src/database/models/socialMedia.model';
 import { ModelClass } from 'objection';
+import { ClientsService } from '../clients/clients.service';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -11,6 +12,7 @@ export interface ResponseData {
 export class SocialMediasService {
   constructor(
     @Inject('SocialMediaModel') private modelClass: ModelClass<SocialMediaModel>,
+    @Inject('ClientsService') private clientSerive: ClientsService,
   ) {}
 
   // socialMedia list
@@ -51,7 +53,20 @@ export class SocialMediasService {
       clientId: socialMediaPayload.clientId
     })
     if (!newSocialMedia.length) {
+      if (socialMediaPayload.clientId) {
+        const clientFnd = await this.clientSerive.findById(socialMediaPayload.clientId,currentUser)
+        console.log(clientFnd.data)
+        if (!clientFnd.data.id) {
+          return {
+            success: false,
+            message: 'Client doesnt exist.',
+            data: {},
+          };
+        }
+      }
+
       socialMediaPayload.createdBy = currentUser.username
+      socialMediaPayload.userId = currentUser.id
       const identifiers = await this.modelClass.query().insert(socialMediaPayload);
       const createSocialMedia = await this.modelClass.query().findById(identifiers.id);
       return {
@@ -71,6 +86,17 @@ export class SocialMediasService {
     let socialMediaPayload = payload
     const socialMedia = await this.modelClass.query().findById(socialMediaPayload.id);
     if (socialMedia) {
+      if (socialMediaPayload.clientId) {
+        const clientFnd = await this.clientSerive.findById(socialMediaPayload.clientId,currentUser)
+        if (!clientFnd.data.id) {
+          return {
+            success: false,
+            message: 'Client doesnt exist.',
+            data: {},
+          };
+        }
+      }
+
       const updatedSocialMedia = await this.modelClass
         .query()
         .update({
@@ -80,6 +106,7 @@ export class SocialMediasService {
           status: socialMediaPayload.status ? socialMediaPayload.status : socialMedia.status,
           deleted: socialMediaPayload.deleted ? socialMediaPayload.deleted : socialMedia.deleted,
           updatedBy: currentUser.username,
+          userId: currentUser.id,
           clientId: socialMediaPayload.clientId ? socialMediaPayload.clientId : socialMedia.clientId,
         })
         .where({ id: socialMediaPayload.id });

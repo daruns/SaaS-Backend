@@ -4,6 +4,7 @@ import { IsEmail, IsNotEmpty, MinLength, MaxLength, IsString, Matches, IsInt, Is
 export class CreateMeetingDto {
   @IsNotEmpty({ message: 'Date is required' })
   @Type(() => Date)
+  @IsDate()
   date: Date
   @IsInt()
   duration: number
@@ -15,6 +16,7 @@ export class CreateMeetingDto {
   serviceRequirements: string
   @IsOptional()
   @Type(() => Date)
+  @IsDate()
   nextMeetingDate: Date
   @IsString()
   currentServiceProvider: string
