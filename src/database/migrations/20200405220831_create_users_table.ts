@@ -10,12 +10,8 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
 
-    table.string('username')
-      .index()
-      .unique();
-    table.string('email')
-      .index()
-      .unique();
+    table.string('username').index().unique();
+    table.string('email').index().unique();
     table.string('password');
     table.string('name');
     table.string('phoneNumber');
