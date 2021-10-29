@@ -17,7 +17,7 @@ export async function up(knex: Knex): Promise<any> {
     table.integer('companySize');
     table.string('owner');
     table.string('address');
-    table.dateTime('announcedAt');
+    table.timestamp('announcedAt');
     table.string('branches');
     table.string('occupation');
     table.string('website');

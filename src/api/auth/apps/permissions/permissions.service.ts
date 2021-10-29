@@ -177,7 +177,6 @@ export class PermissionsService {
           roleId: payload.roleId ? payload.roleId : permission.roleId,
           status: payload.status ? payload.status : permission.status,
           updatedBy: '',
-          updatedAt: moment().format(),
         })
         .where({ id: payload.id });
       return {

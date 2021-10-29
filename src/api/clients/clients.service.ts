@@ -21,8 +21,7 @@ export class ClientsService {
     const clients = await this.modelClass
       .query()
       .select('clients.*')
-      .join('users', 'clients.userId', 'users.id')
-      .where('users.subdomain', CUser.subdomain)
+      .join('users', CUser.brandCode, 'users.brandCode')
       .withGraphFetched({
         user: true,
         clientContacts: {},

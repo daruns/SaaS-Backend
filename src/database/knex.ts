@@ -20,7 +20,7 @@ module.exports = {
       tableName: 'migrations',
       directory: path.join(__dirname, 'migrations'),
       stub: path.join(__dirname, 'migrations', 'migration.stub'),
-      timezone: 'UTC',
+      timezone: 'GMT',
     },
     seeds: {
       directory: path.join(__dirname, '/seeds'),
@@ -58,7 +58,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migrations',
-      timezone: 'UTC',
+      timezone: 'GMT',
     },
     ...knexSnakeCaseMappers(),
   },

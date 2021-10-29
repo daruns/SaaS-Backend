@@ -5,9 +5,7 @@ export async function up(knex: Knex): Promise<any> {
     table.increments('id').unsigned().primary();
     table.string("name")
     table.string("position")
-    table.string('businessPhoneNumber1')
-    table.string('businessPhoneNumber2')
-    table.string("email").index()
+    table.string("email").index().unique();
     table.string("description")
     table.string("department")
     table

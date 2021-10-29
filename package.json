@@ -46,6 +46,7 @@
     "libphonenumber-js": "^1.9.37",
     "lodash": "4.17.15",
     "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
     "mysql2": "2.1.0",
     "nodemailer": "^6.7.0",
     "objection": "2.1.3",

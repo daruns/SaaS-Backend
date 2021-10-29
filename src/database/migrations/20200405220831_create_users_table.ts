@@ -11,8 +11,10 @@ export async function up(knex: Knex): Promise<any> {
     table.increments('id').unsigned().primary();
 
     table.string('username')
+      .index()
       .unique();
     table.string('email')
+      .index()
       .unique();
     table.string('password');
     table.string('name');

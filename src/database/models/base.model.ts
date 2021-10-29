@@ -1,32 +1,32 @@
+import { Inject, Injectable } from '@nestjs/common';
 import moment = require('moment');
-import { Model } from 'objection';
+import { Model, QueryBuilder } from 'objection';
 
 export class BaseModel extends Model {
-  $beforeUpdate() {
-    this.updatedAt = moment().format().toString();
+  // $beforeUpdate() {
+  //   this.updatedAt = Date();
+  // }
+  // $beforePatch() {
+  //   this.updatedAt = Date();
+  // }
+  $beforeInsert() {
+    // const ss = new Date(moment().toString())
+    // this.status = ss.toString() //new Date(moment(moment(),'Asia/Baghdad').format().toString());
+    // this.createdAt = new Date(ss.toString()) //new Date(moment(moment(),'Asia/Baghdad').format().toString());
+    // this.updatedAt = new Date(moment(moment(),'Asia/Baghdad').format().toString());
   }
-  $beforeCreate() {
-    this.createdAt = moment().format().toString();
-    this.updatedAt = moment().format().toString();
-  }
+  // $beforeCreate() {
+  //   this.createdAt = Date();
+  //   this.updatedAt = Date();
+  // }
 
-  static async afterCreate({ items, inputItems, relation }) {
-    console.log('items:     ', items);
-    console.log('inputItems:', inputItems);
-    console.log('relation:  ', relation ? relation.name : 'none');
-  }
-  static async afterPatch({ items, inputItems, relation }) {
-    console.log('items:     ', items);
-    console.log('inputItems:', inputItems);
-    console.log('relation:  ', relation ? relation.name : 'none');
-  }
 
   readonly id: number;
   status: string;
   deleted: number;
   createdBy: string;
   updatedBy: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 
 }
