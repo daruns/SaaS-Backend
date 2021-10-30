@@ -32,6 +32,7 @@ import { InventoryItemModel } from './models/inventoryItem.model';
 import { NonInventoryItemModel } from './models/nonInventoryItem.model';
 import { ServiceItemModel } from './models/serviceItem.model';
 import { BrandModel } from './models/brand.model';
+import { SubServiceItemModel } from './models/subServiceItem.model';
 
 const models = [
   UserModel,
@@ -45,6 +46,7 @@ const models = [
   InventoryItemModel,
   NonInventoryItemModel,
   ServiceItemModel,
+  SubServiceItemModel,
   BrandModel,
 ];
 

@@ -76,7 +76,6 @@ export class InventoryItemsService {
       const updatedInventoryItem = await this.modelClass
         .query()
         .update({
-          id: payload.id ? payload.id : inventoryItem.id,
           name: payload.name ? payload.name : inventoryItem.name,
           description: payload.description ? payload.description : inventoryItem.description,
           unitPrice: payload.unitPrice ? payload.unitPrice : inventoryItem.unitPrice,

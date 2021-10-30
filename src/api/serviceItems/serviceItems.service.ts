@@ -13,9 +13,13 @@ export class ServiceItemsService {
     @Inject('ServiceItemModel') private modelClass: ModelClass<ServiceItemModel>,
   ) {}
 
-  // inventoryItem list
+  // serviceItem list
   async findAll(currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     const serviceItems = await this.modelClass.query()
+    .select('serviceItems.*')
+    .join('users', 'users.id', 'serviceItems.userId')
+    .where('users.brand_code', CUser.brandCode)
     return {
       success: true,
       message: 'InventoryItem details fetch successfully.',
@@ -23,39 +27,45 @@ export class ServiceItemsService {
     };
   }
 
-  // find one inventoryItem info by inventoryItemId
+  // find one serviceItem info by serviceItemId
   async findById(id: number, currentUser): Promise<ResponseData> {
-    const inventoryItem = await this.modelClass
+    const CUser = currentUser;
+    const serviceItem = await this.modelClass
       .query()
+      .select('serviceItems.*')
+      .join('users', 'users.id', 'serviceItems.userId')
+      .where('users.brand_code', CUser.brandCode)  
       .findById(id)
-    if (inventoryItem) {
+    if (serviceItem) {
       return {
         success: true,
         message: 'ServiceItem details fetch successfully.',
-        data: inventoryItem,
+        data: serviceItem,
       };
     } else {
       return {
         success: true,
-        message: 'No inventoryItem details found.',
+        message: 'No serviceItem details found.',
         data: {},
       };
     }
   }
 
-  // Create inventoryItem before save encrypt password
+  // Create serviceItem before save encrypt password
   async create(payload, currentUser): Promise<ResponseData> {
-    let inventoryItemPayload = payload
+    const CUser = currentUser;
+    const serviceItemPayload = payload
     const newServiceItem = await this.modelClass.query()
+    .select('serviceItems.*')
+    .join('users', 'users.id', 'serviceItems.userId')
+    .where('users.brand_code', CUser.brandCode)
     .where({
-      name: inventoryItemPayload.name
-    })
-    .withGraphFetched({
+      'serviceItems.name': serviceItemPayload.name
     })
     if (!newServiceItem.length) {
-      inventoryItemPayload.createdBy = currentUser.username
-      inventoryItemPayload.userId = currentUser.id
-      const identifiers = await this.modelClass.query().insert(inventoryItemPayload);
+      serviceItemPayload.createdBy = currentUser.username
+      serviceItemPayload.userId = currentUser.id
+      const identifiers = await this.modelClass.query().insert(serviceItemPayload);
       const createServiceItem = await this.modelClass.query().findById(identifiers.id);
       return {
         success: true,
@@ -72,26 +82,30 @@ export class ServiceItemsService {
   }
 
   async update(payload, currentUser): Promise<ResponseData> {
-    let inventoryItemPayload = payload
-    const inventoryItem = await this.modelClass.query().findById(inventoryItemPayload.id);
-    if (inventoryItem) {
+    const CUser = currentUser;
+    const serviceItemPayload = payload
+    const serviceItem = await this.modelClass.query()
+    .select('serviceItems.*')
+    .join('users', 'users.id', 'serviceItems.userId')
+    .where('users.brand_code', CUser.brandCode)
+    .findById(serviceItemPayload.id);
+    if (serviceItem) {
       const updatedServiceItem = await this.modelClass
         .query()
         .update({
-          id: payload.id ? payload.id : inventoryItem.id,
-          name: payload.name ? payload.name : inventoryItem.name,
-          description: payload.description ? payload.description : inventoryItem.description,
-          unitPrice: payload.unitPrice ? payload.unitPrice : inventoryItem.unitPrice,
-          qty: payload.qty ? payload.qty : inventoryItem.qty,
-          purchasedAt: payload.purchasedAt ? payload.purchasedAt : inventoryItem.purchasedAt,
-          expireDate: payload.expireDate ? payload.expireDate : inventoryItem.expireDate,
-          supplier: payload.supplier ? payload.supplier : inventoryItem.supplier,
-          status: inventoryItemPayload.status ? inventoryItemPayload.status : inventoryItem.status,
-          deleted: inventoryItemPayload.deleted ? inventoryItemPayload.deleted : inventoryItem.deleted,
+          name: serviceItemPayload.name ? serviceItemPayload.name : serviceItem.name,
+          description: serviceItemPayload.description ? serviceItemPayload.description : serviceItem.description,
+          unitPrice: serviceItemPayload.unitPrice ? serviceItemPayload.unitPrice : serviceItem.unitPrice,
+          qty: serviceItemPayload.qty ? serviceItemPayload.qty : serviceItem.qty,
+          purchasedAt: serviceItemPayload.purchasedAt ? serviceItemPayload.purchasedAt : serviceItem.purchasedAt,
+          expireDate: serviceItemPayload.expireDate ? serviceItemPayload.expireDate : serviceItem.expireDate,
+          supplier: serviceItemPayload.supplier ? serviceItemPayload.supplier : serviceItem.supplier,
+          status: serviceItemPayload.status ? serviceItemPayload.status : serviceItem.status,
+          deleted: serviceItemPayload.deleted ? serviceItemPayload.deleted : serviceItem.deleted,
           updatedBy: currentUser.username,
-          userId: inventoryItemPayload.userId ? inventoryItemPayload.userId : inventoryItem.userId,
+          userId: serviceItemPayload.userId ? serviceItemPayload.userId : serviceItem.userId,
         })
-        .where({ id: inventoryItemPayload.id });
+        .where({ id: serviceItemPayload.id });
       return {
         success: true,
         message: 'ServiceItem details updated successfully.',
@@ -100,18 +114,22 @@ export class ServiceItemsService {
     } else {
       return {
         success: true,
-        message: 'No inventoryItem found.',
+        message: 'No serviceItem found.',
         data: {},
       };
     }
   }
 
-  // Delete inventoryItem
-  async deleteById(inventoryItemId: number, currentUser): Promise<ResponseData> {
+  // Delete serviceItem
+  async deleteById(serviceItemId: number, currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     const serviceItems = await this.modelClass
       .query()
+      .select('serviceItems.*')
+      .join('users', 'users.id', 'serviceItems.userId')
+      .where('users.brand_code', CUser.brandCode)
       .delete()
-      .where({ id: inventoryItemId });
+      .where({ id: serviceItemId });
     if (serviceItems) {
       return {
         success: true,
@@ -121,7 +139,7 @@ export class ServiceItemsService {
     } else {
       return {
         success: false,
-        message: 'No inventoryItem found.',
+        message: 'No serviceItem found.',
         data: {},
       };
     }

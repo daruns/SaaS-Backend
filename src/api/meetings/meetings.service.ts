@@ -17,7 +17,11 @@ export class MeetingsService {
 
   // meeting list
   async findAll(currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     const meetings = await this.modelClass.query()
+    .select('meetings.*')
+    .join('users', 'users.id', 'meetings.userId')
+    .where('users.brand_code', CUser.brandCode)
     return {
       success: true,
       message: 'Meeting details fetch successfully.',

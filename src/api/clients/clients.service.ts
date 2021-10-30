@@ -54,7 +54,7 @@ export class ClientsService {
       .where('users.brand_code', CUser.brandCode)
       .findById(id)
       .withGraphFetched({
-        user: true,
+        user: {},
         clientContacts: {},
         meetings: {},
         socialMedias: {},
@@ -67,7 +67,7 @@ export class ClientsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No client details found.',
         data: {},
       };

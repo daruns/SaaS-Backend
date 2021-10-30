@@ -17,7 +17,11 @@ export class ClientContactsService {
 
   // clientContact list
   async findAll(currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     const clientContacts = await this.modelClass.query()
+    .select('clientContacts.*')
+    .join('users', 'users.id', 'clientContacts.userId')
+    .where('users.brand_code', CUser.brandCode)
     return {
       success: true,
       message: 'ClientContact details fetch successfully.',
@@ -27,8 +31,12 @@ export class ClientContactsService {
 
   // find one clientContact info by clientContactId
   async findById(id: number, currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     const clientContact = await this.modelClass
       .query()
+      .select('clientContacts.*')
+      .join('users', 'users.id', 'clientContacts.userId')
+      .where('users.brand_code', CUser.brandCode)
       .findById(id)
     if (clientContact) {
       return {
@@ -52,12 +60,10 @@ export class ClientContactsService {
     .where({
       email: clientContactPayload.email
     })
-    .withGraphFetched({
-    })
     if (!newClientContact.length) {
       if (clientContactPayload.clientId) {
-        const clientFnd = await (await this.clientSerive.findById(clientContactPayload.clientId,currentUser)).data
-        if (!clientFnd.length) {
+        const clientFnd = await this.clientSerive.findById(clientContactPayload.clientId,currentUser)
+        if (!clientFnd.success) {
           return {
             success: false,
             message: 'Client doesnt exist.',
@@ -66,7 +72,7 @@ export class ClientContactsService {
         }
       }
 
-      clientContactPayload.userId = clientContactPayload.userId ? clientContactPayload.userId : currentUser.id
+      clientContactPayload.userId = currentUser.id
       clientContactPayload.createdBy = currentUser.username
       const identifiers = await this.modelClass.query().insert(clientContactPayload);
       const createClientContact = await this.modelClass.query().findById(identifiers.id);
@@ -84,12 +90,14 @@ export class ClientContactsService {
     }
   }
   async update(payload, currentUser): Promise<ResponseData> {
-    let clientContactPayload = payload
+    const CUser = currentUser;
+    const clientContactPayload = payload
     const clientContact = await this.modelClass.query().findById(clientContactPayload.id);
     if (clientContact) {
       if (clientContactPayload.clientId) {
-        const clientFnd = await (await this.clientSerive.findById(clientContactPayload.clientId,currentUser)).data
-        if (!clientFnd.length) {
+        const clientFnd = await this.clientSerive.findById(clientContactPayload.clientId,CUser)
+        console.log(clientFnd)
+        if (!clientFnd.success) {
           return {
             success: false,
             message: 'Client doesnt exist.',
@@ -100,6 +108,9 @@ export class ClientContactsService {
 
       const updatedClientContact = await this.modelClass
         .query()
+        .select('clientContacts.*')
+        .join('users', 'users.id', 'clientContacts.userId')
+        .where('users.brand_code', CUser.brandCode)  
         .update({
           name: clientContactPayload.name ? clientContactPayload.name : clientContact.name,
           businessPhoneNumber1: clientContactPayload.businessPhoneNumber1 ? clientContactPayload.businessPhoneNumber1 : clientContact.businessPhoneNumber1,
@@ -130,8 +141,12 @@ export class ClientContactsService {
   }
   // Delete clientContact
   async deleteById(clientContactId: number, currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     const clientContacts = await this.modelClass
       .query()
+      .select('clientContacts.*')
+      .join('users', 'users.id', 'clientContacts.userId')
+      .where('users.brand_code', CUser.brandCode)
       .delete()
       .where({ id: clientContactId });
     if (clientContacts) {

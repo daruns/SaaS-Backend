@@ -17,7 +17,11 @@ export class SocialMediasService {
 
   // socialMedia list
   async findAll(currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     const socialMedias = await this.modelClass.query()
+    .select('socialMedias.*')
+    .join('users', 'users.id', 'socialMedias.userId')
+    .where('users.brand_code', CUser.brandCode)
     return {
       success: true,
       message: 'SocialMedia details fetch successfully.',
@@ -27,8 +31,12 @@ export class SocialMediasService {
 
   // find one socialMedia info by socialMediaId
   async findById(id: number, currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     const socialMedia = await this.modelClass
       .query()
+      .select('socialMedias.*')
+      .join('users', 'users.id', 'socialMedias.userId')
+      .where('users.brand_code', CUser.brandCode)  
       .findById(id)
     if (socialMedia) {
       return {
@@ -46,8 +54,12 @@ export class SocialMediasService {
   }
   // Create socialMedia before save encrypt password
   async create(payload, currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     let socialMediaPayload = payload
     const newSocialMedia = await this.modelClass.query()
+    .select('socialMedias.*')
+    .join('users', 'users.id', 'socialMedias.userId')
+    .where('users.brand_code', CUser.brandCode)
     .where({
       linkAddress: socialMediaPayload.linkAddress,
       clientId: socialMediaPayload.clientId
@@ -83,11 +95,16 @@ export class SocialMediasService {
     }
   }
   async update(payload, currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     let socialMediaPayload = payload
-    const socialMedia = await this.modelClass.query().findById(socialMediaPayload.id);
+    const socialMedia = await this.modelClass.query()
+    .select('socialMedias.*')
+    .join('users', 'users.id', 'socialMedias.userId')
+    .where('users.brand_code', CUser.brandCode)
+    .findById(socialMediaPayload.id);
     if (socialMedia) {
       if (socialMediaPayload.clientId) {
-        const clientFnd = await this.clientSerive.findById(socialMediaPayload.clientId,currentUser)
+        const clientFnd = await this.clientSerive.findById(socialMediaPayload.clientId,CUser)
         if (!clientFnd.data.id) {
           return {
             success: false,
@@ -105,8 +122,8 @@ export class SocialMediasService {
           addressDomain: socialMediaPayload.addressDomain ? socialMediaPayload.addressDomain : socialMedia.addressDomain,
           status: socialMediaPayload.status ? socialMediaPayload.status : socialMedia.status,
           deleted: socialMediaPayload.deleted ? socialMediaPayload.deleted : socialMedia.deleted,
-          updatedBy: currentUser.username,
-          userId: currentUser.id,
+          updatedBy: CUser.username,
+          userId: CUser.id,
           clientId: socialMediaPayload.clientId ? socialMediaPayload.clientId : socialMedia.clientId,
         })
         .where({ id: socialMediaPayload.id });
@@ -125,8 +142,12 @@ export class SocialMediasService {
   }
   // Delete socialMedia
   async deleteById(socialMediaId: number, currentUser): Promise<ResponseData> {
+    const CUser = currentUser;
     const socialMedias = await this.modelClass
       .query()
+      .select('socialMedias.*')
+      .join('users', 'users.id', 'socialMedias.userId')
+      .where('users.brand_code', CUser.brandCode)  
       .delete()
       .where({ id: socialMediaId });
     if (socialMedias) {

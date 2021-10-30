@@ -8,7 +8,8 @@ import { UsersModule } from 'src/api/auth/apps/users/users.module';
 import { BrandsModule } from 'src/api/brands/brands.module';
 import { InventoryItemsMdoule } from './inventoryItems/inventoryItems.module';
 import { NonInventoryItemsMdoule } from './nonInventoryItems/nonInventoryItems.module';
-import { ServiceItemsMdoule } from './serviceItems/serviceItems.module';
+import { ServiceItemsModule } from './serviceItems/serviceItems.module';
+import { SubServiceItemsModule } from 'src/api/subServiceItems/subServiceItems.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { ServiceItemsMdoule } from './serviceItems/serviceItems.module';
     BrandsModule,
     InventoryItemsMdoule,
     NonInventoryItemsMdoule,
-    ServiceItemsMdoule,
+    ServiceItemsModule,
+    SubServiceItemsModule,
   ],
   providers: [],
 })

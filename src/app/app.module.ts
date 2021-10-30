@@ -17,10 +17,10 @@ import { DatabaseModule } from 'src/database/database.module';
     //   provide: APP_FILTER,
     //   useClass: HttpErrorHandler,
     // },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggingInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: LoggingInterceptor,
+    // },
     {
       provide: APP_INTERCEPTOR,
       useClass: TimeoutInterceptor,

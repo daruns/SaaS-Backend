@@ -5,5 +5,6 @@ import { ServiceItemsService } from './serviceItems.service';
 @Module({
   controllers: [ServiceItemsController],
   providers: [ServiceItemsService],
+  exports: [ServiceItemsService],
 })
-export class ServiceItemsMdoule {}
+export class ServiceItemsModule {}
