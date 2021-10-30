@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
 
-    table.string('brandCode').index().unique();
+    table.string('brandCode');
     table.string('subdomain');
     table.string('name');
     table.string('logo');
@@ -28,6 +28,7 @@ export async function up(knex: Knex): Promise<any> {
     table.integer('deleted');
     table.string('createdBy');
     table.string('updatedBy');
+    table.index('brandCode', 'BrandCodeIndex')
     table.timestamps(true, true);
   });
 }

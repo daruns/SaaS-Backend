@@ -17,11 +17,8 @@ export class ClientContactsService {
 
   // clientContact list
   async findAll(currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const clientContacts = await this.modelClass.query()
-    .select('clientContacts.*')
-    .join('users', 'users.id', 'clientContacts.userId')
-    .where('users.brand_code', CUser.brandCode)
+    .where({ brandCode: currentUser.brandCode })
     return {
       success: true,
       message: 'ClientContact details fetch successfully.',
@@ -31,12 +28,9 @@ export class ClientContactsService {
 
   // find one clientContact info by clientContactId
   async findById(id: number, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const clientContact = await this.modelClass
       .query()
-      .select('clientContacts.*')
-      .join('users', 'users.id', 'clientContacts.userId')
-      .where('users.brand_code', CUser.brandCode)
+      .where({ brandCode: currentUser.brandCode })
       .findById(id)
     if (clientContact) {
       return {
@@ -46,7 +40,7 @@ export class ClientContactsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No clientContact details found.',
         data: {},
       };
@@ -57,10 +51,11 @@ export class ClientContactsService {
     // restrict to the client that belongs to brand or user ## IMPORTANT TODO
     let clientContactPayload = payload
     const newClientContact = await this.modelClass.query()
-    .where({
+    .where({ brandCode: currentUser.brandCode })
+    .findOne({
       email: clientContactPayload.email
     })
-    if (!newClientContact.length) {
+    if (!newClientContact) {
       if (clientContactPayload.clientId) {
         const clientFnd = await this.clientSerive.findById(clientContactPayload.clientId,currentUser)
         if (!clientFnd.success) {
@@ -72,7 +67,7 @@ export class ClientContactsService {
         }
       }
 
-      clientContactPayload.userId = currentUser.id
+      clientContactPayload.brandCode = currentUser.brandCode
       clientContactPayload.createdBy = currentUser.username
       const identifiers = await this.modelClass.query().insert(clientContactPayload);
       const createClientContact = await this.modelClass.query().findById(identifiers.id);
@@ -90,12 +85,13 @@ export class ClientContactsService {
     }
   }
   async update(payload, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const clientContactPayload = payload
-    const clientContact = await this.modelClass.query().findById(clientContactPayload.id);
+    const clientContact = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findById(clientContactPayload.id);
     if (clientContact) {
       if (clientContactPayload.clientId) {
-        const clientFnd = await this.clientSerive.findById(clientContactPayload.clientId,CUser)
+        const clientFnd = await this.clientSerive.findById(clientContactPayload.clientId,currentUser)
         console.log(clientFnd)
         if (!clientFnd.success) {
           return {
@@ -108,9 +104,7 @@ export class ClientContactsService {
 
       const updatedClientContact = await this.modelClass
         .query()
-        .select('clientContacts.*')
-        .join('users', 'users.id', 'clientContacts.userId')
-        .where('users.brand_code', CUser.brandCode)  
+        .where({ brandCode: currentUser.brandCode })
         .update({
           name: clientContactPayload.name ? clientContactPayload.name : clientContact.name,
           businessPhoneNumber1: clientContactPayload.businessPhoneNumber1 ? clientContactPayload.businessPhoneNumber1 : clientContact.businessPhoneNumber1,
@@ -122,7 +116,6 @@ export class ClientContactsService {
           status: clientContactPayload.status ? clientContactPayload.status : clientContact.status,
           deleted: clientContactPayload.deleted ? clientContactPayload.deleted : clientContact.deleted,
           updatedBy: currentUser.username,
-          userId: clientContactPayload.userId ? clientContactPayload.userId : clientContact.userId,
           clientId: clientContactPayload.clientId ? clientContactPayload.clientId : clientContact.clientId,
         })
         .where({ id: clientContactPayload.id });
@@ -133,7 +126,7 @@ export class ClientContactsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No clientContact found.',
         data: {},
       };
@@ -141,14 +134,12 @@ export class ClientContactsService {
   }
   // Delete clientContact
   async deleteById(clientContactId: number, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
-    const clientContacts = await this.modelClass
-      .query()
-      .select('clientContacts.*')
-      .join('users', 'users.id', 'clientContacts.userId')
-      .where('users.brand_code', CUser.brandCode)
+    const clientContacts = await this.modelClass.query()
       .delete()
-      .where({ id: clientContactId });
+      .where({
+        brandCode: currentUser.brandCode,
+        id: clientContactId
+      });
     if (clientContacts) {
       return {
         success: true,

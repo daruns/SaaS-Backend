@@ -1,6 +1,5 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
-import { UserModel } from './user.model';
 
 const tbName = 'inventoryItems'
 export class InventoryItemModel extends BaseModel {
@@ -13,18 +12,8 @@ export class InventoryItemModel extends BaseModel {
   purchasedAt: Date
   expireDate: Date
   supplier: string
-  userId: number
-
-  user: UserModel;
+  brandCode: string
 
   static relationMappings = {
-    user: {
-      modelClass: `${__dirname}/user.model`,
-      relation: Model.BelongsToOneRelation,
-      join: {
-        from: `${tbName}.userId`,
-        to: 'users.id',
-      },
-    },
   };
 }

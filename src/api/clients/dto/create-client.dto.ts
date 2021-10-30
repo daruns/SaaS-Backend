@@ -21,8 +21,5 @@ export class CreateClientDto {
   @Max(10)
   rate: number
   zipCode: string
-  userId: number
   status: string
-  deleted:number
-  createdBy:string
 }

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 import { Request } from 'supertest';
+import { BrandsService } from 'src/api/brands/brands.service';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -17,6 +18,7 @@ export interface ResponseData {
 export class UsersService {
   constructor(
     @Inject('UserModel') private modelClass: ModelClass<UserModel>,
+    private brandService: BrandsService
     ) {}
 
   // user list with list of posts and comments on post
@@ -146,16 +148,26 @@ export class UsersService {
     if (!newUser.length) {
       const hashedPassword = await bcrypt.hash(payload.password, 10);
       payload.password = hashedPassword
-      // payload.createdBy = @Req().user.username
       try {
-
-        const identifiers = await this.modelClass.query().insert(payload);
-        const createUser = await this.modelClass.query().findById(identifiers.id);
-        return {
-          success: true,
-          message: 'User created successfully.',
-          data: createUser,
-        }
+        // const createBrandDto = {
+        //   name: payload.brandCode,
+        // }
+    
+        // const createBrand = await this.brandService.create(createBrandDto)
+        // console.log(payload)
+        // if (createBrand.success){
+          const identifiers = await this.modelClass.query().insert(payload);
+          const createUser = await this.modelClass.query().findById(identifiers.id);
+          delete createUser.password
+          return {
+            success: true,
+            message: 'User created successfully.',
+            data: createUser,
+          }
+        // }else
+        // {
+        //   return createBrand
+        // }
       } catch(err) {
         return {
           success: false,

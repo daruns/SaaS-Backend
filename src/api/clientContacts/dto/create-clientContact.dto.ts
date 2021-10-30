@@ -18,13 +18,6 @@ export class CreateClientContactDto {
   description: string
   department: string
   status: string
-  @IsOptional()
-  @IsInt()
-  deleted: number
-  createdBy: string
   @IsInt({ message: 'ClientId must be integer' })
   clientId: number
-  @IsInt({ message: 'userId must be integer' })
-  @IsOptional()
-  userId: number
 }

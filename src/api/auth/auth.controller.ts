@@ -5,6 +5,7 @@ import {
     Post,
     Req,
     Request,
+    UnauthorizedException,
     UseGuards,
     ValidationPipe,
   } from '@nestjs/common';
@@ -34,6 +35,8 @@ import {
     @UseGuards(JwtAuthGuard)
     @Get('me')
     async getMe(@Request() req) {
+      console.log(req.user)
+      if (!req.user.id) throw new UnauthorizedException()
       const myUser = await this.authService.me(req.user.id);
       delete myUser.password
       return myUser;

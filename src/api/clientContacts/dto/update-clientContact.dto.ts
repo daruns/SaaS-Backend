@@ -32,16 +32,7 @@ export class UpdateClientContactDto {
   @IsString()
   @IsOptional()
   status: string
-  @IsInt({ message: 'deleted must be integer' })
-  @IsOptional()
-  deleted: number
-  @IsString()
-  @IsOptional()
-  updatedBy:string
   @IsInt({ message: 'clientId must be integer' })
   @IsOptional()
   clientId: number
-  @IsInt({ message: 'userId must be integer' })
-  @IsOptional()
-  userId: number
 }

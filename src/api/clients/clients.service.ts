@@ -17,12 +17,9 @@ export class ClientsService {
 
   // client list
   async findAll(currentUser): Promise<ResponseData> {
-    const CUser = await this.getUserById(currentUser.id)
     const clients = await this.modelClass
       .query()
-      .select('clients.*')
-      .join('users', 'users.id', 'clients.userId')
-      .where('users.brand_code', CUser.brandCode)
+      .where({ brandCode: currentUser.brandCode })
       .withGraphFetched({
         user: true,
         clientContacts: {},
@@ -37,7 +34,7 @@ export class ClientsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No clients details found.',
         data: {},
       };
@@ -46,12 +43,9 @@ export class ClientsService {
 
   // find one client info by id
   async findById(id: number, currentUser): Promise<ResponseData> {
-    const CUser = await this.getUserById(currentUser.id)
     const client = await this.modelClass
       .query()
-      .select('clients.*')
-      .join('users', 'users.id', 'clients.userId')
-      .where('users.brand_code', CUser.brandCode)
+      .where({ brandCode: currentUser.brandCode })
       .findById(id)
       .withGraphFetched({
         user: {},
@@ -75,11 +69,23 @@ export class ClientsService {
   }
   // Create client
   async create(payload, user, currentUser): Promise<ResponseData> {
-    const CUser = await this.getUserById(currentUser.id)
     const newClient = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
     .findOne({email: payload.email})
     const userParams = user
     if (!newClient) {
+      if (user) {
+        const userUsername = await this.usersService.findByUsername(userParams.username)
+        const userEmail = await this.usersService.findByEmail(payload.email)
+        if (!userUsername.success && !userEmail.success) {
+          return {
+            success: false,
+            message: 'User Already exist with this email or username.',
+            data: {},
+          };
+        }
+      }
+
       let result : any
 
       const trx = await this.modelClass.startTransaction()
@@ -87,10 +93,10 @@ export class ClientsService {
         userParams.userType = 'partner'
         userParams.name = payload.name
         userParams.email = payload.email
-        userParams.brandCode = CUser.brandCode
+        userParams.brandCode = currentUser.brandCode
         userParams.phoneNumber = payload.phoneNumbers
-        userParams.createdBy = CUser.username
-        userParams.reportsTo = CUser.username
+        userParams.createdBy = currentUser.username
+        userParams.reportsTo = currentUser.username
 
         // const createdUser = await this.usersService.create(userParams);
         const createdUser = await this.userClass.query(trx).insert(userParams);
@@ -106,8 +112,9 @@ export class ClientsService {
         rate : payload.rate,
         zipCode : payload.zipCode,
         status : "active",
-        createdBy : CUser.username,
+        createdBy : currentUser.username,
         userId : createdUser.id,
+        brandCode: currentUser.brandCode,
         }
         const createdClient = await createdUser
           .$relatedQuery('clients', trx)
@@ -144,7 +151,9 @@ export class ClientsService {
   }
   async update(payload,currentUser): Promise<ResponseData> {
     const CUser = await this.getUserById(currentUser.id)
-    const client = await this.modelClass.query().findById(payload.id);
+    const client = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findById(payload.id);
     if (client) {
       const updatedClient = await this.modelClass
         .query()
@@ -154,14 +163,12 @@ export class ClientsService {
           phoneNumbers: payload.phoneNumbers ? payload.phoneNumbers : client.phoneNumbers,
           clientType: payload.clientType ? payload.clientType : client.clientType,
           businessType: payload.businessType ? payload.businessType : client.businessType,
-          // email: payload.email ? payload.email : client.email,
           website: payload.website ? payload.website : client.website,
           address: payload.address ? payload.address : client.address,
           rate: payload.rate ? payload.rate : client.rate,
           zipCode: payload.zipCode ? payload.zipCode : client.zipCode,
           status: payload.status ? payload.status : client.status,
           deleted: payload.deleted ? payload.deleted : client.deleted,
-          userId: payload.userId ? payload.userId : client.userId,
           updatedBy: CUser.username,  
         })
         .where({ id: payload.id });
@@ -172,7 +179,7 @@ export class ClientsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No client found.',
         data: {},
       };
@@ -183,7 +190,10 @@ export class ClientsService {
     const clients = await this.modelClass
       .query()
       .delete()
-      .where({ id: payload })
+      .where({
+        brandCode: currentUser.brandCode,
+        id: payload
+      })
     if (clients) {
       return {
         success: true,

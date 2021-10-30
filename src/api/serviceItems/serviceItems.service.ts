@@ -15,11 +15,8 @@ export class ServiceItemsService {
 
   // serviceItem list
   async findAll(currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const serviceItems = await this.modelClass.query()
-    .select('serviceItems.*')
-    .join('users', 'users.id', 'serviceItems.userId')
-    .where('users.brand_code', CUser.brandCode)
+    .where({ brandCode: currentUser.brandCode })
     return {
       success: true,
       message: 'InventoryItem details fetch successfully.',
@@ -30,11 +27,8 @@ export class ServiceItemsService {
   // find one serviceItem info by serviceItemId
   async findById(id: number, currentUser): Promise<ResponseData> {
     const CUser = currentUser;
-    const serviceItem = await this.modelClass
-      .query()
-      .select('serviceItems.*')
-      .join('users', 'users.id', 'serviceItems.userId')
-      .where('users.brand_code', CUser.brandCode)  
+    const serviceItem = await this.modelClass.query()
+      .where({ brandCode: currentUser.brandCode })
       .findById(id)
     if (serviceItem) {
       return {
@@ -44,7 +38,7 @@ export class ServiceItemsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No serviceItem details found.',
         data: {},
       };
@@ -56,15 +50,13 @@ export class ServiceItemsService {
     const CUser = currentUser;
     const serviceItemPayload = payload
     const newServiceItem = await this.modelClass.query()
-    .select('serviceItems.*')
-    .join('users', 'users.id', 'serviceItems.userId')
-    .where('users.brand_code', CUser.brandCode)
-    .where({
-      'serviceItems.name': serviceItemPayload.name
+    .where({ brandCode: currentUser.brandCode })
+    .findOne({
+      name: serviceItemPayload.name
     })
-    if (!newServiceItem.length) {
+    if (!newServiceItem) {
       serviceItemPayload.createdBy = currentUser.username
-      serviceItemPayload.userId = currentUser.id
+      serviceItemPayload.brandCode = currentUser.brandCode
       const identifiers = await this.modelClass.query().insert(serviceItemPayload);
       const createServiceItem = await this.modelClass.query().findById(identifiers.id);
       return {
@@ -85,10 +77,9 @@ export class ServiceItemsService {
     const CUser = currentUser;
     const serviceItemPayload = payload
     const serviceItem = await this.modelClass.query()
-    .select('serviceItems.*')
-    .join('users', 'users.id', 'serviceItems.userId')
-    .where('users.brand_code', CUser.brandCode)
+    .where({ brandCode: currentUser.brandCode })
     .findById(serviceItemPayload.id);
+    // IMPLEMENT and restrict if the new name is duplicate or not and so for all other tables
     if (serviceItem) {
       const updatedServiceItem = await this.modelClass
         .query()
@@ -103,7 +94,6 @@ export class ServiceItemsService {
           status: serviceItemPayload.status ? serviceItemPayload.status : serviceItem.status,
           deleted: serviceItemPayload.deleted ? serviceItemPayload.deleted : serviceItem.deleted,
           updatedBy: currentUser.username,
-          userId: serviceItemPayload.userId ? serviceItemPayload.userId : serviceItem.userId,
         })
         .where({ id: serviceItemPayload.id });
       return {
@@ -113,7 +103,7 @@ export class ServiceItemsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No serviceItem found.',
         data: {},
       };
@@ -123,13 +113,12 @@ export class ServiceItemsService {
   // Delete serviceItem
   async deleteById(serviceItemId: number, currentUser): Promise<ResponseData> {
     const CUser = currentUser;
-    const serviceItems = await this.modelClass
-      .query()
-      .select('serviceItems.*')
-      .join('users', 'users.id', 'serviceItems.userId')
-      .where('users.brand_code', CUser.brandCode)
+    const serviceItems = await this.modelClass.query()
+      .where({
+        brandCode: CUser.brandCode,
+        id: serviceItemId
+      })
       .delete()
-      .where({ id: serviceItemId });
     if (serviceItems) {
       return {
         success: true,

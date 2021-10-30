@@ -5,7 +5,6 @@ export class UpdateClientDto {
   @IsNotEmpty({ message: 'ClientId is required' })
   @IsInt({ message: 'Client id must be integer' })
   id: number;
-
   name: string
   logo: string
   @IsString()
@@ -20,7 +19,4 @@ export class UpdateClientDto {
   rate: number
   zipCode: string
   status: string
-  deleted:number
-  updatedBy:string
-  userId: number
 }

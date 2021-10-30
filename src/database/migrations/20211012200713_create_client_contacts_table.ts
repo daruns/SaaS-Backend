@@ -6,6 +6,8 @@ export async function up(knex: Knex): Promise<any> {
     table.string("name")
     table.string("position")
     table.string("email").index().unique();
+    table.string('businessPhoneNumber1');
+    table.string('businessPhoneNumber2');
     table.string("description")
     table.string("department")
     table
@@ -15,14 +17,7 @@ export async function up(knex: Knex): Promise<any> {
       .references('id')
       .inTable('clients')
       .notNullable()
-    table
-      .integer('userId')
-      .unsigned()
-      .index()
-      .references('id')
-      .inTable('users')
-      .notNullable()
-
+    table.string('brandCode')
     table.string('status');
     table.integer('deleted');
     table.string('createdBy');

@@ -17,9 +17,7 @@ export class NonInventoryItemsService {
   async findAll(currentUser): Promise<ResponseData> {
     const CUser = currentUser;
     const nonInventoryItems = await this.modelClass.query()
-    .select('nonInventoryItems.*')
-    .join('users', 'users.id', 'nonInventoryItems.userId')
-    .where('users.brand_code', CUser.brandCode)
+    .where({ brandCode: currentUser.brandCode })
     return {
       success: true,
       message: 'NonInventoryItem details fetch successfully.',
@@ -30,12 +28,9 @@ export class NonInventoryItemsService {
   // find one nonInventoryItem info by nonInventoryItemId
   async findById(id: number, currentUser): Promise<ResponseData> {
     const CUser = currentUser;
-    const nonInventoryItem = await this.modelClass
-      .query()
-      .select('nonInventoryItems.*')
-      .join('users', 'users.id', 'nonInventoryItems.userId')
-      .where('users.brand_code', CUser.brandCode)  
-      .findById(id)
+    const nonInventoryItem = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findById(id)
     if (nonInventoryItem) {
       return {
         success: true,
@@ -56,17 +51,13 @@ export class NonInventoryItemsService {
     const CUser = currentUser;
     const nonInventoryItemPayload = payload
     const newNonInventoryItem = await this.modelClass.query()
-    .select('nonInventoryItems.*')
-    .join('users', 'users.id', 'nonInventoryItems.userId')
-    .where('users.brand_code', CUser.brandCode)
-    .where({
+    .findOne({
+      brandCode: currentUser.brandCode,
       name: nonInventoryItemPayload.name
     })
-    .withGraphFetched({
-    })
-    if (!newNonInventoryItem.length) {
+    if (!newNonInventoryItem) {
       nonInventoryItemPayload.createdBy = currentUser.username
-      nonInventoryItemPayload.userId = currentUser.id
+      nonInventoryItemPayload.brandCode = currentUser.brandCode
       const identifiers = await this.modelClass.query().insert(nonInventoryItemPayload);
       const createNonInventoryItem = await this.modelClass.query().findById(identifiers.id);
       return {
@@ -87,9 +78,7 @@ export class NonInventoryItemsService {
     const CUser = currentUser;
     const nonInventoryItemPayload = payload
     const nonInventoryItem = await this.modelClass.query()
-    .select('nonInventoryItems.*')
-    .join('users', 'users.id', 'nonInventoryItems.userId')
-    .where('users.brand_code', CUser.brandCode)
+    .where({ brandCode: currentUser.brandCode })
     .findById(nonInventoryItemPayload.id);
     if (nonInventoryItem) {
       const updatedNonInventoryItem = await this.modelClass
@@ -114,7 +103,7 @@ export class NonInventoryItemsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No nonInventoryItem found.',
         data: {},
       };
@@ -124,13 +113,12 @@ export class NonInventoryItemsService {
   // Delete nonInventoryItem
   async deleteById(nonInventoryItemId: number, currentUser): Promise<ResponseData> {
     const CUser = currentUser;
-    const nonInventoryItems = await this.modelClass
-      .query()
-      .select('nonInventoryItems.*')
-      .join('users', 'users.id', 'nonInventoryItems.userId')
-      .where('users.brand_code', CUser.brandCode)
+    const nonInventoryItems = await this.modelClass.query()
       .delete()
-      .where({ id: nonInventoryItemId });
+      .where({
+        brandCode: currentUser.brandCode,
+        id: nonInventoryItemId
+      });
     if (nonInventoryItems) {
       return {
         success: true,

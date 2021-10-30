@@ -16,6 +16,7 @@ export class InventoryItemsService {
   // inventoryItem list
   async findAll(currentUser): Promise<ResponseData> {
     const inventoryItems = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
     return {
       success: true,
       message: 'InventoryItem details fetch successfully.',
@@ -27,6 +28,7 @@ export class InventoryItemsService {
   async findById(id: number, currentUser): Promise<ResponseData> {
     const inventoryItem = await this.modelClass
       .query()
+      .where({ brandCode: currentUser.brandCode })
       .findById(id)
     if (inventoryItem) {
       return {
@@ -46,14 +48,13 @@ export class InventoryItemsService {
   async create(payload, currentUser): Promise<ResponseData> {
     let inventoryItemPayload = payload
     const newInventoryItem = await this.modelClass.query()
-    .where({
+    .where({ brandCode: currentUser.brandCode })
+    .findOne({
       name: inventoryItemPayload.name
     })
-    .withGraphFetched({
-    })
-    if (!newInventoryItem.length) {
+    if (!newInventoryItem) {
       inventoryItemPayload.createdBy = currentUser.username
-      inventoryItemPayload.userId = currentUser.id
+      inventoryItemPayload.brandCode = currentUser.brandCode
       const identifiers = await this.modelClass.query().insert(inventoryItemPayload);
       const createInventoryItem = await this.modelClass.query().findById(identifiers.id);
       return {
@@ -71,7 +72,9 @@ export class InventoryItemsService {
   }
   async update(payload, currentUser): Promise<ResponseData> {
     let inventoryItemPayload = payload
-    const inventoryItem = await this.modelClass.query().findById(inventoryItemPayload.id);
+    const inventoryItem = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findById(inventoryItemPayload.id);
     if (inventoryItem) {
       const updatedInventoryItem = await this.modelClass
         .query()
@@ -86,7 +89,6 @@ export class InventoryItemsService {
           status: inventoryItemPayload.status ? inventoryItemPayload.status : inventoryItem.status,
           deleted: inventoryItemPayload.deleted ? inventoryItemPayload.deleted : inventoryItem.deleted,
           updatedBy: currentUser.username,
-          userId: inventoryItemPayload.userId ? inventoryItemPayload.userId : inventoryItem.userId,
         })
         .where({ id: inventoryItemPayload.id });
       return {
@@ -96,7 +98,7 @@ export class InventoryItemsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No inventoryItem found.',
         data: {},
       };
@@ -107,7 +109,10 @@ export class InventoryItemsService {
     const inventoryItems = await this.modelClass
       .query()
       .delete()
-      .where({ id: inventoryItemId });
+      .where({
+        brandCode: currentUser.brandCode,
+        id: inventoryItemId
+      });
     if (inventoryItems) {
       return {
         success: true,

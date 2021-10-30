@@ -24,15 +24,9 @@ export async function up(knex: Knex): Promise<any> {
       .references('id')
       .inTable('clients')
       .notNullable()
-    table
-      .integer('userId')
-      .unsigned()
-      .index()
-      .references('id')
-      .inTable('users')
-      .notNullable()
+    table.string('brandCode')
 
-    table.string('status');
+      table.string('status');
     table.integer('deleted');
     table.string('createdBy');
     table.string('updatedBy');

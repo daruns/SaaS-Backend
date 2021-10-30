@@ -18,6 +18,7 @@ export class ClientModel extends BaseModel {
   address: string
   rate: number
   zipCode: string
+  brandCode: string
   userId: number
 
   user: UserModel;

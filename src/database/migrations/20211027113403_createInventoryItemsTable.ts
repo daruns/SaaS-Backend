@@ -17,12 +17,7 @@ export async function up(knex: Knex): Promise<any> {
     table.dateTime('purchasedAt')
     table.dateTime('expireDate')
     table.string('supplier')
-    table.integer('userId')
-      .unsigned()
-      .index()
-      .references('id')
-      .inTable('users')
-      .notNullable()
+    table.string('brandCode')
 
     table.string('status');
     table.integer('deleted');

@@ -17,11 +17,8 @@ export class MeetingsService {
 
   // meeting list
   async findAll(currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const meetings = await this.modelClass.query()
-    .select('meetings.*')
-    .join('users', 'users.id', 'meetings.userId')
-    .where('users.brand_code', CUser.brandCode)
+    .where({ brandCode: currentUser.brandCode })
     return {
       success: true,
       message: 'Meeting details fetch successfully.',
@@ -33,6 +30,7 @@ export class MeetingsService {
   async findById(id: number, currentUser): Promise<ResponseData> {
     const meeting = await this.modelClass
       .query()
+      .where({ brandCode: currentUser.brandCode })
       .findById(id)
     if (meeting) {
       return {
@@ -42,7 +40,7 @@ export class MeetingsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No meeting details found.',
         data: {},
       };
@@ -50,10 +48,10 @@ export class MeetingsService {
   }
   // Create meeting before save encrypt password
   async create(payload, currentUser): Promise<ResponseData> {
-    let meetingPayload = payload
+    const meetingPayload = payload
     if (meetingPayload.clientId) {
       const clientFnd = await this.clientSerive.findById(meetingPayload.clientId,currentUser)
-      if (!clientFnd.data.id) {
+      if (!clientFnd.success) {
         return {
           success: false,
           message: 'Client doesnt exist.',
@@ -62,12 +60,10 @@ export class MeetingsService {
       }
     }
 
-    meetingPayload.userId = meetingPayload.userId ? meetingPayload.userId : currentUser.id
     meetingPayload.date = moment(meetingPayload.date).format('YYYY-MM-DD HH:mm:ss').toString()
     meetingPayload.nextMeetingDate = moment(meetingPayload.nextMeetingDate).format('YYYY-MM-DD HH:mm:ss').toString()
     meetingPayload.createdBy = currentUser.username
-    // delete meetingPayload.date
-    // delete meetingPayload.nextMeetingDate
+    meetingPayload.brandCode = currentUser.brandCode
     const identifiers = await this.modelClass.query().insert(meetingPayload);
     const createMeeting = await this.modelClass.query().findById(identifiers.id);
     return {
@@ -77,12 +73,14 @@ export class MeetingsService {
     };
   }
   async update(payload, currentUser): Promise<ResponseData> {
-    let meetingPayload = payload
-    const meeting = await this.modelClass.query().findById(meetingPayload.id);
+    const meetingPayload = payload
+    const meeting = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findById(meetingPayload.id);
     if (meeting) {
       if (meetingPayload.clientId) {
         const clientFnd = await this.clientSerive.findById(meetingPayload.clientId,currentUser)
-        if (!clientFnd.data.id) {
+        if (!clientFnd.success) {
           return {
             success: false,
             message: 'Client doesnt exist.',
@@ -113,7 +111,7 @@ export class MeetingsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No meeting found.',
         data: {},
       };
@@ -121,10 +119,12 @@ export class MeetingsService {
   }
   // Delete meeting
   async deleteById(meetingId: number, currentUser): Promise<ResponseData> {
-    const meetings = await this.modelClass
-      .query()
+    const meetings = await this.modelClass.query()
       .delete()
-      .where({ id: meetingId });
+      .where({
+        brandCode: currentUser.brandCode,
+        id: meetingId
+      });
     if (meetings) {
       return {
         success: true,

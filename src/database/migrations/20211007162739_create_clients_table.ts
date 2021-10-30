@@ -18,6 +18,7 @@ export async function up(knex: Knex): Promise<any> {
     table.string("address")
     table.integer("rate")
     table.string("zipCode")
+    table.string('brandCode')
     table
       .integer('userId')
       .unsigned()

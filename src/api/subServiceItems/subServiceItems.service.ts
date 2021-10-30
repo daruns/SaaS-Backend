@@ -17,9 +17,8 @@ export class SubServiceItemsService {
 
   // subServiceItem list
   async findAll(currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const subServiceItems = await this.modelClass.query()
-    .where({brand_code: CUser.brandCode})
+    .where({brandCode: currentUser.brandCode})
     return {
       success: true,
       message: 'InventoryItem details fetch successfully.',
@@ -29,10 +28,9 @@ export class SubServiceItemsService {
 
   // find one subServiceItem info by subServiceItemId
   async findById(id: number, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const subServiceItem = await this.modelClass
       .query()
-      .where({brand_code: CUser.brandCode})  
+      .where({brandCode: currentUser.brandCode})  
       .findById(id)
     if (subServiceItem) {
       return {
@@ -42,7 +40,7 @@ export class SubServiceItemsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No subServiceItem details found.',
         data: {},
       };
@@ -51,18 +49,16 @@ export class SubServiceItemsService {
 
   // Create subServiceItem before save encrypt password
   async create(payload, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const subServiceItemPayload = payload
     const newServiceItem = await this.modelClass.query()
-    .where({
-      brand_code: CUser.brandCode,
+    .findOne({
+      brandCode: currentUser.brandCode,
       name: subServiceItemPayload.name
     })
-    if (!newServiceItem.length) {
-      console.log(currentUser)
+    if (!newServiceItem) {
       if (subServiceItemPayload.serviceItemId) {
         const clientFnd = await this.serviceItemService.findById(subServiceItemPayload.serviceItemId,currentUser)
-        if (!clientFnd.data.id) {
+        if (!clientFnd.success) {
           return {
             success: false,
             message: 'ServiceItem doesnt exist.',
@@ -71,8 +67,8 @@ export class SubServiceItemsService {
         }
       }
 
-      subServiceItemPayload.createdBy = CUser.username
-      subServiceItemPayload.brandCode = CUser.brandCode
+      subServiceItemPayload.createdBy = currentUser.username
+      subServiceItemPayload.brandCode = currentUser.brandCode
       const identifiers = await this.modelClass.query().insert(subServiceItemPayload);
       const createServiceItem = await this.modelClass.query().findById(identifiers.id);
       return {
@@ -90,10 +86,9 @@ export class SubServiceItemsService {
   }
 
   async update(payload, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const subServiceItemPayload = payload
     const subServiceItem = await this.modelClass.query()
-    .where({brand_code: CUser.brandCode})
+    .where({brandCode: currentUser.brandCode})
     .findById(subServiceItemPayload.id);
     if (subServiceItem) {
       const updatedServiceItem = await this.modelClass.query()
@@ -112,7 +107,7 @@ export class SubServiceItemsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No subServiceItem found.',
         data: {},
       };
@@ -121,9 +116,8 @@ export class SubServiceItemsService {
 
   // Delete subServiceItem
   async deleteById(subServiceItemId: number, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const subServiceItems = await this.modelClass.query()
-      .where({brand_code: CUser.brandCode})
+      .where({brandCode: currentUser.brandCode})
       .delete()
       .where({ id: subServiceItemId });
     if (subServiceItems) {

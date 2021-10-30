@@ -31,9 +31,9 @@ export async function up(knex: Knex): Promise<any> {
       .inTable('users')
     table.string('brandCode')
       .index()
-      .notNullable()
       .references('brandCode')
       .inTable('brands')
+      .notNullable()
     
     table.string('status');
     table.integer('deleted');
