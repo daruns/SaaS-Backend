@@ -33,6 +33,8 @@ import { NonInventoryItemModel } from './models/nonInventoryItem.model';
 import { ServiceItemModel } from './models/serviceItem.model';
 import { BrandModel } from './models/brand.model';
 import { SubServiceItemModel } from './models/subServiceItem.model';
+import { InvoiceModel } from './models/invoice.model';
+import { InvoiceItemModel } from './models/invoiceItem.model';
 
 const models = [
   UserModel,
@@ -48,6 +50,8 @@ const models = [
   ServiceItemModel,
   SubServiceItemModel,
   BrandModel,
+  InvoiceModel,
+  InvoiceItemModel,
 ];
 
 const modelProvider = map(models, model => {

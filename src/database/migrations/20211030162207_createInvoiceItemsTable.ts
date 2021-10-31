@@ -11,19 +11,19 @@ export async function up(knex: Knex): Promise<any> {
     table.increments('id').unsigned().primary();
     table.string('name')
     table.string('category')
-    table.string('itemId')
+    table.integer('itemId')
     table.integer('unitPrice')
     table.integer('qty')
     table.dateTime('purchasedAt')
-    table.dateTime('expireDate')
+    table.dateTime('expiryDate')
     table.string('supplier')
-    table.integer('brandCode')
+    table.string('brandCode')
     table.integer('invoiceId')
-    .index()
-    .unsigned()
-    .references('id')
-    .inTable('invoices')
-    .notNullable()
+      .index()
+      .unsigned()
+      .references('id')
+      .inTable('invoices')
+      .notNullable()
   
     table.string('status');
     table.integer('deleted');

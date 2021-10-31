@@ -4,6 +4,7 @@ import { UserModel } from './user.model';
 import { ClientContactModel } from "./clientContact.model";
 import { MeetingModel } from './meeting.model';
 import { SocialMediaModel } from './socialMedia.model';
+import { InvoiceItemModel } from './invoiceItem.model';
 
 export class ClientModel extends BaseModel {
   static tableName = 'clients';
@@ -25,6 +26,7 @@ export class ClientModel extends BaseModel {
   clientContacts: ClientContactModel[];
   meetings: MeetingModel[];
   socialMedias: SocialMediaModel[];
+  invoices: InvoiceItemModel[];
 
   static relationMappings = {
     // list of all user on current user
@@ -60,6 +62,14 @@ export class ClientModel extends BaseModel {
       join: {
         from: 'clients.id',
         to: 'socialMedias.clientId',
+      },
+    },
+    invoices: {
+      modelClass: `${__dirname}/invoice.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: 'clients.id',
+        to: 'invoices.clientId',
       },
     },
   };

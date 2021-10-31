@@ -1,6 +1,7 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { ClientModel } from './client.model';
+import { InvoiceModel } from './invoice.model';
 
 export class ClientContactModel extends BaseModel {
   static tableName = 'clientContacts';
@@ -16,6 +17,7 @@ export class ClientContactModel extends BaseModel {
   brandCode: string
 
   client: ClientModel;
+  invoices: InvoiceModel[];
 
   static relationMappings = {
     // list of all client on current user
@@ -25,6 +27,14 @@ export class ClientContactModel extends BaseModel {
       join: {
         from: 'clientContacts.clientId',
         to: 'clients.id',
+      },
+    },
+    invoices: {
+      modelClass: `${__dirname}/invoice.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: 'clientContacts.id',
+        to: 'invoices.clientContactid',
       },
     },
   };

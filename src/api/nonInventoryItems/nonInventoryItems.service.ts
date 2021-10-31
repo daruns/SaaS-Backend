@@ -15,7 +15,6 @@ export class NonInventoryItemsService {
 
   // nonInventoryItem list
   async findAll(currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const nonInventoryItems = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     return {
@@ -27,7 +26,6 @@ export class NonInventoryItemsService {
 
   // find one nonInventoryItem info by nonInventoryItemId
   async findById(id: number, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const nonInventoryItem = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findById(id)
@@ -48,7 +46,6 @@ export class NonInventoryItemsService {
 
   // Create nonInventoryItem before save encrypt password
   async create(payload, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const nonInventoryItemPayload = payload
     const newNonInventoryItem = await this.modelClass.query()
     .findOne({
@@ -75,7 +72,6 @@ export class NonInventoryItemsService {
   }
 
   async update(payload, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const nonInventoryItemPayload = payload
     const nonInventoryItem = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
@@ -112,7 +108,6 @@ export class NonInventoryItemsService {
 
   // Delete nonInventoryItem
   async deleteById(nonInventoryItemId: number, currentUser): Promise<ResponseData> {
-    const CUser = currentUser;
     const nonInventoryItems = await this.modelClass.query()
       .delete()
       .where({

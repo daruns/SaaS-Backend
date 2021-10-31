@@ -10,6 +10,7 @@ import { InventoryItemsMdoule } from './inventoryItems/inventoryItems.module';
 import { NonInventoryItemsMdoule } from './nonInventoryItems/nonInventoryItems.module';
 import { ServiceItemsModule } from './serviceItems/serviceItems.module';
 import { SubServiceItemsModule } from 'src/api/subServiceItems/subServiceItems.module';
+import { InvoicesModule } from './invoices/invoices.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SubServiceItemsModule } from 'src/api/subServiceItems/subServiceItems.m
     NonInventoryItemsMdoule,
     ServiceItemsModule,
     SubServiceItemsModule,
+    InvoicesModule,
   ],
   providers: [],
 })
