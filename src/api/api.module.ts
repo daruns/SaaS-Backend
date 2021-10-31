@@ -11,6 +11,7 @@ import { NonInventoryItemsMdoule } from './nonInventoryItems/nonInventoryItems.m
 import { ServiceItemsModule } from './serviceItems/serviceItems.module';
 import { SubServiceItemsModule } from 'src/api/subServiceItems/subServiceItems.module';
 import { InvoicesModule } from './invoices/invoices.module';
+import { QoutesModule } from './qoutes/qoutes.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { InvoicesModule } from './invoices/invoices.module';
     ServiceItemsModule,
     SubServiceItemsModule,
     InvoicesModule,
+    QoutesModule,
   ],
   providers: [],
 })

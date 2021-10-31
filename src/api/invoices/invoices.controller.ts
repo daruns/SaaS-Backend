@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoicesService } from './invoices.service';
-import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { CreateInvoiceDto, CreateInvoiceItemDto } from './dto/create-invoice.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
@@ -36,8 +36,8 @@ export class InvoicesController {
   }
 
   @Post('create')
-  async create(@Body() invoice,@Body('items') invoiceItems, @Request() req) {
-    delete(invoice['items'])
+  async create(@Body() invoice: CreateInvoiceDto,@Body('items') invoiceItems: CreateInvoiceItemDto[], @Request() req) {
+    delete (invoice['items'])
     const createdInvoice = await this.invoicesService.create(invoice, invoiceItems, req.user);
     return createdInvoice
   }

@@ -23,8 +23,7 @@ async function bootstrap() {
   // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
   // see https://expressjs.com/en/guide/behind-proxies.html
   // app.set('trust proxy', 1);
-  
-  
+
   // Custome validation on request using pipe and class-validator
   app.enableCors();
   app.useGlobalPipes(new CustomValidatePipe());

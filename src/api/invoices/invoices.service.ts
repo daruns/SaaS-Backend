@@ -80,29 +80,23 @@ export class InvoicesService {
       invoicePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString()
       invoicePayload.expiryDate = moment(payload.expiryDate).format('YYYY-MM-DD HH:mm:ss').toString()
       invoicePayload.brandCode = currentUser.brandCode
-      invoicePayload.clientContactId = payload.clientContactId
-      invoicePayload.clientId = payload.clientId
-      invoicePayload.billingAddress = payload.billingAddress
-      invoicePayload.status = payload.status
-      invoicePayload.currencyCode = payload.currencyCode
-      invoicePayload.exchangeRate = payload.exchangeRate
-      invoicePayload.taxRatio = payload.taxRatio
-      invoicePayload.discount = payload.discount
       invoicePayload.createdBy = currentUser.username
-      invoicePayload.totalAmount = 0
-      var itemTotal = 0
-      invoiceItemsPayload.map(item => {
+      var totalAmount: number = 0
+      await invoiceItemsPayload.map(async item => {
         item.purchasedAt = moment(item.purchasedAt).format('YYYY-MM-DD HH:mm:ss').toString()
         item.expiryDate = moment(item.expiryDate).format('YYYY-MM-DD HH:mm:ss').toString()
         item.brandCode = currentUser.brandCode
         item.invoiceId = 0
-        itemTotal = itemTotal + (item.qty * item.unitPrice)
-      });
-      invoicePayload.totalAmount = invoicePayload.totalAmount * invoicePayload.taxRatio
-      invoicePayload.totalAmount = invoicePayload.totalAmount * invoicePayload.exchangeRate
-      invoicePayload.totalAmount = invoicePayload.totalAmount * invoicePayload.discount
-      
-      const createdInvoice = await this.modelClass.query(trx).insert(invoicePayload);
+        totalAmount = totalAmount + (item.qty * item.unitPrice)
+      console.log(totalAmount)
+    });
+    console.log(invoicePayload)
+      totalAmount = totalAmount * invoicePayload.taxRatio
+      totalAmount = totalAmount * invoicePayload.exchangeRate
+      totalAmount = totalAmount * invoicePayload.discount
+      invoicePayload.totalAmount = totalAmount
+    console.log(totalAmount)
+    const createdInvoice = await this.modelClass.query(trx).insert(invoicePayload);
       await invoiceItemsPayload.forEach(async (item) => {
         item.invoiceId = createdInvoice.id
           await this.invoiceItemModel.query().insert(item)

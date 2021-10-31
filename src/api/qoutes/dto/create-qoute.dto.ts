@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsInt, IsDate } from 'class-validator';
+import { IsNotEmpty, IsInt, IsOptional, IsDate } from 'class-validator';
 
-export class CreateInvoiceDto {
+export class CreateQouteDto {
   @IsNotEmpty()
   date: Date
   @IsNotEmpty()
@@ -21,7 +21,7 @@ export class CreateInvoiceDto {
   status: string
 }
 
-export class CreateInvoiceItemDto {
+export class CreateQouteItemDto {
   @IsNotEmpty()
   name: string
   @IsNotEmpty()

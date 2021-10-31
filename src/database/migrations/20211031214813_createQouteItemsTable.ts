@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
 
-const tableName = 'qoutes'
+const tableName = 'qouteItems'
 export async function up(knex: Knex): Promise<any> {
   if (await knex.schema.hasTable(tableName)) {
     return;
@@ -9,26 +9,22 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating ' + tableName + ' table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
-    table.string('qouteNumber');
-    table.string('brandCode');
-    table.integer('clientId')
+    table.string('name')
+    table.string('category')
+    table.integer('itemId')
+    table.integer('unitPrice')
+    table.integer('qty')
+    table.dateTime('purchasedAt')
+    table.dateTime('expiryDate')
+    table.string('supplier')
+    table.string('brandCode')
+    table.integer('qouteId')
+      .index()
       .unsigned()
+      .references('id')
+      .inTable('qoutes')
       .notNullable()
-      .references('id')
-      .inTable('clients')
-      table.integer('clientContactId')
-      .unsigned()
-      .references('id')
-      .inTable('clientContacts')
-    table.string('billingAddress');
-    table.dateTime('date');
-    table.dateTime('expiryDate');
-    table.string('currencyCode')
-    table.decimal('exchangeRate')
-    table.decimal('taxRatio');
-    table.decimal('discount')
-    table.decimal('totalAmount');
-
+  
     table.string('status');
     table.integer('deleted');
     table.string('createdBy');

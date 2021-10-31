@@ -1,7 +1,7 @@
 import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsEmail, IsOptional, IsIn, IsDecimal } from 'class-validator';
 import { PhoneNumberRegex } from 'src/app/app.service'
 
-export class UpdateInvoiceDto {
+export class UpdateQouteDto {
   @IsNotEmpty()
   @IsInt()
   id: number

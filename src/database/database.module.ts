@@ -35,6 +35,8 @@ import { BrandModel } from './models/brand.model';
 import { SubServiceItemModel } from './models/subServiceItem.model';
 import { InvoiceModel } from './models/invoice.model';
 import { InvoiceItemModel } from './models/invoiceItem.model';
+import { QouteModel } from './models/qoute.model';
+import { QouteItemModel } from './models/qouteItem.model';
 
 const models = [
   UserModel,
@@ -52,6 +54,8 @@ const models = [
   BrandModel,
   InvoiceModel,
   InvoiceItemModel,
+  QouteModel,
+  QouteItemModel,
 ];
 
 const modelProvider = map(models, model => {
