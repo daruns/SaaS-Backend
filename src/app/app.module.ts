@@ -13,14 +13,14 @@ import { DatabaseModule } from 'src/database/database.module';
   controllers: [AppController],
   providers: [
     AppService,
-    // {
-    //   provide: APP_FILTER,
-    //   useClass: HttpErrorHandler,
-    // },
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: LoggingInterceptor,
-    // },
+    {
+      provide: APP_FILTER,
+      useClass: HttpErrorHandler,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: TimeoutInterceptor,
