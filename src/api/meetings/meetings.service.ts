@@ -88,8 +88,8 @@ export class MeetingsService {
           };
         }
       }
-      meetingPayload.date = moment(meetingPayload.date).format('YYYY-MM-DD HH:mm:ss').toString()
-      meetingPayload.nextMeetingDate = moment(meetingPayload.nextMeetingDate).format('YYYY-MM-DD HH:mm:ss').toString()
+      meetingPayload.date = meetingPayload.date ? moment(meetingPayload.date).format('YYYY-MM-DD HH:mm:ss').toString() : meeting.date
+      meetingPayload.nextMeetingDate = meetingPayload.nextMeetingDate ? moment(meetingPayload.nextMeetingDate).format('YYYY-MM-DD HH:mm:ss').toString() : meeting.nextMeetingDate
       const updatedMeeting = await this.modelClass
         .query()
         .update({

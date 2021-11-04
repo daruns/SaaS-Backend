@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
 
-const tableName = 'qoutes'
+const tableName = 'projects'
 export async function up(knex: Knex): Promise<any> {
   if (await knex.schema.hasTable(tableName)) {
     return;
@@ -9,29 +9,24 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating ' + tableName + ' table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
-    
-    table.string('qouteNumber');
+    table.string('name');
     table.string('brandCode');
-    table.string('description')
-    table.string('billingAddress')
-    table.string('paymentMethod')
-    table.dateTime('date');
-    table.dateTime('dueDate');
-    table.string('currencyCode')
-    table.decimal('exchangeRate').defaultTo(1).notNullable()
-    table.decimal('taxRate').defaultTo(1).notNullable()
-    table.decimal('discount').defaultTo(1).notNullable()
-    table.decimal('totalAmount', 65,2).defaultTo(0).notNullable()
     table.integer('clientId')
+      .index()
       .unsigned()
-      .notNullable()
       .references('id')
       .inTable('clients')
-    table.integer('clientContactId')
-      .unsigned()
-      .references('id')
-      .inTable('clientContacts')
-    
+      .notNullable();
+    table.dateTime('plannedStartDate');
+    table.dateTime('plannedEndDate');
+    table.dateTime('actualStartDate');
+    table.dateTime('actualdEndDate');
+    table.integer('rate');
+    table.string('rateType');
+    table.string('priority');
+    table.string('description');
+    table.integer('attachmentId');
+
     table.string('status');
     table.integer('deleted');
     table.string('createdBy');

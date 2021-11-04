@@ -4,6 +4,7 @@ Dotenv.config({ path: '../../.env' });
 
 import { knexSnakeCaseMappers } from 'objection';
 import { Logger } from '@nestjs/common';
+import * as moment from 'moment';
 
 module.exports = {
   development: {
@@ -21,6 +22,14 @@ module.exports = {
       directory: path.join(__dirname, 'migrations'),
       stub: path.join(__dirname, 'migrations', 'migration.stub'),
       timezone: 'GMT',
+      typeCast: function (field, next) {
+        if (field.type == 'DATETIME') {
+          console.log(field)
+          return moment(field.string()).format('YYYY-MM-DD HH:mm:ss');
+        }
+        return next();
+      }
+
     },
     seeds: {
       directory: path.join(__dirname, '/seeds'),

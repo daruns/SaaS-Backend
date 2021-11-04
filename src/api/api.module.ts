@@ -12,6 +12,7 @@ import { ServiceItemsModule } from './serviceItems/serviceItems.module';
 import { SubServiceItemsModule } from 'src/api/subServiceItems/subServiceItems.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { QoutesModule } from './qoutes/qoutes.module';
+import { JwtStrategy } from './auth/strategies/jwt-auth.strategy';
 
 @Module({
   imports: [

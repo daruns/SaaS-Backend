@@ -4,15 +4,17 @@ import { QouteModel } from './qoute.model'
 
 export class QouteItemModel extends BaseModel {
   static tableName = 'qouteItems';
+
   name: string
   category: string
   itemId: number
+  description: string
   unitPrice: number
   qty: number
   purchasedAt: Date
-  expiryDate: Date
+  expireDate: Date
   supplier: string
-  brandCode: number
+  brandCode: string
   qouteId: number
 
   qoute: QouteModel;

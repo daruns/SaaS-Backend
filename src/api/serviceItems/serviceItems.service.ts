@@ -1,6 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ServiceItemModel } from 'src/database/models/serviceItem.model';
 import { ModelClass } from 'objection';
+import { CreateUserDto } from '../auth/apps/users/dto/create-user.dto';
+import { CreateServiceItemDto } from './dto/create-serviceItem.dto';
+import { UpdateServiceItemDto } from './dto/update-serviceItem.dto';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -46,7 +49,7 @@ export class ServiceItemsService {
   }
 
   // Create serviceItem before save encrypt password
-  async create(payload, currentUser): Promise<ResponseData> {
+  async create(payload: CreateServiceItemDto, currentUser): Promise<ResponseData> {
     const CUser = currentUser;
     const serviceItemPayload = payload
     const newServiceItem = await this.modelClass.query()
@@ -55,8 +58,9 @@ export class ServiceItemsService {
       name: serviceItemPayload.name
     })
     if (!newServiceItem) {
-      serviceItemPayload.createdBy = currentUser.username
-      serviceItemPayload.brandCode = currentUser.brandCode
+      serviceItemPayload['createdBy'] = currentUser.username
+      serviceItemPayload['brandCode'] = currentUser.brandCode
+      serviceItemPayload['qty'] = 1
       const identifiers = await this.modelClass.query().insert(serviceItemPayload);
       const createServiceItem = await this.modelClass.query().findById(identifiers.id);
       return {
@@ -73,7 +77,7 @@ export class ServiceItemsService {
     }
   }
 
-  async update(payload, currentUser): Promise<ResponseData> {
+  async update(payload: UpdateServiceItemDto, currentUser): Promise<ResponseData> {
     const CUser = currentUser;
     const serviceItemPayload = payload
     const serviceItem = await this.modelClass.query()
@@ -87,12 +91,11 @@ export class ServiceItemsService {
           name: serviceItemPayload.name ? serviceItemPayload.name : serviceItem.name,
           description: serviceItemPayload.description ? serviceItemPayload.description : serviceItem.description,
           unitPrice: serviceItemPayload.unitPrice ? serviceItemPayload.unitPrice : serviceItem.unitPrice,
-          qty: serviceItemPayload.qty ? serviceItemPayload.qty : serviceItem.qty,
           purchasedAt: serviceItemPayload.purchasedAt ? serviceItemPayload.purchasedAt : serviceItem.purchasedAt,
           expireDate: serviceItemPayload.expireDate ? serviceItemPayload.expireDate : serviceItem.expireDate,
           supplier: serviceItemPayload.supplier ? serviceItemPayload.supplier : serviceItem.supplier,
-          status: serviceItemPayload.status ? serviceItemPayload.status : serviceItem.status,
-          deleted: serviceItemPayload.deleted ? serviceItemPayload.deleted : serviceItem.deleted,
+          // status: serviceItemPayload.status ? serviceItemPayload.status : serviceItem.status,
+          // deleted: serviceItemPayload.deleted ? serviceItemPayload.deleted : serviceItem.deleted,
           updatedBy: currentUser.username,
         })
         .where({ id: serviceItemPayload.id });

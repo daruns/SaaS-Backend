@@ -38,7 +38,7 @@ export class InventoryItemsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No inventoryItem details found.',
         data: {},
       };
@@ -70,6 +70,57 @@ export class InventoryItemsService {
       };
     }
   }
+
+  async reduceItemQty(item: {qty: number, id: number}, currentUser): Promise<ResponseData> {
+    
+    let inventoryItemPayload = item
+    const inventoryItem = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findById(inventoryItemPayload.id);
+    if (inventoryItem) {
+      if (inventoryItem.qty <= 0) {
+        return {
+          success: false,
+          message: 'Couldnt Reduce the quantity of inventoryItem',
+          data: {msg: "This Item is running out of quantity."},
+        }
+      }
+      if (!(inventoryItem.qty >= item.qty)) {
+        return {
+          success: false,
+          message: 'Couldnt Reduce the quantity of inventoryItem',
+          data: {msg: "New Quantity is larger than current Quantity."},
+        }
+      }
+        const updatedInventoryItem = await this.modelClass
+        .query()
+        .update({
+          qty: inventoryItem.qty - item.qty,
+          updatedBy: currentUser.username,
+        })
+        .where({ id: inventoryItemPayload.id });
+        if (updatedInventoryItem) {
+          return {
+            success: true,
+            message: 'InventoryItem details updated successfully.',
+            data: updatedInventoryItem,
+          };
+        } else {
+          return {
+            success: false,
+            message: 'InventoryItem details did not updated.',
+            data: updatedInventoryItem,
+          };
+        }
+    } else {
+      return {
+        success: false,
+        message: 'No inventoryItem found.',
+        data: {},
+      };
+    }
+  }
+
   async update(payload, currentUser): Promise<ResponseData> {
     let inventoryItemPayload = payload
     const inventoryItem = await this.modelClass.query()

@@ -77,7 +77,8 @@ export class ClientsService {
       if (user) {
         const userUsername = await this.usersService.findByUsername(userParams.username)
         const userEmail = await this.usersService.findByEmail(payload.email)
-        if (!userUsername.success && !userEmail.success) {
+        console.log([payload,userParams])
+        if (userUsername.success && userEmail.success) {
           return {
             success: false,
             message: 'User Already exist with this email or username.',
@@ -189,11 +190,11 @@ export class ClientsService {
   async deleteById(payload: {id: number}, currentUser): Promise<ResponseData> {
     const clients = await this.modelClass
       .query()
-      .delete()
-      .where({
+      .findOne({
         brandCode: currentUser.brandCode,
         id: payload
       })
+      .delete();
     if (clients) {
       return {
         success: true,

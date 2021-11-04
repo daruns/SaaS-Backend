@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
 
-const tableName = 'qoutes'
+const tableName = 'taskAssignedUsers'
 export async function up(knex: Knex): Promise<any> {
   if (await knex.schema.hasTable(tableName)) {
     return;
@@ -9,29 +9,18 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating ' + tableName + ' table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
-    
-    table.string('qouteNumber');
-    table.string('brandCode');
-    table.string('description')
-    table.string('billingAddress')
-    table.string('paymentMethod')
-    table.dateTime('date');
-    table.dateTime('dueDate');
-    table.string('currencyCode')
-    table.decimal('exchangeRate').defaultTo(1).notNullable()
-    table.decimal('taxRate').defaultTo(1).notNullable()
-    table.decimal('discount').defaultTo(1).notNullable()
-    table.decimal('totalAmount', 65,2).defaultTo(0).notNullable()
-    table.integer('clientId')
+    table.integer('userId')
       .unsigned()
-      .notNullable()
+      .index()
       .references('id')
-      .inTable('clients')
-    table.integer('clientContactId')
+      .inTable('users')
+    table.integer('assingedId')
       .unsigned()
+      .index()
       .references('id')
-      .inTable('clientContacts')
-    
+      .inTable('projects')
+      .onDelete('CASCADE');
+
     table.string('status');
     table.integer('deleted');
     table.string('createdBy');

@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import * as Knex from 'knex'
+
 const tableName = 'socialMedias'
 export async function up(knex: Knex): Promise<any> {
   if (await knex.schema.hasTable(tableName)) {
@@ -17,6 +18,7 @@ export async function up(knex: Knex): Promise<any> {
       .index()
       .references('id')
       .inTable('clients')
+      .onDelete('CASCADE')
       .notNullable()
     table.string('brandCode')
 

@@ -1,4 +1,4 @@
-import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsEmail, IsOptional, IsIn, IsDecimal } from 'class-validator';
+import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsEmail, IsOptional, IsIn, IsDecimal, IsNotIn } from 'class-validator';
 import { PhoneNumberRegex } from 'src/app/app.service'
 
 export class UpdateQouteDto {
@@ -6,11 +6,16 @@ export class UpdateQouteDto {
   @IsInt()
   id: number
   billingAddress: string
+  description: string
+  paymentMethod: string
   @IsOptional()
+  @IsNotIn([0])
   discount: number
   @IsOptional()
-  taxRatio: number
+  @IsNotIn([0])
+  taxRate: number
   @IsOptional()
+  @IsNotIn([0])
   exchangeRate: number
   @IsOptional()
   @IsNotEmpty()

@@ -1,16 +1,22 @@
-import { IsNotEmpty, IsInt, IsDate } from 'class-validator';
+import { IsNotEmpty, IsInt, IsDate, IsNotIn } from 'class-validator';
+import { isDate } from 'moment';
 
 export class CreateInvoiceDto {
   @IsNotEmpty()
   date: Date
   @IsNotEmpty()
-  expiryDate: Date
+  dueDate: Date
   billingAddress: string
+  description: string
+  paymentMethod: string
   @IsNotEmpty()
+  @IsNotIn([0])
   discount: number
   @IsNotEmpty()
-  taxRatio: number
+  @IsNotIn([0])
+  taxRate: number
   @IsNotEmpty()
+  @IsNotIn([0])
   exchangeRate: number
   @IsNotEmpty()
   currencyCode: string
@@ -22,20 +28,24 @@ export class CreateInvoiceDto {
 }
 
 export class CreateInvoiceItemDto {
+  invoiceId: number
   @IsNotEmpty()
   name: string
   @IsNotEmpty()
   category: string
+  description: string
+  brandCode: string
   @IsNotEmpty()
   itemId: number
   @IsNotEmpty()
   unitPrice: number
   @IsNotEmpty()
   @IsInt()
+  @IsNotIn([0])
   qty: number
   @IsDate()
   purchasedAt: Date
   @IsDate()
-  expiryDate: Date
+  expireDate: Date
   supplier: string
 }

@@ -4,15 +4,17 @@ import { InvoiceModel } from './invoice.model'
 
 export class InvoiceItemModel extends BaseModel {
   static tableName = 'invoiceItems';
+
   name: string
   category: string
   itemId: number
+  description: string
   unitPrice: number
   qty: number
   purchasedAt: Date
-  expiryDate: Date
+  expireDate: Date
   supplier: string
-  brandCode: number
+  brandCode: string
   invoiceId: number
 
   invoice: InvoiceModel;

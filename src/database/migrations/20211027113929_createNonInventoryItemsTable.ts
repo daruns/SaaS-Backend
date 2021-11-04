@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<any> {
     table.string('name')
     table.string('description')
     table.integer('unitPrice')
-    table.integer('qty')
+    table.integer('qty').defaultTo(1).notNullable()
     table.dateTime('purchasedAt')
     table.dateTime('expireDate')
     table.string('supplier')

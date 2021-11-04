@@ -8,17 +8,19 @@ export class QouteModel extends BaseModel {
   static tableName = 'qoutes';
 
   qouteNumber: string
-  date: Date
-  expiryDate: Date
-  exchangeRate: number
-  taxRatio: number
-  billingAddress: string
-  totalAmount: number
-  currencyCode: string
   brandCode: string
+  description: string
+  date: Date
+  dueDate: Date
+  currencyCode: string
+  exchangeRate: number
+  billingAddress: string
+  paymentMethod: string
+  taxRate: number
   discount: number
-  clientContactId: number
+  totalAmount: number
   clientId: number
+  clientContactId: number
 
   clientContact: ClientContactModel;
   client: ClientModel;

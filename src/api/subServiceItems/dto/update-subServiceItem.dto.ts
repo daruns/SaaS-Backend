@@ -6,6 +6,7 @@ export class UpdateSubServiceItemDto {
   id: number
   @IsOptional()
   name: string
+  description: string
   @IsOptional()
   @IsInt()
   serviceItemId: number

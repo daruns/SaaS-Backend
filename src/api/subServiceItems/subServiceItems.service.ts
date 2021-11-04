@@ -95,6 +95,7 @@ export class SubServiceItemsService {
         .update({
           name: payload.name ? payload.name : subServiceItem.name,
           serviceItemId: subServiceItemPayload.serviceItemId ? subServiceItemPayload.serviceItemId : subServiceItem.serviceItemId,
+          description: subServiceItemPayload.description ? subServiceItemPayload.description : subServiceItem.description,
           status: subServiceItemPayload.status ? subServiceItemPayload.status : subServiceItem.status,
           deleted: subServiceItemPayload.deleted ? subServiceItemPayload.deleted : subServiceItem.deleted,
           updatedBy: currentUser.username,

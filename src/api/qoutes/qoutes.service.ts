@@ -5,6 +5,13 @@ import { ModelClass } from 'objection';
 import moment = require('moment');
 import { map } from 'rxjs/operators';
 import { isIdentifier } from 'typescript';
+import { CreateQouteDto, CreateQouteItemDto } from './dto/create-qoute.dto';
+import { PassCreateQouteDto } from './dto/passCreate-qoute.dto';
+import { stringify } from 'querystring';
+import { InventoryItemsService } from '../inventoryItems/inventoryItems.service';
+import { ServiceItemsService } from '../serviceItems/serviceItems.service';
+import { NonInventoryItemsService } from '../nonInventoryItems/nonInventoryItems.service';
+import { throwError } from 'rxjs';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -15,7 +22,10 @@ export interface ResponseData {
 export class QoutesService {
   constructor(
     @Inject('QouteModel') private modelClass: ModelClass<QouteModel>,
-    @Inject('QouteItemModel') private qouteItemModel: ModelClass<QouteItemModel>,
+    // @Inject('QouteItemModel') private qouteItemModel: ModelClass<QouteItemModel>,
+    private readonly inventoryItemsService: InventoryItemsService,
+    private readonly nonInventoryItemsService: NonInventoryItemsService,
+    private readonly serviceItemsService: ServiceItemsService,
   ) {}
 
   // qoute list
@@ -61,9 +71,9 @@ export class QoutesService {
   }
 
   // Create qoute before save encrypt password
-  async create(payload, items, currentUser): Promise<ResponseData> {
-    const qoutePayload = payload
-    const qouteItemsPayload = items
+  async create(payload, items: Array<CreateQouteItemDto>, currentUser): Promise<ResponseData> {
+    const qoutePayload: PassCreateQouteDto = payload
+    const qouteItemsPayload: CreateQouteItemDto[] = items
     if (!qouteItemsPayload.length) {
       return {
         success: false,
@@ -76,37 +86,86 @@ export class QoutesService {
 
     const trx = await this.modelClass.startTransaction()
     try {
-      qoutePayload.qouteNumber = `QOUTE_${Number(new Date())}`
+      qoutePayload.qouteNumber = `INVOICE_${Number(new Date())}`
       qoutePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString()
-      qoutePayload.expiryDate = moment(payload.expiryDate).format('YYYY-MM-DD HH:mm:ss').toString()
+      qoutePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
       qoutePayload.brandCode = currentUser.brandCode
-      qoutePayload.clientContactId = payload.clientContactId
-      qoutePayload.clientId = payload.clientId
-      qoutePayload.billingAddress = payload.billingAddress
-      qoutePayload.status = payload.status
-      qoutePayload.currencyCode = payload.currencyCode
-      qoutePayload.exchangeRate = payload.exchangeRate
-      qoutePayload.taxRatio = payload.taxRatio
-      qoutePayload.discount = payload.discount
       qoutePayload.createdBy = currentUser.username
-      qoutePayload.totalAmount = 0
-      var itemTotal = 0
-      qouteItemsPayload.map(item => {
-        item.purchasedAt = moment(item.purchasedAt).format('YYYY-MM-DD HH:mm:ss').toString()
-        item.expiryDate = moment(item.expiryDate).format('YYYY-MM-DD HH:mm:ss').toString()
-        item.brandCode = currentUser.brandCode
-        item.qouteId = 0
-        itemTotal = itemTotal + (item.qty * item.unitPrice)
-      });
-      qoutePayload.totalAmount = qoutePayload.totalAmount * qoutePayload.taxRatio
-      qoutePayload.totalAmount = qoutePayload.totalAmount * qoutePayload.exchangeRate
-      qoutePayload.totalAmount = qoutePayload.totalAmount * qoutePayload.discount
+      var subTotalAmount = 0
+      for (let item of qouteItemsPayload) {
+        const typedItem: CreateQouteItemDto = item
+        typedItem.purchasedAt = moment(typedItem.purchasedAt).toDate()
+        typedItem.expireDate = moment(typedItem.expireDate).toDate()
+        typedItem['createdBy'] = currentUser.username
+        typedItem.brandCode = currentUser.brandCode
+        typedItem.qouteId = 0
+        console.log("typedItem")
+        console.log(typedItem)
+        // check if the recieved items are belong to user or not,
+        // and all categories are available?
+        // this will reduce user missuses 
+        if (typedItem.category === "inventoryItem") {
+          console.log(typedItem.qty)  
+          const found = await this.inventoryItemsService
+          .findById(typedItem.itemId,currentUser)
+          if (!found.success) {
+            throw "inventoryItem category not exist."
+          }
+          subTotalAmount = subTotalAmount + (typedItem.qty * typedItem.unitPrice)
+        } else if (typedItem.category === "nonInventoryItem") {
+          const found = await this.nonInventoryItemsService
+          .findById(typedItem.itemId,currentUser)
+          if (!found.success) {
+            throw "nonInventoryItem category not exist."
+          }
+          subTotalAmount = subTotalAmount + typedItem.unitPrice // we avoid quantity in nonInventory and services Items
+        } else if (typedItem.category === "serviceItem") {
+          const found = await this.serviceItemsService
+          .findById(typedItem.itemId,currentUser)
+          if (!found.success) {
+            throw "serviceItem category not exist."
+          }
+          subTotalAmount = subTotalAmount + typedItem.unitPrice // we avoid quantity in nonInventory and services Items
+        } else {
+          console.log("notfound")
+          throw typedItem.category.toString() + "item category is not valid."
+        }
+        console.log(typedItem.unitPrice,subTotalAmount)
+      }
+      console.log(subTotalAmount)
+      var taxRate:number = subTotalAmount * qoutePayload.taxRate
+      var discount:number = subTotalAmount * qoutePayload.discount
+      console.log(taxRate, discount)
+      qoutePayload.totalAmount = (subTotalAmount + taxRate) + (subTotalAmount - discount)
       
+      // start operation for adding qoutes and qouteItems with relatedQuery depending on parent
+      const promises = []
       const createdQoute = await this.modelClass.query(trx).insert(qoutePayload);
-      await qouteItemsPayload.forEach(async (item) => {
+      for (let itemNoType of qouteItemsPayload) {
+        const item: CreateQouteItemDto = itemNoType
         item.qouteId = createdQoute.id
-          await this.qouteItemModel.query().insert(item)
-      });
+        const insertedQouteItem = await createdQoute.$relatedQuery('qouteItems',trx)
+        .insert(item)
+        if (insertedQouteItem) {
+          
+          const invservnonItem = {qty: item.qty, id: item.itemId}
+          if (item.category === "inventoryItem") {
+            console.log("invservnonItem")
+            console.log(invservnonItem)
+            const reducedInventoryItem = await this.inventoryItemsService.reduceItemQty(invservnonItem, currentUser)
+            console.log("reducedInventoryItem")  
+            console.log(reducedInventoryItem)  
+            if (!reducedInventoryItem.success) throw reducedInventoryItem
+          }
+        } else {
+            return {
+              success: false,
+              message: "couldnt insert qouteItem on incoice",
+              data: insertedQouteItem,
+            }
+          }
+      }
+      
       await trx.commit();
       result = await this.modelClass.query()
       .findById(createdQoute.id)
@@ -126,7 +185,7 @@ export class QoutesService {
       return {
         success: false,
         message: `Something went wrong. Neither Qoute nor QouteItems were inserted.`,
-        data: err,
+        data: result,
       };
     }
   }
@@ -139,10 +198,12 @@ export class QoutesService {
     if (qoute) {
       const updatedQoute = await this.modelClass.query()
         .update({
-          expiryDate: qoutePayload.expiryDate ? qoutePayload.expiryDate : qoute.expiryDate,
+          dueDate: qoutePayload.dueDate ? qoutePayload.dueDate : qoute.dueDate,
           exchangeRate: qoutePayload.exchangeRate ? qoutePayload.exchangeRate : qoute.exchangeRate,
-          taxRatio: qoutePayload.taxRatio ? qoutePayload.taxRatio : qoute.taxRatio,
+          taxRate: qoutePayload.taxRate ? qoutePayload.taxRate : qoute.taxRate,
           billingAddress: qoutePayload.billingAddress ? qoutePayload.billingAddress : qoute.billingAddress,
+          description: qoutePayload.description ? qoutePayload.description : qoute.description,
+          paymentMethod: qoutePayload.paymentMethod ? qoutePayload.paymentMethod : qoute.paymentMethod,
           currencyCode: qoutePayload.currencyCode ? qoutePayload.currencyCode : qoute.currencyCode,
           status: qoutePayload.status ? qoutePayload.status : qoute.status,
           deleted: qoutePayload.deleted ? qoutePayload.deleted : qoute.deleted,
@@ -167,8 +228,8 @@ export class QoutesService {
   async deleteById(qouteId: number, currentUser): Promise<ResponseData> {
     const qoutes = await this.modelClass.query()
       .where({brandCode: currentUser.brandCode})
+      .where({ id: qouteId })
       .delete()
-      .where({ id: qouteId });
     if (qoutes) {
       return {
         success: true,

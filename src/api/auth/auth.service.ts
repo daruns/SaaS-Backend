@@ -7,6 +7,7 @@ import { QueryAuthUser } from './dto/query-auth-user.dto';
 import { BrandsService } from '../brands/brands.service';
 import { CreateBrandDto } from 'src/api/brands/dto/create-brand.dto';
 import { CreateUserDto } from './apps/users/dto/create-user.dto';
+import { query } from 'express';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -22,14 +23,14 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signUp(signupDto): Promise<ResponseData> {
-    console.log(signupDto)
+  async signUp(signupDto: SignupDto): Promise<ResponseData> {
     const createBrandDto = {
-      name: signupDto.name,
+      subdomain: signupDto.subdomain,
     }
     const createBrand = await this.brandService.create(createBrandDto)
-    console.log(signupDto)
+    console.log("brandif")
     if (createBrand.success){
+      console.log("brandinif")
 
       const createUserDto = {
         username: signupDto.username,
@@ -39,12 +40,11 @@ export class AuthService {
         name: signupDto.username,
         userType: 'owner',
       }
-      const createUser  = await this.usersService.create(createUserDto)
-      delete createUser.data.password
-      console.log("finished")
-      return createUser
-    }else
-    {
+        const createUser  = await this.usersService.create(createUserDto)
+        delete createUser.data.password
+        console.log("finished")
+        return createUser
+    } else {
       return createBrand
     }
   }
@@ -86,8 +86,12 @@ export class AuthService {
 
   async me(id: number) {
     const queryUser = await this.usersService.findById(id);
-    const user = queryUser.data;
-    return user;
+    if (queryUser.success) {
+      const user = queryUser.data;
+      return user;
+    } else {
+      return null
+    }
   }
 }
 

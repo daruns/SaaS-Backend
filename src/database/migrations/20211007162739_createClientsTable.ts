@@ -1,12 +1,13 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
 
+const tableName = 'clients'
 export async function up(knex: Knex): Promise<any> {
-  if (await knex.schema.hasTable('clients')) {
+  if (await knex.schema.hasTable(tableName)) {
     return;
   }
-  Logger.log('Creating clients table');
-  return knex.schema.createTable('clients', (table: Knex.TableBuilder) => {
+  Logger.log('Creating' + tableName + 'table');
+  return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
     table.string("name")
     table.string("logo")
@@ -19,14 +20,12 @@ export async function up(knex: Knex): Promise<any> {
     table.integer("rate")
     table.string("zipCode")
     table.string('brandCode')
-    table
-      .integer('userId')
+    table.integer('userId')
       .unsigned()
       .index()
+      .defaultTo(null)
       .references('id')
       .inTable('users')
-      .notNullable()
-
     table.string('status');
     table.integer('deleted');
     table.string('createdBy');
@@ -36,5 +35,6 @@ export async function up(knex: Knex): Promise<any> {
 }
 
 export async function down(knex: Knex): Promise<any> {
-  return knex.schema.dropTable('clients');
+  Logger.log('Droping' + tableName + 'table');
+  return knex.schema.dropTable(tableName);
 }

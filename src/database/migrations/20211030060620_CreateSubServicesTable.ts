@@ -10,12 +10,14 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
     table.string('name');
+    table.string('description');
     table.integer('serviceItemId')
       .unsigned()
       .index()
       .references('id')
       .inTable('serviceItems')
-      .notNullable();
+      .notNullable()
+      .onDelete('CASCADE')
     table.string('brandCode').notNullable();
 
     table.string('status');

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsInt, IsOptional, IsNotIn } from 'class-validator';
 
 export class CreateServiceItemDto {
   @IsNotEmpty({ message: 'Name is required' })
@@ -7,9 +7,6 @@ export class CreateServiceItemDto {
   @IsOptional()
   @IsInt()
   unitPrice: number
-  @IsOptional()
-  @IsInt()
-  qty: number
   purchasedAt: Date
   expireDate: Date
   supplier: string

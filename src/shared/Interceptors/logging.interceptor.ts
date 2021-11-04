@@ -5,8 +5,9 @@ import {
   Logger,
   CallHandler,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import * as fs from 'fs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -28,7 +29,15 @@ export class LoggingInterceptor implements NestInterceptor {
               context.getClass().name,
             )
           ),
+          catchError(x => {
+            fs.appendFile(
+              __dirname + '/../../../logFile.log',
+            `${method} ${url} ${Date.now() - now}ms --  ${context.getClass().name} --\tError:\t ${x}`, () => {}
+            )
+            return throwError(x)
+          })
         );
+
     } else {
       return next.handle();
     }

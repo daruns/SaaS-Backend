@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsInt, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsInt, IsOptional, IsNotIn, IsDate } from 'class-validator';
+import { isDate } from 'moment';
 
 export class CreateNonInventoryItemDto {
   @IsNotEmpty({ message: 'Name is required' })
@@ -7,9 +8,6 @@ export class CreateNonInventoryItemDto {
   @IsOptional()
   @IsInt()
   unitPrice: number
-  @IsOptional()
-  @IsInt()
-  qty: number
   purchasedAt: Date
   expireDate: Date
   supplier: string

@@ -6,7 +6,8 @@ const tbName = 'subServiceItems';
 export class SubServiceItemModel extends BaseModel {
   static tableName = tbName;
   name: string
-  serviceItemId: string
+  serviceItemId: number
+  description: string
   brandCode: string
 
   serviceItem: ServiceItemModel;

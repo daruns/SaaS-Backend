@@ -37,7 +37,7 @@ export class NonInventoryItemsService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No nonInventoryItem details found.',
         data: {},
       };
@@ -53,6 +53,7 @@ export class NonInventoryItemsService {
       name: nonInventoryItemPayload.name
     })
     if (!newNonInventoryItem) {
+      nonInventoryItemPayload.qty = 1
       nonInventoryItemPayload.createdBy = currentUser.username
       nonInventoryItemPayload.brandCode = currentUser.brandCode
       const identifiers = await this.modelClass.query().insert(nonInventoryItemPayload);
@@ -83,7 +84,7 @@ export class NonInventoryItemsService {
           name: nonInventoryItemPayload.name ? nonInventoryItemPayload.name : nonInventoryItem.name,
           description: nonInventoryItemPayload.description ? nonInventoryItemPayload.description : nonInventoryItem.description,
           unitPrice: nonInventoryItemPayload.unitPrice ? nonInventoryItemPayload.unitPrice : nonInventoryItem.unitPrice,
-          qty: nonInventoryItemPayload.qty ? nonInventoryItemPayload.qty : nonInventoryItem.qty,
+          // qty: nonInventoryItemPayload.qty ? nonInventoryItemPayload.qty : nonInventoryItem.qty,
           purchasedAt: nonInventoryItemPayload.purchasedAt ? nonInventoryItemPayload.purchasedAt : nonInventoryItem.purchasedAt,
           expireDate: nonInventoryItemPayload.expireDate ? nonInventoryItemPayload.expireDate : nonInventoryItem.expireDate,
           supplier: nonInventoryItemPayload.supplier ? nonInventoryItemPayload.supplier : nonInventoryItem.supplier,

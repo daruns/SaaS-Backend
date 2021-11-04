@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<any> {
     table.increments('id').unsigned().primary();
 
     table.string('brandCode');
-    table.string('subdomain');
+    table.string('subdomain').unique();
     table.string('name');
     table.string('logo');
     table.integer('companySize');

@@ -5,6 +5,13 @@ import { ModelClass } from 'objection';
 import moment = require('moment');
 import { map } from 'rxjs/operators';
 import { isIdentifier } from 'typescript';
+import { CreateInvoiceDto, CreateInvoiceItemDto } from './dto/create-invoice.dto';
+import { PassCreateInvoiceDto } from './dto/passCreate-invoice.dto';
+import { stringify } from 'querystring';
+import { InventoryItemsService } from '../inventoryItems/inventoryItems.service';
+import { ServiceItemsService } from '../serviceItems/serviceItems.service';
+import { NonInventoryItemsService } from '../nonInventoryItems/nonInventoryItems.service';
+import { throwError } from 'rxjs';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -15,7 +22,10 @@ export interface ResponseData {
 export class InvoicesService {
   constructor(
     @Inject('InvoiceModel') private modelClass: ModelClass<InvoiceModel>,
-    @Inject('InvoiceItemModel') private invoiceItemModel: ModelClass<InvoiceItemModel>,
+    // @Inject('InvoiceItemModel') private invoiceItemModel: ModelClass<InvoiceItemModel>,
+    private readonly inventoryItemsService: InventoryItemsService,
+    private readonly nonInventoryItemsService: NonInventoryItemsService,
+    private readonly serviceItemsService: ServiceItemsService,
   ) {}
 
   // invoice list
@@ -61,9 +71,9 @@ export class InvoicesService {
   }
 
   // Create invoice before save encrypt password
-  async create(payload, items, currentUser): Promise<ResponseData> {
-    const invoicePayload = payload
-    const invoiceItemsPayload = items
+  async create(payload, items: Array<CreateInvoiceItemDto>, currentUser): Promise<ResponseData> {
+    const invoicePayload: PassCreateInvoiceDto = payload
+    const invoiceItemsPayload: CreateInvoiceItemDto[] = items
     if (!invoiceItemsPayload.length) {
       return {
         success: false,
@@ -78,29 +88,84 @@ export class InvoicesService {
     try {
       invoicePayload.invoiceNumber = `INVOICE_${Number(new Date())}`
       invoicePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString()
-      invoicePayload.expiryDate = moment(payload.expiryDate).format('YYYY-MM-DD HH:mm:ss').toString()
+      invoicePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
       invoicePayload.brandCode = currentUser.brandCode
       invoicePayload.createdBy = currentUser.username
-      var totalAmount: number = 0
-      await invoiceItemsPayload.map(async item => {
-        item.purchasedAt = moment(item.purchasedAt).format('YYYY-MM-DD HH:mm:ss').toString()
-        item.expiryDate = moment(item.expiryDate).format('YYYY-MM-DD HH:mm:ss').toString()
-        item.brandCode = currentUser.brandCode
-        item.invoiceId = 0
-        totalAmount = totalAmount + (item.qty * item.unitPrice)
-      console.log(totalAmount)
-    });
-    console.log(invoicePayload)
-      totalAmount = totalAmount * invoicePayload.taxRatio
-      totalAmount = totalAmount * invoicePayload.exchangeRate
-      totalAmount = totalAmount * invoicePayload.discount
-      invoicePayload.totalAmount = totalAmount
-    console.log(totalAmount)
-    const createdInvoice = await this.modelClass.query(trx).insert(invoicePayload);
-      await invoiceItemsPayload.forEach(async (item) => {
+      var subTotalAmount = 0
+      for (let item of invoiceItemsPayload) {
+        const typedItem: CreateInvoiceItemDto = item
+        typedItem.purchasedAt = moment(typedItem.purchasedAt).toDate()
+        typedItem.expireDate = moment(typedItem.expireDate).toDate()
+        typedItem['createdBy'] = currentUser.username
+        typedItem.brandCode = currentUser.brandCode
+        typedItem.invoiceId = 0
+        console.log("typedItem")
+        console.log(typedItem)
+        // check if the recieved items are belong to user or not,
+        // and all categories are available?
+        // this will reduce user missuses 
+        if (typedItem.category === "inventoryItem") {
+          console.log(typedItem.qty)  
+          const found = await this.inventoryItemsService
+          .findById(typedItem.itemId,currentUser)
+          if (!found.success) {
+            throw "inventoryItem category not exist."
+          }
+          subTotalAmount = subTotalAmount + (typedItem.qty * typedItem.unitPrice)
+        } else if (typedItem.category === "nonInventoryItem") {
+          const found = await this.nonInventoryItemsService
+          .findById(typedItem.itemId,currentUser)
+          if (!found.success) {
+            throw "nonInventoryItem category not exist."
+          }
+          subTotalAmount = subTotalAmount + typedItem.unitPrice // we avoid quantity in nonInventory and services Items
+        } else if (typedItem.category === "serviceItem") {
+          const found = await this.serviceItemsService
+          .findById(typedItem.itemId,currentUser)
+          if (!found.success) {
+            throw "serviceItem category not exist."
+          }
+          subTotalAmount = subTotalAmount + typedItem.unitPrice // we avoid quantity in nonInventory and services Items
+        } else {
+          console.log("notfound")
+          throw typedItem.category.toString() + "item category is not valid."
+        }
+        console.log(typedItem.unitPrice,subTotalAmount)
+      }
+      console.log(subTotalAmount)
+      var taxRate:number = subTotalAmount * invoicePayload.taxRate
+      var discount:number = subTotalAmount * invoicePayload.discount
+      console.log(taxRate, discount)
+      invoicePayload.totalAmount = (subTotalAmount + taxRate) + (subTotalAmount - discount)
+      
+      // start operation for adding invoices and invoiceItems with relatedQuery depending on parent
+      const promises = []
+      const createdInvoice = await this.modelClass.query(trx).insert(invoicePayload);
+      for (let itemNoType of invoiceItemsPayload) {
+        const item: CreateInvoiceItemDto = itemNoType
         item.invoiceId = createdInvoice.id
-          await this.invoiceItemModel.query().insert(item)
-      });
+        const insertedInvoiceItem = await createdInvoice.$relatedQuery('invoiceItems',trx)
+        .insert(item)
+        if (insertedInvoiceItem) {
+          
+          const invservnonItem = {qty: item.qty, id: item.itemId}
+          if (item.category === "inventoryItem") {
+            console.log("invservnonItem")
+            console.log(invservnonItem)
+            const reducedInventoryItem = await this.inventoryItemsService.reduceItemQty(invservnonItem, currentUser)
+            console.log("reducedInventoryItem")  
+            console.log(reducedInventoryItem)  
+            if (!reducedInventoryItem.success) throw reducedInventoryItem
+          }
+        } else {
+            return {
+              success: false,
+              message: "couldnt insert invoiceItem on incoice",
+              data: insertedInvoiceItem,
+            }
+          }
+      }
+      
       await trx.commit();
       result = await this.modelClass.query()
       .findById(createdInvoice.id)
@@ -120,7 +185,7 @@ export class InvoicesService {
       return {
         success: false,
         message: `Something went wrong. Neither Invoice nor InvoiceItems were inserted.`,
-        data: err,
+        data: result,
       };
     }
   }
@@ -133,10 +198,12 @@ export class InvoicesService {
     if (invoice) {
       const updatedInvoice = await this.modelClass.query()
         .update({
-          expiryDate: invoicePayload.expiryDate ? invoicePayload.expiryDate : invoice.expiryDate,
+          dueDate: invoicePayload.dueDate ? invoicePayload.dueDate : invoice.dueDate,
           exchangeRate: invoicePayload.exchangeRate ? invoicePayload.exchangeRate : invoice.exchangeRate,
-          taxRatio: invoicePayload.taxRatio ? invoicePayload.taxRatio : invoice.taxRatio,
+          taxRate: invoicePayload.taxRate ? invoicePayload.taxRate : invoice.taxRate,
           billingAddress: invoicePayload.billingAddress ? invoicePayload.billingAddress : invoice.billingAddress,
+          description: invoicePayload.description ? invoicePayload.description : invoice.description,
+          paymentMethod: invoicePayload.paymentMethod ? invoicePayload.paymentMethod : invoice.paymentMethod,
           currencyCode: invoicePayload.currencyCode ? invoicePayload.currencyCode : invoice.currencyCode,
           status: invoicePayload.status ? invoicePayload.status : invoice.status,
           deleted: invoicePayload.deleted ? invoicePayload.deleted : invoice.deleted,
@@ -161,8 +228,8 @@ export class InvoicesService {
   async deleteById(invoiceId: number, currentUser): Promise<ResponseData> {
     const invoices = await this.modelClass.query()
       .where({brandCode: currentUser.brandCode})
+      .where({ id: invoiceId })
       .delete()
-      .where({ id: invoiceId });
     if (invoices) {
       return {
         success: true,

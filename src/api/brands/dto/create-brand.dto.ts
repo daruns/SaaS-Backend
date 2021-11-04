@@ -4,8 +4,8 @@ import { PhoneNumberRegex } from 'src/app/app.service'
 export class CreateBrandDto {
 
   brandCode: string
+  @IsNotEmpty({ message: 'Subdomain is required' })
   subdomain: string
-  @IsNotEmpty({ message: 'Name is required' })
   name: string;
   logo: string
   companySize: number

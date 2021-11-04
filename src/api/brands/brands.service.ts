@@ -75,7 +75,7 @@ export class BrandsService {
   }
   // Create brand before save encrypt password
   async create(payload): Promise<ResponseData> {
-    const brandCode = _.camelCase(payload.name);
+    const brandCode = _.camelCase(payload.subdomain);
 
     const newBrand = await this.modelClass.query().where({
       brandCode: brandCode

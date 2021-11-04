@@ -66,7 +66,7 @@ export class UsersService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No user details found.',
         data: {},
       };
@@ -98,7 +98,7 @@ export class UsersService {
       };
     } else {
       return {
-        success: true,
+        success: false,
         message: 'No user details found.',
         data: {},
       };

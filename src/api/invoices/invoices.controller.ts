@@ -23,6 +23,7 @@ export class InvoicesController {
     private readonly invoicesService: InvoicesService,
     ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Request() req) {
     const invoices = await this.invoicesService.findAll(req.user);

@@ -9,26 +9,29 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating ' + tableName + ' table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
+    
     table.string('invoiceNumber');
     table.string('brandCode');
+    table.string('description')
+    table.string('billingAddress')
+    table.string('paymentMethod')
+    table.dateTime('date');
+    table.dateTime('dueDate');
+    table.string('currencyCode')
+    table.decimal('exchangeRate').defaultTo(1).notNullable()
+    table.decimal('taxRate').defaultTo(1).notNullable()
+    table.decimal('discount').defaultTo(1).notNullable()
+    table.decimal('totalAmount', 65,2).defaultTo(0).notNullable()
     table.integer('clientId')
       .unsigned()
       .notNullable()
       .references('id')
       .inTable('clients')
-      table.integer('clientContactId')
+    table.integer('clientContactId')
       .unsigned()
       .references('id')
       .inTable('clientContacts')
-    table.string('billingAddress');
-    table.dateTime('date');
-    table.dateTime('expiryDate');
-    table.string('currencyCode')
-    table.decimal('exchangeRate')
-    table.decimal('taxRatio');
-    table.decimal('discount')
-    table.decimal('totalAmount');
-
+    
     table.string('status');
     table.integer('deleted');
     table.string('createdBy');

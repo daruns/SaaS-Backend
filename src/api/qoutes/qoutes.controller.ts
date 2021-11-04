@@ -23,6 +23,7 @@ export class QoutesController {
     private readonly qoutesService: QoutesService,
     ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Request() req) {
     const qoutes = await this.qoutesService.findAll(req.user);
