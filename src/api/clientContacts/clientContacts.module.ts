@@ -10,5 +10,6 @@ import { ClientContactsService } from './clientContacts.service';
   imports: [ClientsModule],
   controllers: [ClientContactsController],
   providers: [ClientContactsService,UsersService,BrandsService,ClientsService],
+  exports: [ClientContactsService, UsersService]
 })
 export class ClientContactsModule {}

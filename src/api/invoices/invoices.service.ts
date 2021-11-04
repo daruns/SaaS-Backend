@@ -6,12 +6,14 @@ import moment = require('moment');
 import { map } from 'rxjs/operators';
 import { isIdentifier } from 'typescript';
 import { CreateInvoiceDto, CreateInvoiceItemDto } from './dto/create-invoice.dto';
-import { PassCreateInvoiceDto } from './dto/passCreate-invoice.dto';
+import { PassCreateInvoiceDto, PassCreateInvoiceItemDto } from './dto/passCreate-invoice.dto';
 import { stringify } from 'querystring';
 import { InventoryItemsService } from '../inventoryItems/inventoryItems.service';
 import { ServiceItemsService } from '../serviceItems/serviceItems.service';
 import { NonInventoryItemsService } from '../nonInventoryItems/nonInventoryItems.service';
 import { throwError } from 'rxjs';
+import { ClientsService } from '../clients/clients.service';
+import { ClientContactsService } from '../clientContacts/clientContacts.service';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -26,6 +28,8 @@ export class InvoicesService {
     private readonly inventoryItemsService: InventoryItemsService,
     private readonly nonInventoryItemsService: NonInventoryItemsService,
     private readonly serviceItemsService: ServiceItemsService,
+    private readonly clientsSerive: ClientsService,
+    private readonly clientContactsSerive: ClientContactsService,
   ) {}
 
   // invoice list
@@ -92,56 +96,78 @@ export class InvoicesService {
       invoicePayload.brandCode = currentUser.brandCode
       invoicePayload.createdBy = currentUser.username
       var subTotalAmount = 0
+      const invoiceItemsPayloadFinal = []
       for (let item of invoiceItemsPayload) {
-        const typedItem: CreateInvoiceItemDto = item
-        typedItem.purchasedAt = moment(typedItem.purchasedAt).toDate()
-        typedItem.expireDate = moment(typedItem.expireDate).toDate()
-        typedItem['createdBy'] = currentUser.username
-        typedItem.brandCode = currentUser.brandCode
-        typedItem.invoiceId = 0
-        console.log("typedItem")
-        console.log(typedItem)
+        var finalItem = {}
+        let newItem: CreateInvoiceItemDto
+        let id: number
         // check if the recieved items are belong to user or not,
         // and all categories are available?
         // this will reduce user missuses 
-        if (typedItem.category === "inventoryItem") {
-          console.log(typedItem.qty)  
+        if (item.category === "inventoryItem") {
           const found = await this.inventoryItemsService
-          .findById(typedItem.itemId,currentUser)
+          .findById(item.itemId,currentUser)
           if (!found.success) {
             throw "inventoryItem category not exist."
+          } else {
+            newItem = found.data
+            id = found.data.id
+            newItem.category = 'inventoryItem'
+            if (typeof item.qty === "number") {
+              newItem.qty = item.qty
+            } else {
+              throw 'quantity of invoice Item is required'
+            }
           }
-          subTotalAmount = subTotalAmount + (typedItem.qty * typedItem.unitPrice)
-        } else if (typedItem.category === "nonInventoryItem") {
+        } else if (item.category === "nonInventoryItem") {
           const found = await this.nonInventoryItemsService
-          .findById(typedItem.itemId,currentUser)
+          .findById(item.itemId,currentUser)
           if (!found.success) {
             throw "nonInventoryItem category not exist."
+          } else {
+            newItem = found.data
+            id = found.data.id
+            newItem.category = 'nonInventoryItem'
+            newItem.qty = 1
           }
-          subTotalAmount = subTotalAmount + typedItem.unitPrice // we avoid quantity in nonInventory and services Items
-        } else if (typedItem.category === "serviceItem") {
+        } else if (item.category === "serviceItem") {
           const found = await this.serviceItemsService
-          .findById(typedItem.itemId,currentUser)
+          .findById(item.itemId,currentUser)
           if (!found.success) {
             throw "serviceItem category not exist."
+          } else {
+            newItem = found.data
+            id = found.data.id
+            newItem.category = 'serviceItem'
+            newItem.qty = 1
           }
-          subTotalAmount = subTotalAmount + typedItem.unitPrice // we avoid quantity in nonInventory and services Items
         } else {
-          console.log("notfound")
-          throw typedItem.category.toString() + "item category is not valid."
+          throw item.category.toString() + "item category is not valid."
         }
-        console.log(typedItem.unitPrice,subTotalAmount)
+        
+        finalItem['itemId'] = id
+        finalItem['name'] = newItem.name
+        finalItem['category'] = newItem.category
+        finalItem['description'] = item.description ? item.description : newItem.description
+        finalItem['brandCode'] = currentUser.brandCode
+        finalItem['createdBy'] = currentUser.username
+        finalItem['unitPrice'] = item.unitPrice ? item.unitPrice : newItem.unitPrice
+        finalItem['unitPrice'] = newItem.unitPrice
+        finalItem['qty'] = newItem.qty
+        finalItem['purchasedAt'] = newItem.purchasedAt
+        finalItem['expireDate'] = newItem.expireDate
+        finalItem['supplier'] = newItem.supplier
+      
+        subTotalAmount = subTotalAmount + (newItem.qty * newItem.unitPrice) // we avoid quantity in nonInventory and services Items
+        invoiceItemsPayloadFinal.push(finalItem)
       }
-      console.log(subTotalAmount)
       var taxRate:number = subTotalAmount * invoicePayload.taxRate
       var discount:number = subTotalAmount * invoicePayload.discount
-      console.log(taxRate, discount)
-      invoicePayload.totalAmount = (subTotalAmount + taxRate) + (subTotalAmount - discount)
-      
+      invoicePayload.subTotalAmount = subTotalAmount
+      invoicePayload.totalAmount = Number(parseFloat((subTotalAmount + taxRate - discount).toString()).toFixed(2))
       // start operation for adding invoices and invoiceItems with relatedQuery depending on parent
-      const promises = []
       const createdInvoice = await this.modelClass.query(trx).insert(invoicePayload);
-      for (let itemNoType of invoiceItemsPayload) {
+      for (let itemNoType of invoiceItemsPayloadFinal) {
         const item: CreateInvoiceItemDto = itemNoType
         item.invoiceId = createdInvoice.id
         const insertedInvoiceItem = await createdInvoice.$relatedQuery('invoiceItems',trx)
@@ -150,11 +176,7 @@ export class InvoicesService {
           
           const invservnonItem = {qty: item.qty, id: item.itemId}
           if (item.category === "inventoryItem") {
-            console.log("invservnonItem")
-            console.log(invservnonItem)
             const reducedInventoryItem = await this.inventoryItemsService.reduceItemQty(invservnonItem, currentUser)
-            console.log("reducedInventoryItem")  
-            console.log(reducedInventoryItem)  
             if (!reducedInventoryItem.success) throw reducedInventoryItem
           }
         } else {
@@ -196,12 +218,46 @@ export class InvoicesService {
     .where({brandCode: currentUser.brandCode})
     .findById(invoicePayload.id);
     if (invoice) {
+      if (invoicePayload.clientId) {
+        const clientFnd = await this.clientsSerive.findById(invoicePayload.clientId,currentUser)
+        console.log(clientFnd)
+        if (!clientFnd.success) {
+          return {
+            success: false,
+            message: 'Client doesnt exist.',
+            data: {},
+          };
+        }
+      }
+      if (invoicePayload.clientContactId) {
+        const clientContactFnd = await this.clientContactsSerive.findById(invoicePayload.clientId,currentUser)
+        console.log(clientContactFnd)
+        if (!clientContactFnd.success) {
+          return {
+            success: false,
+            message: 'Client contact doesnt exist.',
+            data: {},
+          };
+        }
+      }
+
+      const subTotalAmount = invoice.subTotalAmount
+      const taxRate: number = invoicePayload.taxRate ? invoicePayload.taxRate : invoice.taxRate
+      const discount: number = invoicePayload.discount ? invoicePayload.discount : invoice.discount
+      console.log(subTotalAmount, taxRate, discount)
+      const newTotalAmount: number = subTotalAmount + ( subTotalAmount * taxRate ) - ( subTotalAmount * discount )
+      console.log(newTotalAmount)
+
       const updatedInvoice = await this.modelClass.query()
         .update({
           dueDate: invoicePayload.dueDate ? invoicePayload.dueDate : invoice.dueDate,
           exchangeRate: invoicePayload.exchangeRate ? invoicePayload.exchangeRate : invoice.exchangeRate,
-          taxRate: invoicePayload.taxRate ? invoicePayload.taxRate : invoice.taxRate,
+          taxRate: taxRate,
+          discount: discount,
+          totalAmount: Number(parseFloat(newTotalAmount.toString()).toFixed(2)),
           billingAddress: invoicePayload.billingAddress ? invoicePayload.billingAddress : invoice.billingAddress,
+          clientId: invoicePayload.clientId ? invoicePayload.clientId : invoice.clientId,
+          clientContactId: invoicePayload.clientContactId ? invoicePayload.clientContactId : invoice.clientContactId,
           description: invoicePayload.description ? invoicePayload.description : invoice.description,
           paymentMethod: invoicePayload.paymentMethod ? invoicePayload.paymentMethod : invoice.paymentMethod,
           currencyCode: invoicePayload.currencyCode ? invoicePayload.currencyCode : invoice.currencyCode,

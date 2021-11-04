@@ -21,6 +21,7 @@ export async function up(knex: Knex): Promise<any> {
     table.decimal('exchangeRate').defaultTo(1).notNullable()
     table.decimal('taxRate').defaultTo(1).notNullable()
     table.decimal('discount').defaultTo(1).notNullable()
+    table.decimal('subTotalAmount', 65,2).defaultTo(0).notNullable()
     table.decimal('totalAmount', 65,2).defaultTo(0).notNullable()
     table.integer('clientId')
       .unsigned()

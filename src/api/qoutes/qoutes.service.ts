@@ -39,7 +39,7 @@ export class QoutesService {
     });
     return {
       success: true,
-      message: 'InventoryItem details fetch successfully.',
+      message: 'Qoute details fetch successfully.',
       data: qoutes,
     };
   }
@@ -196,11 +196,18 @@ export class QoutesService {
     .where({brandCode: currentUser.brandCode})
     .findById(qoutePayload.id);
     if (qoute) {
+      const oldTotalamount = qoute.totalAmount
+      const taxRate: number = qoutePayload.taxRate ? qoutePayload.taxRate : qoute.taxRate
+      const discount: number = qoutePayload.discount ? qoutePayload.discount : qoute.discount
+      const oldSubTotalAmount: number = oldTotalamount - (( oldTotalamount / qoute.taxRate ) - ( oldTotalamount / qoute.taxRate ))
+      const newTotalAmount: number = oldSubTotalAmount + (( oldSubTotalAmount * taxRate ) - ( oldSubTotalAmount * discount ))
       const updatedQoute = await this.modelClass.query()
         .update({
           dueDate: qoutePayload.dueDate ? qoutePayload.dueDate : qoute.dueDate,
           exchangeRate: qoutePayload.exchangeRate ? qoutePayload.exchangeRate : qoute.exchangeRate,
-          taxRate: qoutePayload.taxRate ? qoutePayload.taxRate : qoute.taxRate,
+          taxRate: taxRate,
+          discount: discount,
+          totalAmount: newTotalAmount,
           billingAddress: qoutePayload.billingAddress ? qoutePayload.billingAddress : qoute.billingAddress,
           description: qoutePayload.description ? qoutePayload.description : qoute.description,
           paymentMethod: qoutePayload.paymentMethod ? qoutePayload.paymentMethod : qoute.paymentMethod,

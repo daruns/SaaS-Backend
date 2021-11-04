@@ -7,6 +7,7 @@ export class PassCreateInvoiceDto {
   date: any
   dueDate: any
   brandCode: string
+  subTotalAmount: number
   createdBy: string
   taxRate: number
   exchangeRate: number
