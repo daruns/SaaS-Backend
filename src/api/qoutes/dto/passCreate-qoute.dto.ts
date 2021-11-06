@@ -7,6 +7,7 @@ export class PassCreateQouteDto {
   date: any
   dueDate: any
   brandCode: string
+  subTotalAmount: number
   createdBy: string
   taxRate: number
   exchangeRate: number

@@ -6,12 +6,14 @@ import moment = require('moment');
 import { map } from 'rxjs/operators';
 import { isIdentifier } from 'typescript';
 import { CreateQouteDto, CreateQouteItemDto } from './dto/create-qoute.dto';
-import { PassCreateQouteDto } from './dto/passCreate-qoute.dto';
+import { PassCreateQouteDto, PassCreateQouteItemDto } from './dto/passCreate-qoute.dto';
 import { stringify } from 'querystring';
 import { InventoryItemsService } from '../inventoryItems/inventoryItems.service';
 import { ServiceItemsService } from '../serviceItems/serviceItems.service';
 import { NonInventoryItemsService } from '../nonInventoryItems/nonInventoryItems.service';
 import { throwError } from 'rxjs';
+import { ClientsService } from '../clients/clients.service';
+import { ClientContactsService } from '../clientContacts/clientContacts.service';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -26,6 +28,8 @@ export class QoutesService {
     private readonly inventoryItemsService: InventoryItemsService,
     private readonly nonInventoryItemsService: NonInventoryItemsService,
     private readonly serviceItemsService: ServiceItemsService,
+    private readonly clientsSerive: ClientsService,
+    private readonly clientContactsSerive: ClientContactsService,
   ) {}
 
   // qoute list
@@ -39,7 +43,7 @@ export class QoutesService {
     });
     return {
       success: true,
-      message: 'Qoute details fetch successfully.',
+      message: 'InventoryItem details fetch successfully.',
       data: qoutes,
     };
   }
@@ -86,62 +90,84 @@ export class QoutesService {
 
     const trx = await this.modelClass.startTransaction()
     try {
-      qoutePayload.qouteNumber = `INVOICE_${Number(new Date())}`
+      qoutePayload.qouteNumber = `QOUTE_${Number(new Date())}`
       qoutePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString()
       qoutePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
       qoutePayload.brandCode = currentUser.brandCode
       qoutePayload.createdBy = currentUser.username
       var subTotalAmount = 0
+      const qouteItemsPayloadFinal = []
       for (let item of qouteItemsPayload) {
-        const typedItem: CreateQouteItemDto = item
-        typedItem.purchasedAt = moment(typedItem.purchasedAt).toDate()
-        typedItem.expireDate = moment(typedItem.expireDate).toDate()
-        typedItem['createdBy'] = currentUser.username
-        typedItem.brandCode = currentUser.brandCode
-        typedItem.qouteId = 0
-        console.log("typedItem")
-        console.log(typedItem)
+        var finalItem = {}
+        let newItem: CreateQouteItemDto
+        let id: number
         // check if the recieved items are belong to user or not,
         // and all categories are available?
         // this will reduce user missuses 
-        if (typedItem.category === "inventoryItem") {
-          console.log(typedItem.qty)  
+        if (item.category === "inventoryItem") {
           const found = await this.inventoryItemsService
-          .findById(typedItem.itemId,currentUser)
+          .findById(item.itemId,currentUser)
           if (!found.success) {
             throw "inventoryItem category not exist."
+          } else {
+            newItem = found.data
+            id = found.data.id
+            newItem.category = 'inventoryItem'
+            if (typeof item.qty === "number") {
+              newItem.qty = item.qty
+            } else {
+              throw 'quantity of qoute Item is required'
+            }
           }
-          subTotalAmount = subTotalAmount + (typedItem.qty * typedItem.unitPrice)
-        } else if (typedItem.category === "nonInventoryItem") {
+        } else if (item.category === "nonInventoryItem") {
           const found = await this.nonInventoryItemsService
-          .findById(typedItem.itemId,currentUser)
+          .findById(item.itemId,currentUser)
           if (!found.success) {
             throw "nonInventoryItem category not exist."
+          } else {
+            newItem = found.data
+            id = found.data.id
+            newItem.category = 'nonInventoryItem'
+            newItem.qty = 1
           }
-          subTotalAmount = subTotalAmount + typedItem.unitPrice // we avoid quantity in nonInventory and services Items
-        } else if (typedItem.category === "serviceItem") {
+        } else if (item.category === "serviceItem") {
           const found = await this.serviceItemsService
-          .findById(typedItem.itemId,currentUser)
+          .findById(item.itemId,currentUser)
           if (!found.success) {
             throw "serviceItem category not exist."
+          } else {
+            newItem = found.data
+            id = found.data.id
+            newItem.category = 'serviceItem'
+            newItem.qty = 1
           }
-          subTotalAmount = subTotalAmount + typedItem.unitPrice // we avoid quantity in nonInventory and services Items
         } else {
-          console.log("notfound")
-          throw typedItem.category.toString() + "item category is not valid."
+          throw item.category.toString() + "item category is not valid."
         }
-        console.log(typedItem.unitPrice,subTotalAmount)
+        
+        finalItem['itemId'] = id
+        finalItem['name'] = newItem.name
+        finalItem['category'] = newItem.category
+        finalItem['description'] = item.description ? item.description : newItem.description
+        finalItem['brandCode'] = currentUser.brandCode
+        finalItem['createdBy'] = currentUser.username
+        finalItem['unitPrice'] = item.unitPrice ? item.unitPrice : newItem.unitPrice
+        finalItem['unitPrice'] = newItem.unitPrice
+        finalItem['qty'] = newItem.qty
+        finalItem['purchasedAt'] = newItem.purchasedAt
+        finalItem['expireDate'] = newItem.expireDate
+        finalItem['supplier'] = newItem.supplier
+      
+        subTotalAmount = subTotalAmount + (newItem.qty * newItem.unitPrice) // we avoid quantity in nonInventory and services Items
+        qouteItemsPayloadFinal.push(finalItem)
       }
-      console.log(subTotalAmount)
       var taxRate:number = subTotalAmount * qoutePayload.taxRate
       var discount:number = subTotalAmount * qoutePayload.discount
-      console.log(taxRate, discount)
-      qoutePayload.totalAmount = (subTotalAmount + taxRate) + (subTotalAmount - discount)
-      
+      qoutePayload.subTotalAmount = subTotalAmount
+      qoutePayload.totalAmount = Number(parseFloat((subTotalAmount + taxRate - discount).toString()).toFixed(2))
       // start operation for adding qoutes and qouteItems with relatedQuery depending on parent
-      const promises = []
       const createdQoute = await this.modelClass.query(trx).insert(qoutePayload);
-      for (let itemNoType of qouteItemsPayload) {
+      for (let itemNoType of qouteItemsPayloadFinal) {
         const item: CreateQouteItemDto = itemNoType
         item.qouteId = createdQoute.id
         const insertedQouteItem = await createdQoute.$relatedQuery('qouteItems',trx)
@@ -150,11 +176,7 @@ export class QoutesService {
           
           const invservnonItem = {qty: item.qty, id: item.itemId}
           if (item.category === "inventoryItem") {
-            console.log("invservnonItem")
-            console.log(invservnonItem)
             const reducedInventoryItem = await this.inventoryItemsService.reduceItemQty(invservnonItem, currentUser)
-            console.log("reducedInventoryItem")  
-            console.log(reducedInventoryItem)  
             if (!reducedInventoryItem.success) throw reducedInventoryItem
           }
         } else {
@@ -196,19 +218,46 @@ export class QoutesService {
     .where({brandCode: currentUser.brandCode})
     .findById(qoutePayload.id);
     if (qoute) {
-      const oldTotalamount = qoute.totalAmount
+      if (qoutePayload.clientId) {
+        const clientFnd = await this.clientsSerive.findById(qoutePayload.clientId,currentUser)
+        console.log(clientFnd)
+        if (!clientFnd.success) {
+          return {
+            success: false,
+            message: 'Client doesnt exist.',
+            data: {},
+          };
+        }
+      }
+      if (qoutePayload.clientContactId) {
+        const clientContactFnd = await this.clientContactsSerive.findById(qoutePayload.clientId,currentUser)
+        console.log(clientContactFnd)
+        if (!clientContactFnd.success) {
+          return {
+            success: false,
+            message: 'Client contact doesnt exist.',
+            data: {},
+          };
+        }
+      }
+
+      const subTotalAmount = qoute.subTotalAmount
       const taxRate: number = qoutePayload.taxRate ? qoutePayload.taxRate : qoute.taxRate
       const discount: number = qoutePayload.discount ? qoutePayload.discount : qoute.discount
-      const oldSubTotalAmount: number = oldTotalamount - (( oldTotalamount / qoute.taxRate ) - ( oldTotalamount / qoute.taxRate ))
-      const newTotalAmount: number = oldSubTotalAmount + (( oldSubTotalAmount * taxRate ) - ( oldSubTotalAmount * discount ))
+      console.log(subTotalAmount, taxRate, discount)
+      const newTotalAmount: number = subTotalAmount + ( subTotalAmount * taxRate ) - ( subTotalAmount * discount )
+      console.log(newTotalAmount)
+
       const updatedQoute = await this.modelClass.query()
         .update({
           dueDate: qoutePayload.dueDate ? qoutePayload.dueDate : qoute.dueDate,
           exchangeRate: qoutePayload.exchangeRate ? qoutePayload.exchangeRate : qoute.exchangeRate,
           taxRate: taxRate,
           discount: discount,
-          totalAmount: newTotalAmount,
+          totalAmount: Number(parseFloat(newTotalAmount.toString()).toFixed(2)),
           billingAddress: qoutePayload.billingAddress ? qoutePayload.billingAddress : qoute.billingAddress,
+          clientId: qoutePayload.clientId ? qoutePayload.clientId : qoute.clientId,
+          clientContactId: qoutePayload.clientContactId ? qoutePayload.clientContactId : qoute.clientContactId,
           description: qoutePayload.description ? qoutePayload.description : qoute.description,
           paymentMethod: qoutePayload.paymentMethod ? qoutePayload.paymentMethod : qoute.paymentMethod,
           currencyCode: qoutePayload.currencyCode ? qoutePayload.currencyCode : qoute.currencyCode,

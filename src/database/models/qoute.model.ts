@@ -18,6 +18,7 @@ export class QouteModel extends BaseModel {
   paymentMethod: string
   taxRate: number
   discount: number
+  subTotalAmount: number
   totalAmount: number
   clientId: number
   clientContactId: number
