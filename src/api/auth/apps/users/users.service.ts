@@ -109,7 +109,6 @@ export class UsersService {
         permissions: {
         }
       });
-    delete user.password
     if (user) {
       return {
         success: true,
@@ -144,7 +143,6 @@ export class UsersService {
         permissions: {
         }
       });
-    delete user.password
     if (user) {
       return {
         success: true,
