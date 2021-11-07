@@ -9,13 +9,10 @@ export class UpdateQuoteDto {
   description: string
   paymentMethod: string
   @IsOptional()
-  @IsNotIn([0])
   discount: number
   @IsOptional()
-  @IsNotIn([0])
   taxRate: number
   @IsOptional()
-  @IsNotIn([0])
   exchangeRate: number
   @IsOptional()
   @IsNotEmpty()

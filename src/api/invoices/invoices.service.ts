@@ -95,6 +95,7 @@ export class InvoicesService {
       invoicePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
       invoicePayload.brandCode = currentUser.brandCode
       invoicePayload.createdBy = currentUser.username
+      invoicePayload.exchangeRate = invoicePayload.exchangeRate | 1
       var subTotalAmount = 0
       const invoiceItemsPayloadFinal = []
       for (let item of invoiceItemsPayload) {
@@ -144,21 +145,20 @@ export class InvoicesService {
         } else {
           throw item.category.toString() + "item category is not valid."
         }
-        
+
         finalItem['itemId'] = id
         finalItem['name'] = newItem.name
         finalItem['category'] = newItem.category
         finalItem['description'] = item.description ? item.description : newItem.description
         finalItem['brandCode'] = currentUser.brandCode
         finalItem['createdBy'] = currentUser.username
-        finalItem['unitPrice'] = item.unitPrice ? item.unitPrice : newItem.unitPrice
-        finalItem['unitPrice'] = newItem.unitPrice
-        finalItem['qty'] = newItem.qty
+        finalItem['unitPrice'] = item.unitPrice ? item.unitPrice | 1 : newItem.unitPrice | 1
+        finalItem['qty'] = newItem.qty | 1
         finalItem['purchasedAt'] = newItem.purchasedAt
         finalItem['expireDate'] = newItem.expireDate
         finalItem['supplier'] = newItem.supplier
-      
-        subTotalAmount = subTotalAmount + (newItem.qty * newItem.unitPrice) // we avoid quantity in nonInventory and services Items
+
+        subTotalAmount = subTotalAmount + (finalItem['qty'] * finalItem['unitPrice']) // we avoid quantity in nonInventory and services Items
         invoiceItemsPayloadFinal.push(finalItem)
       }
       var taxRate:number = subTotalAmount * invoicePayload.taxRate
@@ -173,7 +173,7 @@ export class InvoicesService {
         const insertedInvoiceItem = await createdInvoice.$relatedQuery('invoiceItems',trx)
         .insert(item)
         if (insertedInvoiceItem) {
-          
+
           const invservnonItem = {qty: item.qty, id: item.itemId}
           if (item.category === "inventoryItem") {
             const reducedInventoryItem = await this.inventoryItemsService.reduceItemQty(invservnonItem, currentUser)
@@ -187,7 +187,7 @@ export class InvoicesService {
             }
           }
       }
-      
+
       await trx.commit();
       result = await this.modelClass.query()
       .findById(createdInvoice.id)
@@ -251,7 +251,7 @@ export class InvoicesService {
       const updatedInvoice = await this.modelClass.query()
         .update({
           dueDate: invoicePayload.dueDate ? invoicePayload.dueDate : invoice.dueDate,
-          exchangeRate: invoicePayload.exchangeRate ? invoicePayload.exchangeRate : invoice.exchangeRate,
+          exchangeRate: invoicePayload.exchangeRate ? invoicePayload.exchangeRate | 1 : invoice.exchangeRate,
           taxRate: taxRate,
           discount: discount,
           totalAmount: Number(parseFloat(newTotalAmount.toString()).toFixed(2)),

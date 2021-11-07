@@ -43,7 +43,7 @@ export class QuotesService {
     });
     return {
       success: true,
-      message: 'Quotes details fetch successfully.',
+      message: 'InventoryItem details fetch successfully.',
       data: quotes,
     };
   }
@@ -95,6 +95,7 @@ export class QuotesService {
       quotePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
       quotePayload.brandCode = currentUser.brandCode
       quotePayload.createdBy = currentUser.username
+      quotePayload.exchangeRate = quotePayload.exchangeRate | 1
       var subTotalAmount = 0
       const quoteItemsPayloadFinal = []
       for (let item of quoteItemsPayload) {
@@ -144,21 +145,20 @@ export class QuotesService {
         } else {
           throw item.category.toString() + "item category is not valid."
         }
-        
+
         finalItem['itemId'] = id
         finalItem['name'] = newItem.name
         finalItem['category'] = newItem.category
         finalItem['description'] = item.description ? item.description : newItem.description
         finalItem['brandCode'] = currentUser.brandCode
         finalItem['createdBy'] = currentUser.username
-        finalItem['unitPrice'] = item.unitPrice ? item.unitPrice : newItem.unitPrice
-        finalItem['unitPrice'] = newItem.unitPrice
-        finalItem['qty'] = newItem.qty
+        finalItem['unitPrice'] = item.unitPrice ? item.unitPrice | 1 : newItem.unitPrice | 1
+        finalItem['qty'] = newItem.qty | 1
         finalItem['purchasedAt'] = newItem.purchasedAt
         finalItem['expireDate'] = newItem.expireDate
         finalItem['supplier'] = newItem.supplier
-      
-        subTotalAmount = subTotalAmount + (newItem.qty * newItem.unitPrice) // we avoid quantity in nonInventory and services Items
+
+        subTotalAmount = subTotalAmount + (finalItem['qty'] * finalItem['unitPrice']) // we avoid quantity in nonInventory and services Items
         quoteItemsPayloadFinal.push(finalItem)
       }
       var taxRate:number = subTotalAmount * quotePayload.taxRate
@@ -173,7 +173,7 @@ export class QuotesService {
         const insertedQuoteItem = await createdQuote.$relatedQuery('quoteItems',trx)
         .insert(item)
         if (insertedQuoteItem) {
-          
+
           const invservnonItem = {qty: item.qty, id: item.itemId}
           if (item.category === "inventoryItem") {
             const reducedInventoryItem = await this.inventoryItemsService.reduceItemQty(invservnonItem, currentUser)
@@ -187,7 +187,7 @@ export class QuotesService {
             }
           }
       }
-      
+
       await trx.commit();
       result = await this.modelClass.query()
       .findById(createdQuote.id)
@@ -251,7 +251,7 @@ export class QuotesService {
       const updatedQuote = await this.modelClass.query()
         .update({
           dueDate: quotePayload.dueDate ? quotePayload.dueDate : quote.dueDate,
-          exchangeRate: quotePayload.exchangeRate ? quotePayload.exchangeRate : quote.exchangeRate,
+          exchangeRate: quotePayload.exchangeRate ? quotePayload.exchangeRate | 1 : quote.exchangeRate,
           taxRate: taxRate,
           discount: discount,
           totalAmount: Number(parseFloat(newTotalAmount.toString()).toFixed(2)),

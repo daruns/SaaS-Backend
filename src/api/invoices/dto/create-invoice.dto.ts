@@ -10,13 +10,13 @@ export class CreateInvoiceDto {
   description: string
   paymentMethod: string
   @IsNotEmpty()
-  @IsNotIn([0])
+  // @IsNotIn([0])
   discount: number
   @IsNotEmpty()
-  @IsNotIn([0])
+  // @IsNotIn([0])
   taxRate: number
   @IsNotEmpty()
-  @IsNotIn([0])
+  // @IsNotIn([0])
   exchangeRate: number
   @IsNotEmpty()
   currencyCode: string
@@ -41,7 +41,7 @@ export class CreateInvoiceItemDto {
   unitPrice: number
   @IsNotEmpty()
   @IsInt()
-  @IsNotIn([0])
+  // @IsNotIn([0])
   qty: number
   @IsDate()
   purchasedAt: Date
