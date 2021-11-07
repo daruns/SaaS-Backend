@@ -40,6 +40,8 @@ import { QouteItemModel } from './models/qouteItem.model';
 import { ProjectModel } from './models/project.model';
 import { ProjectLeaderModel } from './models/projectLeader.model';
 import { ProjectMemberModel } from './models/projectMember.model';
+import { BoardModel } from './models/board.model';
+import { BoardAttributeModel } from './models/boardAttribute.model';
 
 const models = [
   UserModel,
@@ -62,6 +64,8 @@ const models = [
   ProjectModel,
   ProjectLeaderModel,
   ProjectMemberModel,
+  BoardModel,
+  BoardAttributeModel,
 ];
 
 const modelProvider = map(models, model => {

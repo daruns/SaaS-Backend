@@ -2,8 +2,10 @@ import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { UserModel } from './user.model';
 import * as _ from "lodash";
+
+const tableName = 'brands'
 export class BrandModel extends BaseModel {
-  static tableName = 'brands';
+  static tableName = tableName;
 
   brandCode: string
   subdomain: string
@@ -27,7 +29,7 @@ export class BrandModel extends BaseModel {
       modelClass: `${__dirname}/user.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'brands.brandCode',
+        from: `${tableName}.brandCode`,
         to: 'users.brandCode',
       },
     },

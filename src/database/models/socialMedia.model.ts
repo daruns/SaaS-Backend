@@ -2,8 +2,9 @@ import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { ClientModel } from './client.model';
 
+const tableName = 'socialMedias'
 export class SocialMediaModel extends BaseModel {
-  static tableName = 'socialMedias';
+  static tableName = tableName;
   name: string
   linkAddress: string
   addressDomain: string
@@ -18,7 +19,7 @@ export class SocialMediaModel extends BaseModel {
       modelClass: `${__dirname}/client.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'socialMedias.clientId',
+        from: `${tableName}.clientId`,
         to: 'clients.id',
       },
     },

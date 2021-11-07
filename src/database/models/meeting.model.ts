@@ -2,8 +2,9 @@ import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { ClientModel } from './client.model';
 
+const tableName = 'meetings'
 export class MeetingModel extends BaseModel {
-  static tableName = 'meetings';
+  static tableName = tableName;
   date: Date
   duration: number
   type: string
@@ -22,7 +23,7 @@ export class MeetingModel extends BaseModel {
       modelClass: `${__dirname}/client.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'meetings.clientId',
+        from: `${tableName}.clientId`,
         to: 'clients.id',
       },
     },

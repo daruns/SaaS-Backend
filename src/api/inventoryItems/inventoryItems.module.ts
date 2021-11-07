@@ -6,4 +6,4 @@ import { InventoryItemsService } from './inventoryItems.service';
   controllers: [InventoryItemsController],
   providers: [InventoryItemsService],
 })
-export class InventoryItemsMdoule {}
+export class InventoryItemsModule {}

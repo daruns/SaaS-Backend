@@ -3,8 +3,9 @@ import { Model } from 'objection';
 import { ClientModel } from './client.model';
 import { InvoiceModel } from './invoice.model';
 
+const tableName = 'clientContacts'
 export class ClientContactModel extends BaseModel {
-  static tableName = 'clientContacts';
+  static tableName = tableName;
 
   name: string
   position: string
@@ -25,7 +26,7 @@ export class ClientContactModel extends BaseModel {
       modelClass: `${__dirname}/client.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'clientContacts.clientId',
+        from: `${tableName}.clientId`,
         to: 'clients.id',
       },
     },
@@ -33,7 +34,7 @@ export class ClientContactModel extends BaseModel {
       modelClass: `${__dirname}/invoice.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'clientContacts.id',
+        from: `${tableName}.id`,
         to: 'invoices.clientContactid',
       },
     },

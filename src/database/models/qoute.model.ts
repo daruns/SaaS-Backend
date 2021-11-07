@@ -4,8 +4,9 @@ import { ClientModel } from "./client.model";
 import { ClientContactModel } from './clientContact.model';
 import { QouteItemModel } from './qouteItem.model';
 
+const tableName = 'qoutes'
 export class QouteModel extends BaseModel {
-  static tableName = 'qoutes';
+  static tableName = tableName;
 
   qouteNumber: string
   brandCode: string
@@ -32,7 +33,7 @@ export class QouteModel extends BaseModel {
       modelClass: `${__dirname}/qouteItem.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'qoutes.id',
+        from: `${tableName}.id`,
         to: 'qouteItems.qouteId',
       },
     },
@@ -41,7 +42,7 @@ export class QouteModel extends BaseModel {
       modelClass: `${__dirname}/clientContact.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'qoutes.clientContactId',
+        from: `${tableName}.clientContactId`,
         to: 'clientContacts.id',
       }
     },
@@ -50,7 +51,7 @@ export class QouteModel extends BaseModel {
       modelClass: `${__dirname}/client.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'qoutes.clientId',
+        from: `${tableName}.clientId`,
         to: 'clients.id',
       },
     },

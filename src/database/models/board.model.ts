@@ -1,34 +1,36 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
-import { ClientModel } from './client.model';
 import { ProjectModel } from './project.model';
+import { BoardAttributeModel } from './boardAttribute.model';
 
-export class ClientContactModel extends BaseModel {
-  static tableName = 'clientContacts';
+const tableName = 'projectBoards'
+export class BoardModel extends BaseModel {
+  static tableName = tableName;
 
   name: string
   description: string
   brandCode: string
   projectId: number
 
-  project: ProjectModel[];
+  boardAttribute: BoardAttributeModel[];
+  project: ProjectModel;
 
   static relationMappings = {
     // list of all client on current user
-    client: {
-      modelClass: `${__dirname}/client.model`,
-      relation: Model.BelongsToOneRelation,
+    boardAttribute: {
+      modelClass: `${__dirname}/boardAttribute.model`,
+      relation: Model.HasManyRelation,
       join: {
-        from: 'clientContacts.clientId',
-        to: 'clients.id',
+        from: `${tableName}.id`,
+        to: 'boardAttributes.boardId',
       },
     },
     project: {
-      modelClass: `${__dirname}/invoice.model`,
-      relation: Model.HasManyRelation,
+      modelClass: `${__dirname}/project.model`,
+      relation: Model.BelongsToOneRelation,
       join: {
-        from: 'clientContacts.id',
-        to: 'projects.clientContactid',
+        from: `${tableName}.projectId`,
+        to: 'projects.id',
       },
     },
   };

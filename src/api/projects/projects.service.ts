@@ -9,6 +9,8 @@ import { ProjectLeaderModel } from 'src/database/models/projectLeader.model';
 import { ProjectMemberModel } from 'src/database/models/projectMember.model';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { UserModel } from 'src/database/models/user.model';
+import { BoardModel } from 'src/database/models/board.model';
+import { BoardAttributeModel } from 'src/database/models/boardAttribute.model';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -22,6 +24,8 @@ export class ProjectsService {
     @Inject('ProjectLeaderModel') private leaderModelClass: ModelClass<ProjectLeaderModel>,
     @Inject('ProjectMemberModel') private memberModelClass: ModelClass<ProjectMemberModel>,
     @Inject('UserModel') private userModel: ModelClass<UserModel>,
+    @Inject('BoardModel') private boardModelClass: ModelClass<BoardModel>,
+    @Inject('BoardAttributeModel') private boardAttributeClass: ModelClass<BoardAttributeModel>,
     private readonly clientsSerive: ClientsService,
   ) {}
 
@@ -93,7 +97,7 @@ export class ProjectsService {
     var result : any
     const trx = await this.modelClass.startTransaction()
 
-    try {
+    // try {
       // start operation for adding project and members and leaders with relatedQuery depending on parent
       const createdProject = await this.modelClass.query(trx).insert(projectParams)
       if (createdProject) {
@@ -128,22 +132,42 @@ export class ProjectsService {
             throw finishedInsert
           }
         }
-        trx.commit()
+        result = await this.modelClass.query(trx).findById(createdProject.id).withGraphFetched({
+          client: {},
+          members: {},
+          leaders: {},
+          boards: {
+            boardAttribute: {}
+          },
+        })
+        await trx.commit()
+        this.boardModelClass.query().insert({name:'Pending', description: '', brandCode: currentUser.brandCode, projectId: createdProject.id})
+        .then(async (x) => {
+           this.boardAttributeClass.query().insert({color: 'yellow', position: 1, userId: currentUser.id, brandCode: currentUser.brandCode, boardId: x.id})
+        })
+        this.boardModelClass.query().insert({name:'In-Progress', description: '', brandCode: currentUser.brandCode, projectId: createdProject.id})
+        .then(async (x) => {
+          this.boardAttributeClass.query().insert({color: 'blue', position: 2, userId: currentUser.id, brandCode: currentUser.brandCode, boardId: x.id})
+        })
+        this.boardModelClass.query().insert({name:'completed', description: '', brandCode: currentUser.brandCode, projectId: createdProject.id})
+        .then(async (x) => {
+           this.boardAttributeClass.query().insert({color: 'green', position: 3, userId: currentUser.id, brandCode: currentUser.brandCode, boardId: x.id})
+        })
+        return {
+          success: true,
+          message: 'Project created successfully.',
+          data: result,
+        };      
       }
-    } catch(err) {
-      await trx.rollback();
-      result = err
-      return {
-        success: false,
-        message: `Something went wrong. Project were not inserted.`,
-        data: result,
-      };
-    }
-    return {
-      success: true,
-      message: 'Project created successfully.',
-      data: {},
-    };  
+    // } catch(err) {
+    //   trx.rollback();
+    //   result = err
+    //   return {
+    //     success: false,
+    //     message: `Something went wrong. Project were not inserted.`,
+    //     data: result,
+    //   };
+    // }
   }
 
   async update(payload: UpdateProjectDto, currentUser): Promise<ResponseData> {

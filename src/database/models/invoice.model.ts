@@ -4,8 +4,9 @@ import { ClientModel } from "./client.model";
 import { ClientContactModel } from './clientContact.model';
 import { InvoiceItemModel } from './invoiceItem.model';
 
+const tableName = 'invoices'
 export class InvoiceModel extends BaseModel {
-  static tableName = 'invoices';
+  static tableName = tableName;
 
   invoiceNumber: string
   brandCode: string
@@ -32,7 +33,7 @@ export class InvoiceModel extends BaseModel {
       modelClass: `${__dirname}/invoiceItem.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'invoices.id',
+        from: `${tableName}.id`,
         to: 'invoiceItems.invoiceId',
       },
     },
@@ -41,7 +42,7 @@ export class InvoiceModel extends BaseModel {
       modelClass: `${__dirname}/clientContact.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'invoices.clientContactId',
+        from: `${tableName}.clientContactId`,
         to: 'clientContacts.id',
       }
     },
@@ -50,7 +51,7 @@ export class InvoiceModel extends BaseModel {
       modelClass: `${__dirname}/client.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'invoices.clientId',
+        from: `${tableName}.clientId`,
         to: 'clients.id',
       },
     },

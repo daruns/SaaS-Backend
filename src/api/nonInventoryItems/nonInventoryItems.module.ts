@@ -6,4 +6,4 @@ import { NonInventoryItemsService } from './nonInventoryItems.service';
   controllers: [NonInventoryItemsController],
   providers: [NonInventoryItemsService],
 })
-export class NonInventoryItemsMdoule {}
+export class NonInventoryItemsModule {}

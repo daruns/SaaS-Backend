@@ -2,8 +2,9 @@ import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { QouteModel } from './qoute.model'
 
+const tableName = 'qouteItems'
 export class QouteItemModel extends BaseModel {
-  static tableName = 'qouteItems';
+  static tableName = tableName;
 
   name: string
   category: string
@@ -24,7 +25,7 @@ export class QouteItemModel extends BaseModel {
       modelClass: `${__dirname}/qoute.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'qouteItems.qouteId.',
+        from: `${tableName}.qouteId`,
         to: 'qoutes.id',
       }
     },

@@ -4,9 +4,11 @@ import { ClientModel } from './client.model';
 import { ProjectLeaderModel } from './projectLeader.model';
 import { ProjectMemberModel } from './projectMember.model';
 import { UserModel } from './user.model';
+import { BoardModel } from './board.model';
 
+const tableName = 'projects'
 export class ProjectModel extends BaseModel {
-  static tableName = 'projects';
+  static tableName = tableName;
 
   name: string
   brandCode: string
@@ -25,6 +27,7 @@ export class ProjectModel extends BaseModel {
   members: ProjectMemberModel[];
   leaderUsers: UserModel[]
   memberUsers: UserModel[]
+  boards: BoardModel[];
 
 
   static relationMappings = {
@@ -33,7 +36,7 @@ export class ProjectModel extends BaseModel {
       modelClass: `${__dirname}/client.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'projects.clientId',
+        from: `${tableName}.clientId`,
         to: 'clients.id',
       },
     },
@@ -42,7 +45,7 @@ export class ProjectModel extends BaseModel {
       modelClass: `${__dirname}/projectLeader.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: `projects.id`,
+        from: `${tableName}.id`,
         to: 'projectLeaderUsers.projectId',
       },
     },
@@ -51,7 +54,7 @@ export class ProjectModel extends BaseModel {
       modelClass: `${__dirname}/projectMember.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: `projects.id`,
+        from: `${tableName}.id`,
         to: 'projectMemberUsers.projectId'
       },
     },
@@ -60,7 +63,7 @@ export class ProjectModel extends BaseModel {
       modelClass: `${__dirname}/user.model`,
       relation: Model.ManyToManyRelation,
       join: {
-        from: `projects.id`,
+        from: `${tableName}.id`,
         through: {
           from: 'projectLeaderUsers.projectId',
           to: 'projectLeaderUsers.leaderId'
@@ -73,7 +76,7 @@ export class ProjectModel extends BaseModel {
       modelClass: `${__dirname}/user.model`,
       relation: Model.ManyToManyRelation,
       join: {
-        from: `projects.id`,
+        from: `${tableName}.id`,
         through: {
           from: 'projectMemberUsers.projectId',
           to: 'projectMemberUsers.memberId'
@@ -81,5 +84,13 @@ export class ProjectModel extends BaseModel {
         to: 'users.id',
       },
     },
+    boards: {
+      modelClass: `${__dirname}/board.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `${tableName}.id`,
+        to: 'projectBoards.projectId',
+      },
+    }
   };
 }

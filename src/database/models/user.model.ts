@@ -9,6 +9,7 @@ import { BrandModel } from './brand.model';
 import { ProjectLeaderModel } from './projectLeader.model';
 import { ProjectMemberModel } from './projectMember.model';
 import { ProjectModel } from './project.model';
+import { BoardAttributeModel } from './boardAttribute.model';
 
 const tbName = 'users'
 export class UserModel extends BaseModel {
@@ -43,6 +44,7 @@ export class UserModel extends BaseModel {
   projectMembers: ProjectMemberModel[];
   projectsMemberUsers: ProjectModel[];
   projectsLeaderUsers: ProjectModel[];
+  boardAttribute: BoardAttributeModel;
 
   static relationMappings = {
     user: {
@@ -109,7 +111,7 @@ export class UserModel extends BaseModel {
       modelClass: `${__dirname}/projectLeader.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: `users.id`,
+        from: `${tbName}.id`,
         to: 'projectLeaderUsers.leaderId',
       },
     },
@@ -117,7 +119,7 @@ export class UserModel extends BaseModel {
       modelClass: `${__dirname}/projectMember.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: `users.id`,
+        from: `${tbName}.id`,
         to: 'projectMemberUsers.memberId'
       },
     },
@@ -125,7 +127,7 @@ export class UserModel extends BaseModel {
       modelClass: `${__dirname}/project.model`,
       relation: Model.ManyToManyRelation,
       join: {
-        from: `users.id`,
+        from: `${tbName}.id`,
         through: {
           from: `projectMemberUsers.memberId`,
           to: `projectMemberUsers.projectId`,
@@ -137,12 +139,20 @@ export class UserModel extends BaseModel {
       modelClass: `${__dirname}/project.model`,
       relation: Model.ManyToManyRelation,
       join: {
-        from: `users.id`,
+        from: `${tbName}.id`,
         through: {
           from: `projectLeaderUsers.leaderId`,
           to: `projectLeaderUsers.projectId`,
         },
         to: 'projects.id'
+      },
+    },
+    boardAttribute: {
+      modelClass: `${__dirname}/boardAttribute.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `${tbName}.id`,
+        to: 'boardAttribute.userId',
       },
     },
   };

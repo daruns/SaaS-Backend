@@ -6,8 +6,9 @@ import { MeetingModel } from './meeting.model';
 import { SocialMediaModel } from './socialMedia.model';
 import { InvoiceItemModel } from './invoiceItem.model';
 
+const tableName = 'clients'
 export class ClientModel extends BaseModel {
-  static tableName = 'clients';
+  static tableName = tableName;
 
   name: string
   logo: string
@@ -34,7 +35,7 @@ export class ClientModel extends BaseModel {
       modelClass: `${__dirname}/user.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: 'clients.userId',
+        from: `${tableName}.userId`,
         to: 'users.id',
       },
     },
@@ -43,7 +44,7 @@ export class ClientModel extends BaseModel {
       modelClass: `${__dirname}/clientContact.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'clients.id',
+        from: `${tableName}.id`,
         to: 'clientContacts.clientId',
       },
     },
@@ -52,7 +53,7 @@ export class ClientModel extends BaseModel {
       modelClass: `${__dirname}/meeting.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'clients.id',
+        from: `${tableName}.id`,
         to: 'meetings.clientId',
       },
     },
@@ -60,7 +61,7 @@ export class ClientModel extends BaseModel {
       modelClass: `${__dirname}/socialMedia.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'clients.id',
+        from: `${tableName}.id`,
         to: 'socialMedias.clientId',
       },
     },
@@ -68,7 +69,7 @@ export class ClientModel extends BaseModel {
       modelClass: `${__dirname}/invoice.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: 'clients.id',
+        from: `${tableName}.id`,
         to: 'invoices.clientId',
       },
     },

@@ -43,7 +43,7 @@ export class QoutesService {
     });
     return {
       success: true,
-      message: 'InventoryItem details fetch successfully.',
+      message: 'Qoutes details fetch successfully.',
       data: qoutes,
     };
   }

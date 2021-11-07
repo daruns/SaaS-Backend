@@ -2,6 +2,7 @@ import { BaseModel } from './base.model';
 import { UserModel } from './user.model';
 import { RoleModel } from './role.model';
 import { Model } from 'objection';
+
 const tbName = 'userRoles'
 export class UserRoleModel extends BaseModel {
   static tableName = tbName;

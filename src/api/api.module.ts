@@ -6,13 +6,15 @@ import { MeetingsModule } from './meetings/meetings.module';
 import { SocialMediasModule } from './socialMedias/socialMedias.module';
 import { UsersModule } from 'src/api/auth/apps/users/users.module';
 import { BrandsModule } from 'src/api/brands/brands.module';
-import { InventoryItemsMdoule } from './inventoryItems/inventoryItems.module';
-import { NonInventoryItemsMdoule } from './nonInventoryItems/nonInventoryItems.module';
+import { InventoryItemsModule } from './inventoryItems/inventoryItems.module';
+import { NonInventoryItemsModule } from './nonInventoryItems/nonInventoryItems.module';
 import { ServiceItemsModule } from './serviceItems/serviceItems.module';
 import { SubServiceItemsModule } from 'src/api/subServiceItems/subServiceItems.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { QoutesModule } from './qoutes/qoutes.module';
 import { JwtStrategy } from './auth/strategies/jwt-auth.strategy';
+import { ProjectsModule } from './projects/projects.module';
+import { BoardsModule } from './boards/boards.module';
 
 @Module({
   imports: [
@@ -23,12 +25,14 @@ import { JwtStrategy } from './auth/strategies/jwt-auth.strategy';
     MeetingsModule,
     SocialMediasModule,
     BrandsModule,
-    InventoryItemsMdoule,
-    NonInventoryItemsMdoule,
+    InventoryItemsModule,
+    NonInventoryItemsModule,
     ServiceItemsModule,
     SubServiceItemsModule,
     InvoicesModule,
     QoutesModule,
+    ProjectsModule,
+    BoardsModule
   ],
   providers: [],
 })
