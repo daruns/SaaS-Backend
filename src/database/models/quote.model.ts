@@ -2,13 +2,13 @@ import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { ClientModel } from "./client.model";
 import { ClientContactModel } from './clientContact.model';
-import { QouteItemModel } from './qouteItem.model';
+import { QuoteItemModel } from './quoteItem.model';
 
-const tableName = 'qoutes'
-export class QouteModel extends BaseModel {
+const tableName = 'quotes'
+export class QuoteModel extends BaseModel {
   static tableName = tableName;
 
-  qouteNumber: string
+  quoteNumber: string
   brandCode: string
   description: string
   date: Date
@@ -26,15 +26,15 @@ export class QouteModel extends BaseModel {
 
   clientContact: ClientContactModel;
   client: ClientModel;
-  qouteItems: QouteItemModel[];
+  quoteItems: QuoteItemModel[];
 
   static relationMappings = {
-    qouteItems: {
-      modelClass: `${__dirname}/qouteItem.model`,
+    quoteItems: {
+      modelClass: `${__dirname}/quoteItem.model`,
       relation: Model.HasManyRelation,
       join: {
         from: `${tableName}.id`,
-        to: 'qouteItems.qouteId',
+        to: 'quoteItems.quoteId',
       },
     },
 

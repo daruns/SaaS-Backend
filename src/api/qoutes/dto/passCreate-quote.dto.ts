@@ -1,9 +1,7 @@
-import {IsInt, IsDate, IsNotIn } from 'class-validator';
-import { isDate } from 'moment';
-import { CreateQouteDto, CreateQouteItemDto } from './create-qoute.dto';
+import { CreateQuoteItemDto } from './create-quote.dto';
 
-export class PassCreateQouteDto {
-  qouteNumber: string
+export class PassCreateQuoteDto {
+  quoteNumber: string
   date: any
   dueDate: any
   brandCode: string
@@ -15,8 +13,8 @@ export class PassCreateQouteDto {
   discount: number
 }
 
-export class PassCreateQouteItemDto extends CreateQouteItemDto {
-  qouteId: number
+export class PassCreateQuoteItemDto extends CreateQuoteItemDto {
+  quoteId: number
   name: string
   category: string
   description: string

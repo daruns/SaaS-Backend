@@ -1,9 +1,9 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
-import { QouteModel } from './qoute.model'
+import { QuoteModel } from './quote.model'
 
-const tableName = 'qouteItems'
-export class QouteItemModel extends BaseModel {
+const tableName = 'quoteItems'
+export class QuoteItemModel extends BaseModel {
   static tableName = tableName;
 
   name: string
@@ -16,17 +16,17 @@ export class QouteItemModel extends BaseModel {
   expireDate: Date
   supplier: string
   brandCode: string
-  qouteId: number
+  quoteId: number
 
-  qoute: QouteModel;
+  quote: QuoteModel;
 
   static relationMappings = {
-    qoute: {
-      modelClass: `${__dirname}/qoute.model`,
+    quote: {
+      modelClass: `${__dirname}/quote.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: `${tableName}.qouteId`,
-        to: 'qoutes.id',
+        from: `${tableName}.quoteId`,
+        to: 'quotes.id',
       }
     },
   };

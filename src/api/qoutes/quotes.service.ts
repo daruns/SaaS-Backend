@@ -1,12 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { QouteModel } from 'src/database/models/qoute.model';
-import { QouteItemModel } from 'src/database/models/qouteItem.model';
+import { QuoteModel } from 'src/database/models/quote.model';
+import { QuoteItemModel } from 'src/database/models/quoteItem.model';
 import { ModelClass } from 'objection';
 import moment = require('moment');
 import { map } from 'rxjs/operators';
 import { isIdentifier } from 'typescript';
-import { CreateQouteDto, CreateQouteItemDto } from './dto/create-qoute.dto';
-import { PassCreateQouteDto, PassCreateQouteItemDto } from './dto/passCreate-qoute.dto';
+import { CreateQuoteDto, CreateQuoteItemDto } from './dto/create-quote.dto';
+import { PassCreateQuoteDto, PassCreateQuoteItemDto } from './dto/passCreate-quote.dto';
 import { stringify } from 'querystring';
 import { InventoryItemsService } from '../inventoryItems/inventoryItems.service';
 import { ServiceItemsService } from '../serviceItems/serviceItems.service';
@@ -21,10 +21,10 @@ export interface ResponseData {
   readonly data: any;
 }
 @Injectable()
-export class QoutesService {
+export class QuotesService {
   constructor(
-    @Inject('QouteModel') private modelClass: ModelClass<QouteModel>,
-    // @Inject('QouteItemModel') private qouteItemModel: ModelClass<QouteItemModel>,
+    @Inject('QuoteModel') private modelClass: ModelClass<QuoteModel>,
+    // @Inject('QuoteItemModel') private quoteItemModel: ModelClass<QuoteItemModel>,
     private readonly inventoryItemsService: InventoryItemsService,
     private readonly nonInventoryItemsService: NonInventoryItemsService,
     private readonly serviceItemsService: ServiceItemsService,
@@ -32,53 +32,53 @@ export class QoutesService {
     private readonly clientContactsSerive: ClientContactsService,
   ) {}
 
-  // qoute list
+  // quote list
   async findAll(currentUser): Promise<ResponseData> {
-    const qoutes = await this.modelClass.query()
+    const quotes = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
     .withGraphFetched({
       client: {},
       clientContact: {},
-      qouteItems: {},
+      quoteItems: {},
     });
     return {
       success: true,
-      message: 'Qoutes details fetch successfully.',
-      data: qoutes,
+      message: 'Quotes details fetch successfully.',
+      data: quotes,
     };
   }
 
-  // find one qoute info by qouteId
+  // find one quote info by quoteId
   async findById(id: number, currentUser): Promise<ResponseData> {
-    const qoute = await this.modelClass
+    const quote = await this.modelClass
       .query()
       .where({brandCode: currentUser.brandCode})  
       .findById(id)
       .withGraphFetched({
         client: {},
         clientContact: {},
-        qouteItems: {},
+        quoteItems: {},
       });
-    if (qoute) {
+    if (quote) {
       return {
         success: true,
-        message: 'Qoute details fetch successfully.',
-        data: qoute,
+        message: 'Quote details fetch successfully.',
+        data: quote,
       };
     } else {
       return {
         success: false,
-        message: 'No qoute details found.',
+        message: 'No quote details found.',
         data: {},
       };
     }
   }
 
-  // Create qoute before save encrypt password
-  async create(payload, items: Array<CreateQouteItemDto>, currentUser): Promise<ResponseData> {
-    const qoutePayload: PassCreateQouteDto = payload
-    const qouteItemsPayload: CreateQouteItemDto[] = items
-    if (!qouteItemsPayload.length) {
+  // Create quote before save encrypt password
+  async create(payload, items: Array<CreateQuoteItemDto>, currentUser): Promise<ResponseData> {
+    const quotePayload: PassCreateQuoteDto = payload
+    const quoteItemsPayload: CreateQuoteItemDto[] = items
+    if (!quoteItemsPayload.length) {
       return {
         success: false,
         message: 'Items cant be Empty.',
@@ -90,16 +90,16 @@ export class QoutesService {
 
     const trx = await this.modelClass.startTransaction()
     try {
-      qoutePayload.qouteNumber = `QOUTE_${Number(new Date())}`
-      qoutePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString()
-      qoutePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
-      qoutePayload.brandCode = currentUser.brandCode
-      qoutePayload.createdBy = currentUser.username
+      quotePayload.quoteNumber = `QUOTE_${Number(new Date())}`
+      quotePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString()
+      quotePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
+      quotePayload.brandCode = currentUser.brandCode
+      quotePayload.createdBy = currentUser.username
       var subTotalAmount = 0
-      const qouteItemsPayloadFinal = []
-      for (let item of qouteItemsPayload) {
+      const quoteItemsPayloadFinal = []
+      for (let item of quoteItemsPayload) {
         var finalItem = {}
-        let newItem: CreateQouteItemDto
+        let newItem: CreateQuoteItemDto
         let id: number
         // check if the recieved items are belong to user or not,
         // and all categories are available?
@@ -116,7 +116,7 @@ export class QoutesService {
             if (typeof item.qty === "number") {
               newItem.qty = item.qty
             } else {
-              throw 'quantity of qoute Item is required'
+              throw 'quantity of quote Item is required'
             }
           }
         } else if (item.category === "nonInventoryItem") {
@@ -159,20 +159,20 @@ export class QoutesService {
         finalItem['supplier'] = newItem.supplier
       
         subTotalAmount = subTotalAmount + (newItem.qty * newItem.unitPrice) // we avoid quantity in nonInventory and services Items
-        qouteItemsPayloadFinal.push(finalItem)
+        quoteItemsPayloadFinal.push(finalItem)
       }
-      var taxRate:number = subTotalAmount * qoutePayload.taxRate
-      var discount:number = subTotalAmount * qoutePayload.discount
-      qoutePayload.subTotalAmount = subTotalAmount
-      qoutePayload.totalAmount = Number(parseFloat((subTotalAmount + taxRate - discount).toString()).toFixed(2))
-      // start operation for adding qoutes and qouteItems with relatedQuery depending on parent
-      const createdQoute = await this.modelClass.query(trx).insert(qoutePayload);
-      for (let itemNoType of qouteItemsPayloadFinal) {
-        const item: CreateQouteItemDto = itemNoType
-        item.qouteId = createdQoute.id
-        const insertedQouteItem = await createdQoute.$relatedQuery('qouteItems',trx)
+      var taxRate:number = subTotalAmount * quotePayload.taxRate
+      var discount:number = subTotalAmount * quotePayload.discount
+      quotePayload.subTotalAmount = subTotalAmount
+      quotePayload.totalAmount = Number(parseFloat((subTotalAmount + taxRate - discount).toString()).toFixed(2))
+      // start operation for adding quotes and quoteItems with relatedQuery depending on parent
+      const createdQuote = await this.modelClass.query(trx).insert(quotePayload);
+      for (let itemNoType of quoteItemsPayloadFinal) {
+        const item: CreateQuoteItemDto = itemNoType
+        item.quoteId = createdQuote.id
+        const insertedQuoteItem = await createdQuote.$relatedQuery('quoteItems',trx)
         .insert(item)
-        if (insertedQouteItem) {
+        if (insertedQuoteItem) {
           
           const invservnonItem = {qty: item.qty, id: item.itemId}
           if (item.category === "inventoryItem") {
@@ -182,23 +182,23 @@ export class QoutesService {
         } else {
             return {
               success: false,
-              message: "couldnt insert qouteItem on incoice",
-              data: insertedQouteItem,
+              message: "couldnt insert quoteItem on incoice",
+              data: insertedQuoteItem,
             }
           }
       }
       
       await trx.commit();
       result = await this.modelClass.query()
-      .findById(createdQoute.id)
+      .findById(createdQuote.id)
       .withGraphFetched({
         client: {},
         clientContact: {},
-        qouteItems: {},
+        quoteItems: {},
       });
       return {
         success: true,
-        message: 'Qoute created successfully.',
+        message: 'Quote created successfully.',
         data: result,
       };  
     } catch (err) {
@@ -206,20 +206,20 @@ export class QoutesService {
       result = err
       return {
         success: false,
-        message: `Something went wrong. Neither Qoute nor QouteItems were inserted.`,
+        message: `Something went wrong. Neither Quote nor QuoteItems were inserted.`,
         data: result,
       };
     }
   }
 
   async update(payload, currentUser): Promise<ResponseData> {
-    const qoutePayload = payload
-    const qoute = await this.modelClass.query()
+    const quotePayload = payload
+    const quote = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
-    .findById(qoutePayload.id);
-    if (qoute) {
-      if (qoutePayload.clientId) {
-        const clientFnd = await this.clientsSerive.findById(qoutePayload.clientId,currentUser)
+    .findById(quotePayload.id);
+    if (quote) {
+      if (quotePayload.clientId) {
+        const clientFnd = await this.clientsSerive.findById(quotePayload.clientId,currentUser)
         console.log(clientFnd)
         if (!clientFnd.success) {
           return {
@@ -229,8 +229,8 @@ export class QoutesService {
           };
         }
       }
-      if (qoutePayload.clientContactId) {
-        const clientContactFnd = await this.clientContactsSerive.findById(qoutePayload.clientId,currentUser)
+      if (quotePayload.clientContactId) {
+        const clientContactFnd = await this.clientContactsSerive.findById(quotePayload.clientId,currentUser)
         console.log(clientContactFnd)
         if (!clientContactFnd.success) {
           return {
@@ -241,61 +241,61 @@ export class QoutesService {
         }
       }
 
-      const subTotalAmount = qoute.subTotalAmount
-      const taxRate: number = qoutePayload.taxRate ? qoutePayload.taxRate : qoute.taxRate
-      const discount: number = qoutePayload.discount ? qoutePayload.discount : qoute.discount
+      const subTotalAmount = quote.subTotalAmount
+      const taxRate: number = quotePayload.taxRate ? quotePayload.taxRate : quote.taxRate
+      const discount: number = quotePayload.discount ? quotePayload.discount : quote.discount
       console.log(subTotalAmount, taxRate, discount)
       const newTotalAmount: number = subTotalAmount + ( subTotalAmount * taxRate ) - ( subTotalAmount * discount )
       console.log(newTotalAmount)
 
-      const updatedQoute = await this.modelClass.query()
+      const updatedQuote = await this.modelClass.query()
         .update({
-          dueDate: qoutePayload.dueDate ? qoutePayload.dueDate : qoute.dueDate,
-          exchangeRate: qoutePayload.exchangeRate ? qoutePayload.exchangeRate : qoute.exchangeRate,
+          dueDate: quotePayload.dueDate ? quotePayload.dueDate : quote.dueDate,
+          exchangeRate: quotePayload.exchangeRate ? quotePayload.exchangeRate : quote.exchangeRate,
           taxRate: taxRate,
           discount: discount,
           totalAmount: Number(parseFloat(newTotalAmount.toString()).toFixed(2)),
-          billingAddress: qoutePayload.billingAddress ? qoutePayload.billingAddress : qoute.billingAddress,
-          clientId: qoutePayload.clientId ? qoutePayload.clientId : qoute.clientId,
-          clientContactId: qoutePayload.clientContactId ? qoutePayload.clientContactId : qoute.clientContactId,
-          description: qoutePayload.description ? qoutePayload.description : qoute.description,
-          paymentMethod: qoutePayload.paymentMethod ? qoutePayload.paymentMethod : qoute.paymentMethod,
-          currencyCode: qoutePayload.currencyCode ? qoutePayload.currencyCode : qoute.currencyCode,
-          status: qoutePayload.status ? qoutePayload.status : qoute.status,
-          deleted: qoutePayload.deleted ? qoutePayload.deleted : qoute.deleted,
+          billingAddress: quotePayload.billingAddress ? quotePayload.billingAddress : quote.billingAddress,
+          clientId: quotePayload.clientId ? quotePayload.clientId : quote.clientId,
+          clientContactId: quotePayload.clientContactId ? quotePayload.clientContactId : quote.clientContactId,
+          description: quotePayload.description ? quotePayload.description : quote.description,
+          paymentMethod: quotePayload.paymentMethod ? quotePayload.paymentMethod : quote.paymentMethod,
+          currencyCode: quotePayload.currencyCode ? quotePayload.currencyCode : quote.currencyCode,
+          status: quotePayload.status ? quotePayload.status : quote.status,
+          deleted: quotePayload.deleted ? quotePayload.deleted : quote.deleted,
           updatedBy: currentUser.username,
         })
-        .where({ id: qoutePayload.id });
+        .where({ id: quotePayload.id });
       return {
         success: true,
-        message: 'Qoute details updated successfully.',
-        data: updatedQoute,
+        message: 'Quote details updated successfully.',
+        data: updatedQuote,
       };
     } else {
       return {
         success: false,
-        message: 'No qoute found.',
+        message: 'No quote found.',
         data: {},
       };
     }
   }
 
-  // Delete qoute
-  async deleteById(qouteId: number, currentUser): Promise<ResponseData> {
-    const qoutes = await this.modelClass.query()
+  // Delete quote
+  async deleteById(quoteId: number, currentUser): Promise<ResponseData> {
+    const quotes = await this.modelClass.query()
       .where({brandCode: currentUser.brandCode})
-      .where({ id: qouteId })
+      .where({ id: quoteId })
       .delete()
-    if (qoutes) {
+    if (quotes) {
       return {
         success: true,
-        message: 'Qoute deleted successfully.',
-        data: qoutes,
+        message: 'Quote deleted successfully.',
+        data: quotes,
       };
     } else {
       return {
         success: false,
-        message: 'No qoute found.',
+        message: 'No quote found.',
         data: {},
       };
     }

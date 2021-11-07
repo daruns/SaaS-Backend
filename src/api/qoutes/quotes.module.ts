@@ -5,14 +5,14 @@ import { ClientsService } from '../clients/clients.service';
 import { InventoryItemsService } from '../inventoryItems/inventoryItems.service';
 import { NonInventoryItemsService } from '../nonInventoryItems/nonInventoryItems.service';
 import { ServiceItemsService } from '../serviceItems/serviceItems.service';
-import { QoutesController } from './qoutes.controller';
-import { QoutesService } from './qoutes.service';
+import { QuotesController } from './quotes.controller';
+import { QuotesService } from './quotes.service';
 
 @Module({
   imports: [ClientsModule],
-  controllers: [QoutesController],
+  controllers: [QuotesController],
   providers: [
-    QoutesService,
+    QuotesService,
     InventoryItemsService,
     NonInventoryItemsService,
     ServiceItemsService,
@@ -20,4 +20,4 @@ import { QoutesService } from './qoutes.service';
     ClientContactsService,
   ]
 })
-export class QoutesModule {}
+export class QuotesModule {}

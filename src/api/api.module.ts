@@ -11,8 +11,7 @@ import { NonInventoryItemsModule } from './nonInventoryItems/nonInventoryItems.m
 import { ServiceItemsModule } from './serviceItems/serviceItems.module';
 import { SubServiceItemsModule } from 'src/api/subServiceItems/subServiceItems.module';
 import { InvoicesModule } from './invoices/invoices.module';
-import { QoutesModule } from './qoutes/qoutes.module';
-import { JwtStrategy } from './auth/strategies/jwt-auth.strategy';
+import { QuotesModule } from './qoutes/quotes.module';
 import { ProjectsModule } from './projects/projects.module';
 import { BoardsModule } from './boards/boards.module';
 import { TasksModule } from './tasks/tasks.module';
@@ -31,7 +30,7 @@ import { TasksModule } from './tasks/tasks.module';
     ServiceItemsModule,
     SubServiceItemsModule,
     InvoicesModule,
-    QoutesModule,
+    QuotesModule,
     ProjectsModule,
     BoardsModule,
     TasksModule,

@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
 
-const tableName = 'qoutes'
+const tableName = 'quotes'
 export async function up(knex: Knex): Promise<any> {
   if (await knex.schema.hasTable(tableName)) {
     return;
@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
     
-    table.string('qouteNumber');
+    table.string('quoteNumber');
     table.string('brandCode');
     table.string('description')
     table.string('billingAddress')

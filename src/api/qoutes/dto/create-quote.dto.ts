@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsInt, IsDate, IsNotIn } from 'class-validator';
 import { isDate } from 'moment';
 
-export class CreateQouteDto {
+export class CreateQuoteDto {
   @IsNotEmpty()
   date: Date
   @IsNotEmpty()
@@ -27,8 +27,8 @@ export class CreateQouteDto {
   status: string
 }
 
-export class CreateQouteItemDto {
-  qouteId: number
+export class CreateQuoteItemDto {
+  quoteId: number
   @IsNotEmpty()
   name: string
   @IsNotEmpty()

@@ -35,8 +35,6 @@ import { BrandModel } from './models/brand.model';
 import { SubServiceItemModel } from './models/subServiceItem.model';
 import { InvoiceModel } from './models/invoice.model';
 import { InvoiceItemModel } from './models/invoiceItem.model';
-import { QouteModel } from './models/qoute.model';
-import { QouteItemModel } from './models/qouteItem.model';
 import { ProjectModel } from './models/project.model';
 import { ProjectLeaderModel } from './models/projectLeader.model';
 import { ProjectMemberModel } from './models/projectMember.model';
@@ -44,6 +42,8 @@ import { BoardModel } from './models/board.model';
 import { BoardAttributeModel } from './models/boardAttribute.model';
 import { TaskModel } from './models/task.model';
 import { TaskMemberModel } from './models/taskMember.model';
+import { QuoteItemModel } from './models/quoteItem.model';
+import { QuoteModel } from './models/quote.model';
 
 const models = [
   UserModel,
@@ -61,8 +61,6 @@ const models = [
   BrandModel,
   InvoiceModel,
   InvoiceItemModel,
-  QouteModel,
-  QouteItemModel,
   ProjectModel,
   ProjectLeaderModel,
   ProjectMemberModel,
@@ -70,6 +68,8 @@ const models = [
   BoardAttributeModel,
   TaskModel,
   TaskMemberModel,
+  QuoteModel,
+  QuoteItemModel,
 ];
 
 const modelProvider = map(models, model => {
