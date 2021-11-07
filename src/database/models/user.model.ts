@@ -10,6 +10,8 @@ import { ProjectLeaderModel } from './projectLeader.model';
 import { ProjectMemberModel } from './projectMember.model';
 import { ProjectModel } from './project.model';
 import { BoardAttributeModel } from './boardAttribute.model';
+import { TaskMemberModel } from './taskMember.model';
+import { TaskModel } from './task.model';
 
 const tbName = 'users'
 export class UserModel extends BaseModel {
@@ -45,6 +47,8 @@ export class UserModel extends BaseModel {
   projectsMemberUsers: ProjectModel[];
   projectsLeaderUsers: ProjectModel[];
   boardAttribute: BoardAttributeModel;
+  taskMembers: TaskMemberModel[];
+  tasksMemberUsers: TaskModel[];
 
   static relationMappings = {
     user: {
@@ -153,6 +157,26 @@ export class UserModel extends BaseModel {
       join: {
         from: `${tbName}.id`,
         to: 'boardAttribute.userId',
+      },
+    },
+    taskMembers: {
+      modelClass: `${__dirname}/taskMember.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `${tbName}.id`,
+        to: 'taskMemberUsers.memberId'
+      },
+    },
+    tasksMemberUsers: {
+      modelClass: `${__dirname}/task.model`,
+      relation: Model.ManyToManyRelation,
+      join: {
+        from: `${tbName}.id`,
+        through: {
+          from: `taskMemberUsers.memberId`,
+          to: `taskMemberUsers.taskId`,
+        },
+        to: 'tasks.id'
       },
     },
   };

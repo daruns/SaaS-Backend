@@ -15,6 +15,7 @@ import { QoutesModule } from './qoutes/qoutes.module';
 import { JwtStrategy } from './auth/strategies/jwt-auth.strategy';
 import { ProjectsModule } from './projects/projects.module';
 import { BoardsModule } from './boards/boards.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { BoardsModule } from './boards/boards.module';
     InvoicesModule,
     QoutesModule,
     ProjectsModule,
-    BoardsModule
+    BoardsModule,
+    TasksModule,
   ],
   providers: [],
 })

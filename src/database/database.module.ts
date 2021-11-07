@@ -42,6 +42,8 @@ import { ProjectLeaderModel } from './models/projectLeader.model';
 import { ProjectMemberModel } from './models/projectMember.model';
 import { BoardModel } from './models/board.model';
 import { BoardAttributeModel } from './models/boardAttribute.model';
+import { TaskModel } from './models/task.model';
+import { TaskMemberModel } from './models/taskMember.model';
 
 const models = [
   UserModel,
@@ -66,6 +68,8 @@ const models = [
   ProjectMemberModel,
   BoardModel,
   BoardAttributeModel,
+  TaskModel,
+  TaskMemberModel,
 ];
 
 const modelProvider = map(models, model => {

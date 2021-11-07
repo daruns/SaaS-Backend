@@ -1,34 +1,34 @@
 import { BaseModel } from './base.model';
 import { UserModel } from './user.model';
-import { ProjectModel } from './project.model';
+import { TaskModel } from './task.model';
 import { Model } from 'objection';
 
-const tbName = 'projectLeaderUsers'
-export class ProjectLeaderModel extends BaseModel {
+const tbName = 'taskMemberUsers'
+export class TaskMemberModel extends BaseModel {
   static tableName = tbName;
 
-  leaderId: number;
-  projectId: number;
+  memberId: number;
+  taskId: number;
 
   user: UserModel;
-  project: ProjectModel;
+  task: TaskModel;
 
   static relationMappings = {
     user: {
       modelClass: `${__dirname}/user.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: `${tbName}.leaerId`,
+        from: `${tbName}.memberId`,
         to: 'users.id',
       },
     },
 
-    project: {
-      modelClass: `${__dirname}/project.model`,
+    task: {
+      modelClass: `${__dirname}/task.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: `${tbName}.projectId`,
-        to: 'projects.id',
+        from: `${tbName}.taskId`,
+        to: 'tasks.id',
       },
     },
   };

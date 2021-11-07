@@ -8,6 +8,7 @@ import { BrandsService } from '../brands/brands.service';
 import { CreateBrandDto } from 'src/api/brands/dto/create-brand.dto';
 import { CreateUserDto } from './apps/users/dto/create-user.dto';
 import { query } from 'express';
+import { EditProfileDto } from './dto/editProfile.dto';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -46,6 +47,29 @@ export class AuthService {
         return createUser
     } else {
       return createBrand
+    }
+  }
+
+  async editProfile(editProfileDto: EditProfileDto, currentUser): Promise<ResponseData> {
+    const userFound = await this.usersService.findById(currentUser.id)
+    if (userFound.success && userFound.data.brandCode === currentUser.brandCode){
+      editProfileDto['id'] = currentUser.id
+      const createUser = await this.usersService.update(editProfileDto)
+      if (createUser.success) {
+        return {
+          success: true,
+          message: "Your Profile Changed Successfully",
+          data: {}
+        }
+      } else {
+        return createUser
+      }
+    } else {
+      return {
+        success: false,
+        message: "Your Profile Not Found!",
+        data: {}
+      }
     }
   }
 

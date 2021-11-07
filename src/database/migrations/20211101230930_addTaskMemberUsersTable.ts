@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
 
-const tableName = 'taskAssignedUsers'
+const tableName = 'taskMemberUsers'
 export async function up(knex: Knex): Promise<any> {
   if (await knex.schema.hasTable(tableName)) {
     return;
@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating ' + tableName + ' table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
-    table.integer('assignedId')
+    table.integer('memberId')
       .unsigned()
       .index()
       .references('id')

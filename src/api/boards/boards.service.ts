@@ -82,23 +82,18 @@ export class BoardsService {
     const newBoard = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findOne({
-      name: boardPayload.name
+      name: boardPayload.name,
+      projectId: payload.projectId,
     })
     if (!newBoard) {
       if (payload.projectId) {
-        const updatedAttribute = await this.projectModelClass.query()
-        .findOne({ id: payload.projectId });
-        if (updatedAttribute) {
-          return {
-            success: true,
-            message: 'Board attribute updated successfully.',
-            data: updatedAttribute,
-          };
-        } else {
+        const project = await this.projectModelClass.query()
+        .findOne({ id: payload.projectId, brandCode: currentUser.brandCode });
+        if (!project) {
           return {
             success: false,
-            message: 'Board Attribute did not updated.',
-            data: updatedAttribute,
+            message: 'Project not exist with this projectId.',
+            data: project,
           };
         }  
       }
@@ -106,7 +101,10 @@ export class BoardsService {
       boardPayload['createdBy'] = currentUser.username
       boardPayload['brandCode'] = currentUser.brandCode
       const identifiers = await this.modelClass.query().insert(boardPayload);
-      const createBoard = await this.modelClass.query().findById(identifiers.id);
+      const createBoard = await this.modelClass.query().findById(identifiers.id)
+      .withGraphFetched({
+        project: {}
+      });
       return {
         success: true,
         message: 'Board created successfully.',
@@ -115,7 +113,7 @@ export class BoardsService {
     } else {
       return {
         success: false,
-        message: 'Board already exists with this name!!!',
+        message: 'Board already exists with this name.',
         data: {},
       };
     }

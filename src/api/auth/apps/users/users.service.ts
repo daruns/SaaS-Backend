@@ -206,10 +206,12 @@ export class UsersService {
   // Update user before save encrypt password
   async update(payload): Promise<ResponseData> {
     const user = await this.modelClass.query().findById(payload.id);
-    const hashedPassword = await bcrypt.hash(payload.password, 10);
-    payload.password = hashedPassword
-
     if (user) {
+      if (payload.password) {
+        const hashedPassword = await bcrypt.hash(payload.password, 10);
+        payload.password = hashedPassword
+      }
+
       const updatedUser = await this.modelClass
         .query()
         .update({
