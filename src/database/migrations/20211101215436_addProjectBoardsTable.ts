@@ -10,6 +10,8 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
     table.string('name');
+    table.string('color');
+    table.string('description');
     table.string('brandCode');
     table
       .integer('projectId')

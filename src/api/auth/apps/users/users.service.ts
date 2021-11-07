@@ -22,6 +22,20 @@ export class UsersService {
     ) {}
 
   // user list with list of posts and comments on post
+  async allWithBrand(currentUser): Promise<ResponseData> {
+    const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).withGraphFetched({
+    });
+    users.map(user => {
+      delete user.password
+    })
+    return {
+      success: true,
+      message: 'User details fetch successfully.',
+      data: users,
+    };
+  }
+
+  // user list with list of posts and comments on post
   async findAll(): Promise<ResponseData> {
     const users = await this.modelClass.query().withGraphFetched({
       clients: {
@@ -34,6 +48,9 @@ export class UsersService {
       permissions: {
       }
     });
+    users.map(user => {
+      delete user.password
+    })
     return {
       success: true,
       message: 'User details fetch successfully.',
@@ -58,6 +75,8 @@ export class UsersService {
         permissions: {
         }
       });
+    delete user.password
+  
     if (user) {
       return {
         success: true,
@@ -90,6 +109,7 @@ export class UsersService {
         permissions: {
         }
       });
+    delete user.password
     if (user) {
       return {
         success: true,
@@ -124,6 +144,7 @@ export class UsersService {
         permissions: {
         }
       });
+    delete user.password
     if (user) {
       return {
         success: true,

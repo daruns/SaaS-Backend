@@ -1,0 +1,236 @@
+import { Injectable, Inject } from '@nestjs/common';
+import { BoardModel } from 'src/database/models/board.model';
+import { BoardAttributeModel } from 'src/database/models/boardAttribute.model';
+import { ModelClass } from 'objection';
+import { CreateBoardDto } from './dto/create-board.dto';
+import { AddAttributeDto } from './dto/add-attribute.dto';
+import { UpdateBoardDto } from './dto/update-board.dto';
+import { ProjectModel } from 'src/database/models/project.model';
+
+export interface ResponseData {
+  readonly success: boolean;
+  readonly message: string;
+  readonly data: any;
+}
+@Injectable()
+export class BoardsService {
+  constructor(
+    @Inject('BoardAttributeModel') private boardAttributeClass: ModelClass<BoardAttributeModel>,
+    @Inject('BoardModel') private modelClass: ModelClass<BoardModel>,
+    @Inject('ProjectModel') private projectModelClass: ModelClass<ProjectModel>,
+  ) {}
+
+  // board list
+  async findAll(currentUser): Promise<ResponseData> {
+    const boards = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .withGraphFetched({
+      // tasks: {}
+    })
+    return {
+      success: true,
+      message: 'Board details fetch successfully.',
+      data: boards,
+    };
+  }
+
+  // find one board info by boardId
+  async findById(id: number, currentUser): Promise<ResponseData> {
+    const board = await this.modelClass
+      .query()
+      .where({ brandCode: currentUser.brandCode })
+      .findById(id)
+    if (board) {
+      return {
+        success: true,
+        message: 'Board details fetch successfully.',
+        data: board,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'No board details found.',
+        data: {},
+      };
+    }
+  }
+
+  // find one board info by boardId
+  async findByProjectId(projectId: number, currentUser): Promise<ResponseData> {
+    const board = await this.modelClass
+      .query()
+      .where({ brandCode: currentUser.brandCode })
+      .findOne({projectId: projectId})
+    if (board) {
+      return {
+        success: true,
+        message: 'Board details fetch successfully.',
+        data: board,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'No board details found.',
+        data: {},
+      };
+    }
+  }
+
+  // Create board before save encrypt password
+  async create(payload: CreateBoardDto, currentUser): Promise<ResponseData> {
+    let boardPayload = payload
+    const newBoard = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findOne({
+      name: boardPayload.name
+    })
+    if (!newBoard) {
+      if (payload.projectId) {
+        const updatedAttribute = await this.projectModelClass.query()
+        .findOne({ id: payload.projectId });
+        if (updatedAttribute) {
+          return {
+            success: true,
+            message: 'Board attribute updated successfully.',
+            data: updatedAttribute,
+          };
+        } else {
+          return {
+            success: false,
+            message: 'Board Attribute did not updated.',
+            data: updatedAttribute,
+          };
+        }  
+      }
+
+      boardPayload['createdBy'] = currentUser.username
+      boardPayload['brandCode'] = currentUser.brandCode
+      const identifiers = await this.modelClass.query().insert(boardPayload);
+      const createBoard = await this.modelClass.query().findById(identifiers.id);
+      return {
+        success: true,
+        message: 'Board created successfully.',
+        data: createBoard,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'Board already exists with this name!!!',
+        data: {},
+      };
+    }
+  }
+
+  async addAttribute(attribute: AddAttributeDto, currentUser): Promise<ResponseData> {
+
+    const boardAttribute = await this.boardAttributeClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findOne({
+      boardId: attribute.boardId,
+      userId: currentUser.id,
+    });
+    if (boardAttribute) {
+      attribute.color = attribute.color
+      attribute.position = attribute.position
+      attribute['updatedBy'] = currentUser.username
+      const updatedAttribute = await this.boardAttributeClass.query()
+      .update(attribute)
+      .where({ id: boardAttribute.id });
+      if (updatedAttribute) {
+        return {
+          success: true,
+          message: 'Board attribute updated successfully.',
+          data: updatedAttribute,
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Board Attribute did not updated.',
+          data: updatedAttribute,
+        };
+      }
+    } else {
+      attribute['brandCode'] = currentUser.brandCode
+      attribute['userId'] = currentUser.id
+      attribute['createdBy'] = currentUser.username
+
+      const addedAttribute = await this.boardAttributeClass.query()
+      .insert(attribute)
+      if (addedAttribute) {
+        return {
+          success: true,
+          message: 'Board attribute added successfully.',
+          data: addedAttribute,
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Board Attribute did not added.',
+          data: addedAttribute,
+        };
+      }
+    }
+  }
+
+  async update(payload: UpdateBoardDto, currentUser): Promise<ResponseData> {
+    let boardPayload = payload
+    const board = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findById(boardPayload.id);
+    if (board) {
+      const updatedBoard = await this.modelClass
+      .query()
+      .update({
+        name: boardPayload.name ? boardPayload.name : board.name,
+        description: boardPayload.description ? boardPayload.description : board.description,
+        projectId: boardPayload.projectId ? boardPayload.projectId : board.projectId,
+        status: boardPayload.status ? boardPayload.status : board.status,
+        deleted: boardPayload.deleted ? boardPayload.deleted : board.deleted,
+        updatedBy: currentUser.username,
+      })
+      .where({ id: boardPayload.id, brandCode: currentUser.brandCode});
+      if (updatedBoard) {
+        return {
+          success: true,
+          message: 'Board details updated successfully.',
+          data: updatedBoard,
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Board did not updated found.',
+          data: updatedBoard,
+        };
+      }
+    } else {
+      return {
+        success: false,
+        message: 'No board found.',
+        data: {},
+      };
+    }
+  }
+  // Delete board
+  async deleteById(boardId: number, currentUser): Promise<ResponseData> {
+    const boards = await this.modelClass
+      .query()
+      .delete()
+      .where({
+        brandCode: currentUser.brandCode,
+        id: boardId
+      });
+    if (boards) {
+      return {
+        success: true,
+        message: 'Board deleted successfully.',
+        data: boards,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'No board found.',
+        data: {},
+      };
+    }
+  }
+}

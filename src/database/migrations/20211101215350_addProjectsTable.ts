@@ -16,7 +16,6 @@ export async function up(knex: Knex): Promise<any> {
       .unsigned()
       .references('id')
       .inTable('clients')
-      .notNullable();
     table.dateTime('plannedStartDate');
     table.dateTime('plannedEndDate');
     table.dateTime('actualStartDate');
@@ -25,7 +24,6 @@ export async function up(knex: Knex): Promise<any> {
     table.string('rateType');
     table.string('priority');
     table.string('description');
-    table.integer('attachmentId');
 
     table.string('status');
     table.integer('deleted');

@@ -28,6 +28,5 @@ export class CreateUserDto {
   passwordResetToken: string
   passwordResetTokenExpire: Date
   lastResetAt: Date
-  @IsNotEmpty()
   brandCode: string
 }

@@ -9,12 +9,12 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating ' + tableName + ' table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
-    table.integer('userId')
+    table.integer('memberId')
       .unsigned()
       .index()
       .references('id')
       .inTable('users')
-    table.integer('memberId')
+    table.integer('projectId')
       .unsigned()
       .index()
       .references('id')

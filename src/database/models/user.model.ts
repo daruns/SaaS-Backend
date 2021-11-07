@@ -6,6 +6,9 @@ import { RoleModel } from './role.model';
 import { PermissionModel } from './permission.model';
 import { UserRoleModel } from './userRole.model';
 import { BrandModel } from './brand.model';
+import { ProjectLeaderModel } from './projectLeader.model';
+import { ProjectMemberModel } from './projectMember.model';
+import { ProjectModel } from './project.model';
 
 const tbName = 'users'
 export class UserModel extends BaseModel {
@@ -36,6 +39,10 @@ export class UserModel extends BaseModel {
   roles: RoleModel[];
   userRoles: UserRoleModel[];
   permissions: PermissionModel[];
+  projectLeaders: ProjectLeaderModel[];
+  projectMembers: ProjectMemberModel[];
+  projectsMemberUsers: ProjectModel[];
+  projectsLeaderUsers: ProjectModel[];
 
   static relationMappings = {
     user: {
@@ -96,6 +103,46 @@ export class UserModel extends BaseModel {
       join: {
         from: `${tbName}.id`,
         to: 'permissions.userId',
+      },
+    },
+    projectLeaders: {
+      modelClass: `${__dirname}/projectLeader.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `users.id`,
+        to: 'projectLeaderUsers.leaderId',
+      },
+    },
+    projectMembers: {
+      modelClass: `${__dirname}/projectMember.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `users.id`,
+        to: 'projectMemberUsers.memberId'
+      },
+    },
+    projectsMemberUsers: {
+      modelClass: `${__dirname}/project.model`,
+      relation: Model.ManyToManyRelation,
+      join: {
+        from: `users.id`,
+        through: {
+          from: `projectMemberUsers.memberId`,
+          to: `projectMemberUsers.projectId`,
+        },
+        to: 'projects.id'
+      },
+    },
+    projectsLeaderUsers: {
+      modelClass: `${__dirname}/project.model`,
+      relation: Model.ManyToManyRelation,
+      join: {
+        from: `users.id`,
+        through: {
+          from: `projectLeaderUsers.leaderId`,
+          to: `projectLeaderUsers.projectId`,
+        },
+        to: 'projects.id'
       },
     },
   };

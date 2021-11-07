@@ -1,23 +1,17 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { ClientModel } from './client.model';
-import { InvoiceModel } from './invoice.model';
+import { ProjectModel } from './project.model';
 
 export class ClientContactModel extends BaseModel {
   static tableName = 'clientContacts';
 
   name: string
-  position: string
-  businessPhoneNumber1: string
-  businessPhoneNumber2: string
-  email: string
   description: string
-  department: string
-  clientId: number
   brandCode: string
+  projectId: number
 
-  client: ClientModel;
-  invoices: InvoiceModel[];
+  project: ProjectModel[];
 
   static relationMappings = {
     // list of all client on current user
@@ -29,12 +23,12 @@ export class ClientContactModel extends BaseModel {
         to: 'clients.id',
       },
     },
-    invoices: {
+    project: {
       modelClass: `${__dirname}/invoice.model`,
       relation: Model.HasManyRelation,
       join: {
         from: 'clientContacts.id',
-        to: 'invoices.clientContactid',
+        to: 'projects.clientContactid',
       },
     },
   };

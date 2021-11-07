@@ -9,16 +9,16 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating ' + tableName + ' table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
-    table.integer('userId')
+    table.integer('assignedId')
       .unsigned()
       .index()
       .references('id')
       .inTable('users')
-    table.integer('assingedId')
+    table.integer('taskId')
       .unsigned()
       .index()
       .references('id')
-      .inTable('projects')
+      .inTable('tasks')
       .onDelete('CASCADE');
 
     table.string('status');

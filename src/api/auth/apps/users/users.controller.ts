@@ -7,7 +7,6 @@ import {
   Post,
   UseGuards,
   Req,
-  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,18 +18,25 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  async findAll(@Request() req) {
+  async findAll(@Req() req) {
     const users = await this.usersService.findAll();
     return users;
   }
 
+  @Get('allWithBrand')
+  async allWithBrand(@Req() req) {
+    const users = await this.usersService.allWithBrand(req.user);
+    return users;
+  }
+
   @Get(':id')
-  async findOne(@Param('id', new ParseIntPipe()) id: number, @Request() req) {
+  async findOne(@Param('id', new ParseIntPipe()) id: number, @Req() req) {
     const post = await this.usersService.findById(id);
     return post;
   }
   @Post('create')
-  create(@Body() user: CreateUserDto) {
+  create(@Body() user: CreateUserDto, @Req() req) {
+    user.brandCode = req.user.brandCode
     return this.usersService.create(user);
   }
 
