@@ -49,6 +49,12 @@ export class TasksController {
     return createdTask
   }
 
+  @Post('removeTeamMembers')
+  async removeMembers(@Body() payload: AddMembersToTaskDto, @Request() req) {
+    const createdTask = await this.tasksService.removeMembers(payload, req.user);
+    return createdTask
+  }
+
   @Post('update')
   // update commnet on task
   update(@Body() payload: UpdateTaskDto, @Request() req) {

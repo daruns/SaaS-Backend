@@ -153,18 +153,8 @@ export class TasksService {
       if (taskPayload.boardId) {
         const boardFnd = await this.boardsService.findById(taskPayload.boardId,currentUser)
         console.log(boardFnd)
+        taskPayload['projectId'] = boardFnd.data.projectId
         if (!boardFnd.success) {
-          return {
-            success: false,
-            message: 'Task Error: Board doesnt exist.',
-            data: {},
-          };
-        }
-      }
-      if (taskPayload.projectId) {
-        const projectFnd = await this.boardsService.findById(taskPayload.projectId,currentUser)
-        console.log(projectFnd)
-        if (!projectFnd.success) {
           return {
             success: false,
             message: 'Task Error: Board doesnt exist.',
@@ -181,6 +171,7 @@ export class TasksService {
           actualStartDate: taskPayload.actualStartDate ? taskPayload.actualStartDate : task.actualStartDate,
           actualdEndDate: taskPayload.actualdEndDate ? taskPayload.actualdEndDate : task.actualdEndDate,        
           boardId: taskPayload.boardId ? taskPayload.boardId : task.boardId,
+          projectId: taskPayload['projectId'],
           status: taskPayload.status ? taskPayload.status : task.status,
           deleted: taskPayload.deleted ? taskPayload.deleted : task.deleted,
           updatedBy: currentUser.username,

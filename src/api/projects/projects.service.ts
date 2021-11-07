@@ -130,7 +130,7 @@ export class ProjectsService {
               data: {},
             };
           }
-          const membersParams = {memberId: member , projectId: createdProject.id}
+          const membersParams = {memberId: member , projectId: createdProject.id, createdBy: currentUser.username}
           let finishedInsert = await this.memberModelClass.query(trx).insert(membersParams)
           if (!finishedInsert) {
             throw finishedInsert
@@ -145,18 +145,18 @@ export class ProjectsService {
               data: {},
             };
           }
-          const leadersParams = {leaderId: leader , projectId: createdProject.id}
+          const leadersParams = {leaderId: leader , projectId: createdProject.id, createdBy: currentUser.username}
           let finishedInsert = await this.leaderModelClass.query(trx).insert(leadersParams)
           if (!finishedInsert) {
             throw finishedInsert
           }
         }
-        const finishedPending = await this.boardModelClass.query(trx).insert({name:'Pending', description: '', brandCode: currentUser.brandCode, projectId: createdProject.id})
-        await this.boardAttributeClass.query(trx).insert({color: 'yellow', position: 1, userId: currentUser.id, brandCode: currentUser.brandCode, boardId: finishedPending.id})
-        const finishedInProgress = await this.boardModelClass.query(trx).insert({name:'In-Progress', description: '', brandCode: currentUser.brandCode, projectId: createdProject.id})
-        await this.boardAttributeClass.query(trx).insert({color: 'blue', position: 2, userId: currentUser.id, brandCode: currentUser.brandCode, boardId: finishedInProgress.id})
-        const finishedcompleted = await this.boardModelClass.query(trx).insert({name:'completed', description: '', brandCode: currentUser.brandCode, projectId: createdProject.id})
-        await this.boardAttributeClass.query(trx).insert({color: 'green', position: 3, userId: currentUser.id, brandCode: currentUser.brandCode, boardId: finishedcompleted.id})
+        const finishedPending = await this.boardModelClass.query(trx).insert({name:'Pending', description: '', brandCode: currentUser.brandCode, createdBy: currentUser.username, projectId: createdProject.id})
+        await this.boardAttributeClass.query(trx).insert({color: 'yellow', position: 1, userId: currentUser.id, brandCode: currentUser.brandCode, createdBy: currentUser.username, boardId: finishedPending.id})
+        const finishedInProgress = await this.boardModelClass.query(trx).insert({name:'In-Progress', description: '', brandCode: currentUser.brandCode, createdBy: currentUser.username, projectId: createdProject.id})
+        await this.boardAttributeClass.query(trx).insert({color: 'blue', position: 2, userId: currentUser.id, brandCode: currentUser.brandCode, createdBy: currentUser.username, boardId: finishedInProgress.id})
+        const finishedcompleted = await this.boardModelClass.query(trx).insert({name:'completed', description: '', brandCode: currentUser.brandCode, createdBy: currentUser.username, projectId: createdProject.id})
+        await this.boardAttributeClass.query(trx).insert({color: 'green', position: 3, userId: currentUser.id, brandCode: currentUser.brandCode, createdBy: currentUser.username, boardId: finishedcompleted.id})
 
         result = await this.modelClass.query(trx).findById(createdProject.id).withGraphFetched({
           client: {},
@@ -204,9 +204,16 @@ export class ProjectsService {
 
       const updatedInvoice = await this.modelClass.query()
         .update({
-          clientId: projectPayload.clientId ? projectPayload.clientId : project.clientId,
+          name: projectPayload.name ? projectPayload.name : project.name,
+          actualStartDate: projectPayload.actualStartDate ? projectPayload.actualStartDate : project.actualStartDate,
+          actualdEndDate: projectPayload.actualdEndDate ? projectPayload.actualdEndDate : project.actualdEndDate,
+          rate: projectPayload.rate ? projectPayload.rate : project.rate,
+          rateType: projectPayload.rateType ? projectPayload.rateType : project.rateType,
+          priority: projectPayload.priority ? projectPayload.priority : project.priority,
+          description: projectPayload.description ? projectPayload.description : project.description,
           status: projectPayload.status ? projectPayload.status : project.status,
           deleted: projectPayload.deleted ? projectPayload.deleted : project.deleted,
+          clientId: projectPayload.clientId ? projectPayload.clientId : project.clientId,
           updatedBy: currentUser.username,
         })
         .where({ id: projectPayload.id });

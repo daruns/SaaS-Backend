@@ -11,6 +11,7 @@ export class CreateTaskDto {
   plannedStartDate: Date
   @IsNotEmpty()
   plannedEndDate: Date
+  status: string
   @IsNotEmpty()
   boardId: number
   @IsNotEmpty()

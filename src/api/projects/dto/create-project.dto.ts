@@ -12,6 +12,7 @@ export class CreateProjectDto {
   actualStartDate: Date
   actualdEndDate: Date
   rate: number
+  status: string
   rateType: string
   priority: string
   description: string

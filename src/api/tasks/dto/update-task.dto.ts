@@ -10,7 +10,6 @@ export class UpdateTaskDto {
   actualStartDate: Date
   actualdEndDate: Date
   boardId: number
-  projectId: number
   status: string
   deleted: number
 }
