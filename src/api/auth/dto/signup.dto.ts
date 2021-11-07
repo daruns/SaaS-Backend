@@ -5,7 +5,7 @@ export class SignupDto extends QueryAuthUser{
 	@IsNotEmpty({ message: 'Username is required' })
 	username: string
 	@IsNotEmpty({ message: 'Password is required' })
-	@Length(7,30)
+	@Length(8,30)
 	password: string;
 	@IsNotEmpty({ message: 'Company Name is required' })
 	subdomain: string

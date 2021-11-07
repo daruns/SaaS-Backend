@@ -3,7 +3,7 @@ import { PhoneNumberRegex } from 'src/app/app.service'
 
 export class EditProfileDto{
 	@IsOptional()
-	@Length(7,30)
+	@Length(8,30)
 	password: string
 	@IsOptional()
 	@IsString()
