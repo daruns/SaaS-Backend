@@ -41,7 +41,9 @@ export class ProjectsService {
       leaderUsers: {},
       memberUsers: {},
       boards: {
-        tasks: {}
+        tasks: {
+          members: {},
+        }
       },
     });
     return {
