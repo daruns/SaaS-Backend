@@ -51,7 +51,7 @@ export class ClientContactsService {
     // restrict to the client that belongs to brand or user ## IMPORTANT TODO
     let clientContactPayload = payload
     const newClientContact = await this.modelClass.query()
-    .where({ brandCode: currentUser.brandCode })
+    // .where({ brandCode: currentUser.brandCode })
     .findOne({
       email: clientContactPayload.email
     })
