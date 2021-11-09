@@ -30,6 +30,10 @@ export class TasksService {
     .where({brandCode: currentUser.brandCode})
     .withGraphFetched({
       members: {},
+      board: {
+        boardAttribute: {}
+      },
+      project: {}
     });
     return {
       success: true,
@@ -46,6 +50,10 @@ export class TasksService {
       .findById(id)
       .withGraphFetched({
         members: {},
+        board: {
+          boardAttribute: {}
+        },
+        project: {}
       });
     if (task) {
       return {
@@ -82,8 +90,6 @@ export class TasksService {
           message: 'Task Error: Board doesnt exist.',
           data: {},
         }
-      } else {
-        taskPayload['projectId'] = boardFnd.data.projectId
       }
     } else {
       return {
@@ -153,7 +159,6 @@ export class TasksService {
       if (taskPayload.boardId) {
         const boardFnd = await this.boardsService.findById(taskPayload.boardId,currentUser)
         console.log(boardFnd)
-        taskPayload['projectId'] = boardFnd.data.projectId
         if (!boardFnd.success) {
           return {
             success: false,
@@ -171,7 +176,6 @@ export class TasksService {
           actualStartDate: taskPayload.actualStartDate ? taskPayload.actualStartDate : task.actualStartDate,
           actualdEndDate: taskPayload.actualdEndDate ? taskPayload.actualdEndDate : task.actualdEndDate,        
           boardId: taskPayload.boardId ? taskPayload.boardId : task.boardId,
-          projectId: taskPayload['projectId'],
           status: taskPayload.status ? taskPayload.status : task.status,
           deleted: taskPayload.deleted ? taskPayload.deleted : task.deleted,
           updatedBy: currentUser.username,

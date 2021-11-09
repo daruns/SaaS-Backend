@@ -14,13 +14,12 @@ export async function up(knex: Knex): Promise<any> {
     table.string('description');
     table.string('brandCode');
     table
-      .integer('projectId')
-      .unsigned()
-      .index()
-      .references('id')
-      .inTable('projects')
-      .notNullable()
-      .onDelete('CASCADE');
+    table.integer('userId')
+    .index()
+    .unsigned()
+    .references('id')
+    .inTable('users')
+    .onDelete('CASCADE');
 
     table.string('status');
     table.integer('deleted');

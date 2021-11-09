@@ -4,7 +4,7 @@ import { ClientModel } from './client.model';
 import { ProjectLeaderModel } from './projectLeader.model';
 import { ProjectMemberModel } from './projectMember.model';
 import { UserModel } from './user.model';
-import { BoardModel } from './board.model';
+import { TaskModel } from './task.model';
 
 const tableName = 'projects'
 export class ProjectModel extends BaseModel {
@@ -27,7 +27,8 @@ export class ProjectModel extends BaseModel {
   members: ProjectMemberModel[];
   leaderUsers: UserModel[]
   memberUsers: UserModel[]
-  boards: BoardModel[];
+  tasks: TaskModel[]
+  // boards: BoardModel[];
 
 
   static relationMappings = {
@@ -84,13 +85,21 @@ export class ProjectModel extends BaseModel {
         to: 'users.id',
       },
     },
-    boards: {
-      modelClass: `${__dirname}/board.model`,
-      relation: Model.HasManyRelation,
-      join: {
-        from: `${tableName}.id`,
-        to: 'projectBoards.projectId',
-      },
+    tasks: {
+      modelClass: `${__dirname}/task.model`,
+        relation: Model.HasManyRelation,
+        join: {
+          from: `${tableName}.id`,
+          to: 'tasks.projectId',
+        },
     }
+    // boards: {
+    //   modelClass: `${__dirname}/board.model`,
+    //   relation: Model.HasManyRelation,
+    //   join: {
+    //     from: `${tableName}.id`,
+    //     to: 'projectBoards.projectId',
+    //   },
+    // }
   };
 }

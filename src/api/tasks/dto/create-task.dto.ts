@@ -14,6 +14,7 @@ export class CreateTaskDto {
   status: string
   @IsNotEmpty()
   boardId: number
+  projectId: number
   @IsNotEmpty()
   members: number[]
 }

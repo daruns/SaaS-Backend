@@ -9,6 +9,9 @@ import { CreateBrandDto } from 'src/api/brands/dto/create-brand.dto';
 import { CreateUserDto } from './apps/users/dto/create-user.dto';
 import { query } from 'express';
 import { EditProfileDto } from './dto/editProfile.dto';
+import { BoardModel } from 'src/database/models/board.model';
+import { BoardAttributeModel } from 'src/database/models/boardAttribute.model';
+import { ModelClass } from 'objection';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -19,6 +22,8 @@ export interface ResponseData {
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject('BoardModel') private boardModelClass: ModelClass<BoardModel>,
+    @Inject('BoardAttributeModel') private boardAttributeClass: ModelClass<BoardAttributeModel>,
     private brandService: BrandsService,
     private usersService: UsersService,
     private jwtService: JwtService
@@ -44,6 +49,13 @@ export class AuthService {
         const createUser  = await this.usersService.create(createUserDto)
         delete createUser.data.password
         console.log("finished")
+        const finishedPending = await this.boardModelClass.query().insert({name:'Pending', description: '', brandCode: createUser.data.brandCode, createdBy: createUser.data.username, userId: createUser.data.id})
+        await this.boardAttributeClass.query().insert({color: 'yellow', position: 1, userId: createUser.data.id, brandCode: createUser.data.brandCode, createdBy: createUser.data.username, boardId: finishedPending.id})
+        const finishedInProgress = await this.boardModelClass.query().insert({name:'In-Progress', description: '', brandCode: createUser.data.brandCode, createdBy: createUser.data.username, userId: createUser.data.id})
+        await this.boardAttributeClass.query().insert({color: 'blue', position: 2, userId: createUser.data.id, brandCode: createUser.data.brandCode, createdBy: createUser.data.username, boardId: finishedInProgress.id})
+        const finishedcompleted = await this.boardModelClass.query().insert({name:'completed', description: '', brandCode: createUser.data.brandCode, createdBy: createUser.data.username, userId: createUser.data.id})
+        await this.boardAttributeClass.query().insert({color: 'green', position: 3, userId: createUser.data.id, brandCode: createUser.data.brandCode, createdBy: createUser.data.username, boardId: finishedcompleted.id})
+
         return createUser
     } else {
       return createBrand

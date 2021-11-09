@@ -5,7 +5,6 @@ import { ModelClass } from 'objection';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { AddAttributeDto } from './dto/add-attribute.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { ProjectModel } from 'src/database/models/project.model';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -17,7 +16,6 @@ export class BoardsService {
   constructor(
     @Inject('BoardAttributeModel') private boardAttributeClass: ModelClass<BoardAttributeModel>,
     @Inject('BoardModel') private modelClass: ModelClass<BoardModel>,
-    @Inject('ProjectModel') private projectModelClass: ModelClass<ProjectModel>,
   ) {}
 
   // board list
@@ -25,7 +23,8 @@ export class BoardsService {
     const boards = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .withGraphFetched({
-      // tasks: {}
+      tasks: {},
+      boardAttribute: {}
     })
     return {
       success: true,
@@ -40,27 +39,10 @@ export class BoardsService {
       .query()
       .where({ brandCode: currentUser.brandCode })
       .findById(id)
-    if (board) {
-      return {
-        success: true,
-        message: 'Board details fetch successfully.',
-        data: board,
-      };
-    } else {
-      return {
-        success: false,
-        message: 'No board details found.',
-        data: {},
-      };
-    }
-  }
-
-  // find one board info by boardId
-  async findByProjectId(projectId: number, currentUser): Promise<ResponseData> {
-    const board = await this.modelClass
-      .query()
-      .where({ brandCode: currentUser.brandCode })
-      .findOne({projectId: projectId})
+      .withGraphFetched({
+        tasks: {},
+        boardAttribute: {}
+      })
     if (board) {
       return {
         success: true,
@@ -83,28 +65,34 @@ export class BoardsService {
     .where({ brandCode: currentUser.brandCode })
     .findOne({
       name: boardPayload.name,
-      projectId: payload.projectId,
+      userId: currentUser.id,
     })
     if (!newBoard) {
-      if (payload.projectId) {
-        const project = await this.projectModelClass.query()
-        .findOne({ id: payload.projectId, brandCode: currentUser.brandCode });
-        if (!project) {
-          return {
-            success: false,
-            message: 'Project not exist with this projectId.',
-            data: project,
-          };
-        }  
+
+      const boardPayloadReady = {
+        userId: currentUser.id,
+        createdBy: currentUser.username,
+        brandCode: currentUser.brandCode,
+        name: boardPayload.name,
+        description: boardPayload.description,
+        status: boardPayload.status,
+      
       }
 
-      boardPayload['createdBy'] = currentUser.username
-      boardPayload['brandCode'] = currentUser.brandCode
-      const identifiers = await this.modelClass.query().insert(boardPayload);
+      const identifiers = await this.modelClass.query().insert(boardPayloadReady);
+
       const createBoard = await this.modelClass.query().findById(identifiers.id)
       .withGraphFetched({
-        project: {}
-      });
+        tasks: {},
+        boardAttribute: {}
+      })
+      const attributePayloadReady = {
+        boardId: createBoard.id,
+        color: boardPayload.color ? boardPayload.color : "grey",
+        position: boardPayload.position ? boardPayload.position : 4,        
+      }
+      console.log(createBoard)
+      const createdAttribute = await this.addAttribute(attributePayloadReady, currentUser)
       return {
         success: true,
         message: 'Board created successfully.',
@@ -181,7 +169,6 @@ export class BoardsService {
       .update({
         name: boardPayload.name ? boardPayload.name : board.name,
         description: boardPayload.description ? boardPayload.description : board.description,
-        projectId: boardPayload.projectId ? boardPayload.projectId : board.projectId,
         status: boardPayload.status ? boardPayload.status : board.status,
         deleted: boardPayload.deleted ? boardPayload.deleted : board.deleted,
         updatedBy: currentUser.username,

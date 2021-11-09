@@ -40,11 +40,12 @@ export class ProjectsService {
       client: {},
       leaderUsers: {},
       memberUsers: {},
-      boards: {
-        tasks: {
-          members: {},
-        }
-      },
+      tasks: {
+        board: {
+          boardAttribute: {}
+        },
+        members: {},
+      }
     });
     return {
       success: true,
@@ -60,6 +61,12 @@ export class ProjectsService {
       .where({brandCode: currentUser.brandCode})  
       .findById(id)
       .withGraphFetched({
+        tasks: {
+          members: {},
+          board: {
+            boardAttribute: {}
+          },
+        },
         client: {},
         leaderUsers: {},
         memberUsers: {},
@@ -153,20 +160,14 @@ export class ProjectsService {
             throw finishedInsert
           }
         }
-        const finishedPending = await this.boardModelClass.query(trx).insert({name:'Pending', description: '', brandCode: currentUser.brandCode, createdBy: currentUser.username, projectId: createdProject.id})
-        await this.boardAttributeClass.query(trx).insert({color: 'yellow', position: 1, userId: currentUser.id, brandCode: currentUser.brandCode, createdBy: currentUser.username, boardId: finishedPending.id})
-        const finishedInProgress = await this.boardModelClass.query(trx).insert({name:'In-Progress', description: '', brandCode: currentUser.brandCode, createdBy: currentUser.username, projectId: createdProject.id})
-        await this.boardAttributeClass.query(trx).insert({color: 'blue', position: 2, userId: currentUser.id, brandCode: currentUser.brandCode, createdBy: currentUser.username, boardId: finishedInProgress.id})
-        const finishedcompleted = await this.boardModelClass.query(trx).insert({name:'completed', description: '', brandCode: currentUser.brandCode, createdBy: currentUser.username, projectId: createdProject.id})
-        await this.boardAttributeClass.query(trx).insert({color: 'green', position: 3, userId: currentUser.id, brandCode: currentUser.brandCode, createdBy: currentUser.username, boardId: finishedcompleted.id})
 
         result = await this.modelClass.query(trx).findById(createdProject.id).withGraphFetched({
-          client: {},
-          members: {},
-          leaders: {},
-          boards: {
-            boardAttribute: {}
-          },
+          // client: {},
+          // members: {},
+          // leaders: {},
+          // boards: {
+          //   boardAttribute: {}
+          // },
         })
         await trx.commit()
         return {

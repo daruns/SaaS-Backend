@@ -1,6 +1,6 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
-import { ProjectModel } from './project.model';
+import { UserModel } from './user.model';
 import { BoardAttributeModel } from './boardAttribute.model';
 import { TaskModel } from './task.model';
 
@@ -11,10 +11,10 @@ export class BoardModel extends BaseModel {
   name: string
   description: string
   brandCode: string
-  projectId: number
+  userId: number
 
   boardAttribute: BoardAttributeModel[];
-  project: ProjectModel;
+  user: UserModel;
   tasks: TaskModel[];
 
   static relationMappings = {
@@ -36,12 +36,12 @@ export class BoardModel extends BaseModel {
         to: 'boardAttributes.boardId',
       },
     },
-    project: {
-      modelClass: `${__dirname}/project.model`,
+    user: {
+      modelClass: `${__dirname}/user.model`,
       relation: Model.BelongsToOneRelation,
       join: {
-        from: `${tableName}.projectId`,
-        to: 'projects.id',
+        from: `${tableName}.userId`,
+        to: 'users.id',
       },
     },
   };

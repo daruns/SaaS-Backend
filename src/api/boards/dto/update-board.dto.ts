@@ -6,9 +6,6 @@ export class UpdateBoardDto {
   id: number
   name: string
   description: string
-  @IsOptional()
-  @IsInt()
-  projectId: number
   status: string
   deleted: number
 }
