@@ -23,7 +23,13 @@ export class BoardsService {
     const boards = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .withGraphFetched({
-      tasks: {},
+      tasks: {
+        members: {},
+        project: {
+          leaders: {},
+          members: {},
+        }
+      },
       boardAttribute: {}
     })
     return {
@@ -40,7 +46,13 @@ export class BoardsService {
       .where({ brandCode: currentUser.brandCode })
       .findById(id)
       .withGraphFetched({
-        tasks: {},
+        tasks: {
+          members: {},
+          project: {
+            leaders: {},
+            members: {},
+          }
+        },
         boardAttribute: {}
       })
     if (board) {
@@ -76,7 +88,6 @@ export class BoardsService {
         name: boardPayload.name,
         description: boardPayload.description,
         status: boardPayload.status,
-      
       }
 
       const identifiers = await this.modelClass.query().insert(boardPayloadReady);
