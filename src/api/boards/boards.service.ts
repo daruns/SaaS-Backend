@@ -92,23 +92,30 @@ export class BoardsService {
 
       const identifiers = await this.modelClass.query().insert(boardPayloadReady);
 
+      const attributePayloadReady = {
+        boardId: identifiers.id,
+        color: boardPayload.color ? boardPayload.color : "grey",
+        position: boardPayload.position ? boardPayload.position : 4,        
+      }
+      const createdAttribute = await this.addAttribute(attributePayloadReady, currentUser)
       const createBoard = await this.modelClass.query().findById(identifiers.id)
       .withGraphFetched({
         tasks: {},
         boardAttribute: {}
       })
-      const attributePayloadReady = {
-        boardId: createBoard.id,
-        color: boardPayload.color ? boardPayload.color : "grey",
-        position: boardPayload.position ? boardPayload.position : 4,        
+      if (createdAttribute) {
+        return {
+          success: true,
+          message: 'Board created successfully.',
+          data: createBoard,
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Board Attribute [color, position] Error: board attribute couldnt be added.',
+          data: createBoard,
+        };
       }
-      console.log(createBoard)
-      const createdAttribute = await this.addAttribute(attributePayloadReady, currentUser)
-      return {
-        success: true,
-        message: 'Board created successfully.',
-        data: createBoard,
-      };
     } else {
       return {
         success: false,
