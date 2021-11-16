@@ -5,6 +5,7 @@ import { ClientsService } from '../clients/clients.service';
 import { InventoryItemsService } from '../inventoryItems/inventoryItems.service';
 import { NonInventoryItemsService } from '../nonInventoryItems/nonInventoryItems.service';
 import { ServiceItemsService } from '../serviceItems/serviceItems.service';
+import { SubServiceItemsService } from '../subServiceItems/subServiceItems.service';
 import { QuotesController } from './quotes.controller';
 import { QuotesService } from './quotes.service';
 
@@ -16,8 +17,9 @@ import { QuotesService } from './quotes.service';
     InventoryItemsService,
     NonInventoryItemsService,
     ServiceItemsService,
+    SubServiceItemsService,
     ClientsService,
     ClientContactsService,
-  ]
+  ],
 })
 export class QuotesModule {}

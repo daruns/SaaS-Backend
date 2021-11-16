@@ -44,6 +44,13 @@ import { TaskModel } from './models/task.model';
 import { TaskMemberModel } from './models/taskMember.model';
 import { QuoteItemModel } from './models/quoteItem.model';
 import { QuoteModel } from './models/quote.model';
+import { ExpenseCategoryModel } from './models/expenseCategory.model';
+import { ExpenseSubCategoryModel } from './models/expenseSubCategory.model';
+import { SupplierModel } from './models/supplier.model';
+import { TaxModel } from './models/tax.model';
+import { PaymentMethodModel } from './models/paymentMethod.model';
+import { ExpenseModel } from './models/expense.model';
+import { ExpenseItemModel } from './models/expenseItem.model';
 
 const models = [
   UserModel,
@@ -70,6 +77,13 @@ const models = [
   TaskMemberModel,
   QuoteModel,
   QuoteItemModel,
+  ExpenseCategoryModel,
+  ExpenseSubCategoryModel,
+  SupplierModel,
+  TaxModel,
+  PaymentMethodModel,
+  ExpenseModel,
+  ExpenseItemModel,
 ];
 
 const modelProvider = map(models, model => {

@@ -10,4 +10,10 @@ export class UpdateSubServiceItemDto {
   @IsOptional()
   @IsInt()
   serviceItemId: number
+  @IsOptional()
+  @IsInt()
+  unitPrice: number
+  purchasedAt: Date
+  expireDate: Date
+  supplier: string
 }

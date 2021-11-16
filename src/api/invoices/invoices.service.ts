@@ -14,6 +14,7 @@ import { NonInventoryItemsService } from '../nonInventoryItems/nonInventoryItems
 import { throwError } from 'rxjs';
 import { ClientsService } from '../clients/clients.service';
 import { ClientContactsService } from '../clientContacts/clientContacts.service';
+import { SubServiceItemsService } from '../subServiceItems/subServiceItems.service';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -28,6 +29,7 @@ export class InvoicesService {
     private readonly inventoryItemsService: InventoryItemsService,
     private readonly nonInventoryItemsService: NonInventoryItemsService,
     private readonly serviceItemsService: ServiceItemsService,
+    private readonly subServiceItemsService: SubServiceItemsService,
     private readonly clientsSerive: ClientsService,
     private readonly clientContactsSerive: ClientContactsService,
   ) {}
@@ -43,7 +45,7 @@ export class InvoicesService {
     });
     return {
       success: true,
-      message: 'InventoryItem details fetch successfully.',
+      message: 'Invoices details fetch successfully.',
       data: invoices,
     };
   }
@@ -89,82 +91,121 @@ export class InvoicesService {
     let result : any
 
     const trx = await this.modelClass.startTransaction()
-    try {
-      invoicePayload.invoiceNumber = `INVOICE_${Number(new Date())}`
-      invoicePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString()
-      invoicePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
-      invoicePayload.brandCode = currentUser.brandCode
-      invoicePayload.createdBy = currentUser.username
-      invoicePayload.exchangeRate = invoicePayload.exchangeRate | 1
-      var subTotalAmount = 0
-      const invoiceItemsPayloadFinal = []
-      for (let item of invoiceItemsPayload) {
-        var finalItem = {}
-        let newItem: CreateInvoiceItemDto
-        let id: number
-        // check if the recieved items are belong to user or not,
-        // and all categories are available?
-        // this will reduce user missuses 
-        if (item.category === "inventoryItem") {
-          const found = await this.inventoryItemsService
-          .findById(item.itemId,currentUser)
-          if (!found.success) {
-            throw "inventoryItem category not exist."
-          } else {
-            newItem = found.data
-            id = found.data.id
-            newItem.category = 'inventoryItem'
-            if (typeof item.qty === "number") {
-              newItem.qty = item.qty
-            } else {
-              throw 'quantity of invoice Item is required'
-            }
-          }
-        } else if (item.category === "nonInventoryItem") {
-          const found = await this.nonInventoryItemsService
-          .findById(item.itemId,currentUser)
-          if (!found.success) {
-            throw "nonInventoryItem category not exist."
-          } else {
-            newItem = found.data
-            id = found.data.id
-            newItem.category = 'nonInventoryItem'
-            newItem.qty = 1
-          }
-        } else if (item.category === "serviceItem") {
-          const found = await this.serviceItemsService
-          .findById(item.itemId,currentUser)
-          if (!found.success) {
-            throw "serviceItem category not exist."
-          } else {
-            newItem = found.data
-            id = found.data.id
-            newItem.category = 'serviceItem'
-            newItem.qty = 1
+    invoicePayload.invoiceNumber = `INVOICE_${Number(new Date())}`
+    invoicePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString()
+    invoicePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
+    invoicePayload.brandCode = currentUser.brandCode
+    invoicePayload.createdBy = currentUser.username
+    invoicePayload.exchangeRate = invoicePayload.exchangeRate | 1
+    var subTotalAmount = 0
+    const invoiceItemsPayloadFinal = []
+    for (let item of invoiceItemsPayload) {
+      var finalItem = {}
+      let newItem: CreateInvoiceItemDto
+      let id: number
+      // check if the recieved items are belong to user or not,
+      // and all categories are available?
+      // this will reduce user missuses
+      if (item.category === "inventoryItem") {
+        const found = await this.inventoryItemsService
+        .findById(item.itemId,currentUser)
+        if (!found.success) {
+          return {
+            success: false,
+            message: "inventoryItem category not exist.",
+            data: {},
           }
         } else {
-          throw item.category.toString() + "item category is not valid."
+          newItem = found.data
+          id = found.data.id
+          newItem.category = 'inventoryItem'
+          if (typeof item.qty === "number") {
+            newItem.qty = item.qty
+          } else {
+            return {
+              success: false,
+              message: 'quantity of invoice Item is required',
+              data: {},
+            }
+          }
         }
-
-        finalItem['itemId'] = id
-        finalItem['name'] = newItem.name
-        finalItem['category'] = newItem.category
-        finalItem['description'] = item.description ? item.description : newItem.description
-        finalItem['brandCode'] = currentUser.brandCode
-        finalItem['createdBy'] = currentUser.username
-        finalItem['unitPrice'] = item.unitPrice ? item.unitPrice | 1 : newItem.unitPrice | 1
-        finalItem['qty'] = newItem.qty | 1
-        finalItem['purchasedAt'] = newItem.purchasedAt
-        finalItem['expireDate'] = newItem.expireDate
-        finalItem['supplier'] = newItem.supplier
-
-        subTotalAmount = subTotalAmount + (finalItem['qty'] * finalItem['unitPrice']) // we avoid quantity in nonInventory and services Items
-        invoiceItemsPayloadFinal.push(finalItem)
+      } else if (item.category === "nonInventoryItem") {
+        const found = await this.nonInventoryItemsService
+        .findById(item.itemId,currentUser)
+        if (!found.success) {
+          return {
+            success: false,
+            message: "nonInventoryItem category not exist.",
+            data: {},
+          }
+        } else {
+          newItem = found.data
+          id = found.data.id
+          newItem.category = 'nonInventoryItem'
+          newItem.qty = 1
+        }
+      } else if (item.category === "serviceItem") {
+        const found = await this.serviceItemsService
+        .findById(item.itemId,currentUser)
+        if (!found.success) {
+          return {
+            success: false,
+            message: "serviceItem category not exist.",
+            data: {},
+          }
+        } else {
+          newItem = found.data
+          id = found.data.id
+          newItem.category = 'serviceItem'
+          newItem.qty = 1
+        }
+      } else if (item.category === "subServiceItem") {
+        const found = await this.subServiceItemsService
+        .findById(item.itemId,currentUser)
+        if (!found.success) {
+          return {
+            success: false,
+            message: "subServiceItem category not exist.",
+            data: {},
+          }
+        } else {
+          newItem = found.data
+          id = found.data.id
+          newItem.category = 'subServiceItem'
+          newItem.qty = 1
+        }
+      } else {
+        return {
+          success: false,
+          message: item.category.toString() + "item category is not valid.",
+          data: {},
+        }
       }
-      var taxRate:number = subTotalAmount * invoicePayload.taxRate
-      var discount:number = subTotalAmount * invoicePayload.discount
-      invoicePayload.subTotalAmount = subTotalAmount
-      invoicePayload.totalAmount = Number(parseFloat((subTotalAmount + taxRate - discount).toString()).toFixed(2))
+
+      finalItem['itemId'] = id
+      finalItem['name'] = newItem.name
+      finalItem['category'] = newItem.category
+      finalItem['description'] = item.description ? item.description : newItem.description
+      finalItem['brandCode'] = currentUser.brandCode
+      finalItem['createdBy'] = currentUser.username
+      finalItem['unitPrice'] = item.unitPrice ? item.unitPrice : newItem.unitPrice
+      finalItem['qty'] = newItem.qty | 1
+      finalItem['purchasedAt'] = newItem.purchasedAt
+      finalItem['expireDate'] = newItem.expireDate
+      finalItem['supplier'] = newItem.supplier
+
+      subTotalAmount = Number(subTotalAmount) + Number(finalItem['qty'] * finalItem['unitPrice']) // we avoid quantity in nonInventory and services Items and subService items
+      invoiceItemsPayloadFinal.push(finalItem)
+    }
+    var taxRate:number = subTotalAmount * invoicePayload.taxRate
+    var discount:number = subTotalAmount * invoicePayload.discount
+    invoicePayload.subTotalAmount = subTotalAmount
+    let grandTotal = Number(subTotalAmount) + Number(taxRate)
+    grandTotal = Number(grandTotal) - Number(discount)
+
+    invoicePayload.totalAmount = Number(parseFloat((Number(grandTotal)).toString()).toFixed(2))
+
+    try {
       // start operation for adding invoices and invoiceItems with relatedQuery depending on parent
       const createdInvoice = await this.modelClass.query(trx).insert(invoicePayload);
       for (let itemNoType of invoiceItemsPayloadFinal) {

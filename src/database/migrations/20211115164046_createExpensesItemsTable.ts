@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
 
-const tableName = 'subServiceItems'
+const tableName = 'expenseItems'
 export async function up(knex: Knex): Promise<any> {
   if (await knex.schema.hasTable(tableName)) {
     return;
@@ -10,21 +10,20 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
     table.string('name')
+    table.boolean('category')
+    table.integer('itemId')
     table.string('description')
     table.integer('unitPrice')
     table.integer('qty').defaultTo(1).notNullable()
-    table.dateTime('purchasedAt')
-    table.dateTime('expireDate')
-    table.string('supplier')
-    table.integer('serviceItemId')
-      .unsigned()
+    table.string('brandCode')
+    table.integer('expenseId')
       .index()
+      .unsigned()
       .references('id')
-      .inTable('serviceItems')
+      .inTable('expenses')
       .notNullable()
       .onDelete('CASCADE')
-    table.string('brandCode').notNullable()
-
+  
     table.string('status');
     table.integer('deleted');
     table.string('createdBy');

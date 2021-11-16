@@ -21,7 +21,7 @@ export class SubServiceItemsService {
     .where({brandCode: currentUser.brandCode})
     return {
       success: true,
-      message: 'InventoryItem details fetch successfully.',
+      message: 'SubServices details fetch successfully.',
       data: subServiceItems,
     };
   }
@@ -93,11 +93,14 @@ export class SubServiceItemsService {
     if (subServiceItem) {
       const updatedServiceItem = await this.modelClass.query()
         .update({
-          name: payload.name ? payload.name : subServiceItem.name,
-          serviceItemId: subServiceItemPayload.serviceItemId ? subServiceItemPayload.serviceItemId : subServiceItem.serviceItemId,
+          name: subServiceItemPayload.name ? subServiceItemPayload.name : subServiceItem.name,
           description: subServiceItemPayload.description ? subServiceItemPayload.description : subServiceItem.description,
-          status: subServiceItemPayload.status ? subServiceItemPayload.status : subServiceItem.status,
-          deleted: subServiceItemPayload.deleted ? subServiceItemPayload.deleted : subServiceItem.deleted,
+          unitPrice: subServiceItemPayload.unitPrice ? subServiceItemPayload.unitPrice : subServiceItem.unitPrice,
+          purchasedAt: subServiceItemPayload.purchasedAt ? subServiceItemPayload.purchasedAt : subServiceItem.purchasedAt,
+          expireDate: subServiceItemPayload.expireDate ? subServiceItemPayload.expireDate : subServiceItem.expireDate,
+          supplier: subServiceItemPayload.supplier ? subServiceItemPayload.supplier : subServiceItem.supplier,
+          // status: subServiceItemPayload.status ? subServiceItemPayload.status : subServiceItem.status,
+          // deleted: subServiceItemPayload.deleted ? subServiceItemPayload.deleted : subServiceItem.deleted,
           updatedBy: currentUser.username,
         })
         .where({ id: subServiceItemPayload.id });

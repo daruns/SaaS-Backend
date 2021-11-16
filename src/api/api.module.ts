@@ -15,6 +15,12 @@ import { QuotesModule } from './qoutes/quotes.module';
 import { ProjectsModule } from './projects/projects.module';
 import { BoardsModule } from './boards/boards.module';
 import { TasksModule } from './tasks/tasks.module';
+import { ExpenseCategoriesModule } from './expenseCategories/expenseCategories.module';
+import { ExpenseSubCategoriesModule } from './expenseSubCategories/expenseSubCategories.module';
+import { TaxesModule } from './taxes/taxes.module';
+import { SuppliersModule } from './suppliers/suppliers.module';
+import { PaymentMethodsModule } from './paymentMethods/paymentMethods.module';
+import { ExpensesModule } from './expenses/expenses.module';
 
 @Module({
   imports: [
@@ -34,6 +40,12 @@ import { TasksModule } from './tasks/tasks.module';
     ProjectsModule,
     BoardsModule,
     TasksModule,
+    ExpenseCategoriesModule,
+    ExpenseSubCategoriesModule,
+    TaxesModule,
+    SuppliersModule,
+    PaymentMethodsModule,
+    ExpensesModule,
   ],
   providers: [],
 })

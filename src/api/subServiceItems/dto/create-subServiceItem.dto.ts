@@ -7,4 +7,10 @@ export class CreateSubServiceItemDto {
   @IsNotEmpty()
   @IsInt()
   serviceItemId: number
+  @IsOptional()
+  @IsInt()
+  unitPrice: number
+  purchasedAt: Date
+  expireDate: Date
+  supplier: string
 }
