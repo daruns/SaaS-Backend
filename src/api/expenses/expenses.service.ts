@@ -83,7 +83,7 @@ export class ExpensesService {
         data: {},
       };
     }
-    const taxFnd = await this.taxService.findById(expensePayload.taxId,currentUser)
+    const taxFnd = await this.taxService.findById(expensePayload.taxId, currentUser)
     if (!taxFnd.success) {
       return {
         success: false,
@@ -91,7 +91,6 @@ export class ExpensesService {
         data: {},
       };
     }
-    expensePayload.taxRate = taxFnd.data.rate
     console.log(taxFnd)
     const supplierFnd = await this.supplierService.findById(expensePayload.supplierId,currentUser)
     if (!supplierFnd.success) {
@@ -171,8 +170,8 @@ export class ExpensesService {
       }
       expenseItemsPayloadFinal.push(finalItem)
     }
-    let foundTax = await this.taxService.findById(expensePayload.taxId, currentUser)
-    let prepTaxRate = foundTax.data.rate
+    expensePayload.taxRate = taxFnd.data.rate
+    let prepTaxRate = taxFnd.data.rate
     var taxRate:number = subTotalAmount * prepTaxRate
     var discount:number = subTotalAmount * expensePayload.discount
     expensePayload.subTotalAmount = subTotalAmount
@@ -266,8 +265,8 @@ export class ExpensesService {
       // const discount: number = expensePayload.discount ? expensePayload.discount : expense.discount
       // const newTotalAmount = subTotalAmount + (( subTotalAmount * taxRate ) - ( subTotalAmount * discount ))
       
-      let prepTaxRate = expensePayload.taxId ? expensePayload.taxRate : expense.taxRate | 1
-      let prepDiscount = expensePayload.discount ? expensePayload.discount : expense.discount | 1
+      let prepTaxRate = expensePayload.taxId ? expensePayload.taxRate : expense.taxRate
+      let prepDiscount = expensePayload.discount ? expensePayload.discount : expense.discount
       var taxRate:number = subTotalAmount * prepTaxRate
       var discount:number = subTotalAmount * prepDiscount
       expensePayload.subTotalAmount = subTotalAmount
@@ -278,8 +277,8 @@ export class ExpensesService {
         .update({
           dueDate: expensePayload.dueDate ? expensePayload.dueDate : expense.dueDate,
           exchangeRate: expensePayload.exchangeRate ? expensePayload.exchangeRate | 1 : expense.exchangeRate,
-          taxRate: taxRate,
-          discount: discount,
+          taxRate: prepTaxRate,
+          discount: prepDiscount,
           totalAmount: newTotalAmount,
           billingAddress: expensePayload.billingAddress ? expensePayload.billingAddress : expense.billingAddress,
           supplierId: expensePayload.supplierId ? expensePayload.supplierId : expense.supplierId,
