@@ -98,10 +98,7 @@ export class ClientsService {
         userParams.phoneNumber = payload.phoneNumbers
         userParams.createdBy = currentUser.username
         userParams.reportsTo = currentUser.username
-
-        // const createdUser = await this.usersService.create(userParams);
-        const createdUser = await this.userClass.query(trx).insert(userParams);
-
+          
         let newparamspayload = {
         name : payload.name,
         phoneNumbers : payload.phoneNumbers,
@@ -114,12 +111,16 @@ export class ClientsService {
         zipCode : payload.zipCode,
         status : "active",
         createdBy : currentUser.username,
-        userId : createdUser.id,
         brandCode: currentUser.brandCode,
         }
-        const createdClient = await createdUser
-          .$relatedQuery('clients', trx)
-          .insert(newparamspayload);
+        if (userParams.username.length > 3 && userParams.username.length > 7) {
+          const createdUser = await this.userClass.query(trx).insert(userParams)
+          var createdClient = await createdUser
+            .$relatedQuery('clients', trx)
+            .insert(newparamspayload);
+        } else {
+          var createdClient = await this.modelClass.query(trx).insert(newparamspayload)
+        }
         const identifier = await this.modelClass.query(trx).findById(createdClient.id).withGraphFetched({
           user: {},
         });
