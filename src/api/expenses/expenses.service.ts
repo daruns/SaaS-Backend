@@ -4,7 +4,6 @@ import { ExpenseItemModel } from 'src/database/models/expenseItem.model';
 import { ModelClass } from 'objection';
 import moment = require('moment');
 import { CreateExpenseDto, CreateExpenseItemDto } from './dto/create-expense.dto';
-import { PassCreateExpenseDto, PassCreateExpenseItemDto } from './dto/passCreate-expense.dto';
 import { SuppliersService } from '../suppliers/suppliers.service';
 import { TaxesService } from '../taxes/taxes.service';
 import { PaymentMethodsService } from '../paymentMethods/paymentMethods.service';
@@ -20,7 +19,7 @@ export interface ResponseData {
 export class ExpensesService {
   constructor(
     @Inject('ExpenseModel') private modelClass: ModelClass<ExpenseModel>,
-    // @Inject('ExpenseItemModel') private expenseItemModel: ModelClass<ExpenseItemModel>,
+    @Inject('ExpenseItemModel') private expenseItemModel: ModelClass<ExpenseItemModel>,
     private readonly supplierService: SuppliersService,
     private readonly taxService: TaxesService,
     private readonly paymentMethodService: PaymentMethodsService,
@@ -120,46 +119,10 @@ export class ExpensesService {
     const expenseItemsPayloadFinal = []
     for (let item of expenseItemsPayload) {
       var finalItem = {}
-      let newItem: PassCreateExpenseItemDto
-      let id: number
-      // check if the recieved items are belong to user or not,
-      // and all categories are available?
-      // this will reduce user missuses
-      if (item.itemId) {
-        let found;
-        if (item.category === true) {
-          found = await this.categoryService.findById(item.itemId,currentUser)
-        } else if (item.category === false) {
-          found = await this.subCategoryService.findById(item.itemId,currentUser)
-        } else {
-          return {
-            success: false,
-            message: "Item: Category should be boolean and required.",
-            data: {},
-          }
-        }
-        if (!found.success) {
-          return {
-            success: false,
-            message: "item category or subCategory not exist.",
-            data: found.message,
-          }
-        } else {
-          newItem = found.data
-          id = found.data.id
-        }
-      } else {
-        return {
-          success: false,
-          message: "itemId is not found in any category or subCategory.",
-          data: item.itemId,
-        }
-      }
-
-      finalItem['itemId'] = id
-      finalItem['name'] = newItem.name
+      finalItem['itemId'] = null
+      finalItem['name'] = item.name
       finalItem['category'] = item.category
-      finalItem['description'] = item.description ? item.description : newItem.description
+      finalItem['description'] = item.description
       finalItem['brandCode'] = currentUser.brandCode
       finalItem['createdBy'] = currentUser.username
       finalItem['unitPrice'] = item.unitPrice ? item.unitPrice : 0
@@ -191,7 +154,7 @@ export class ExpensesService {
         if (!insertedExpenseItem) {
             return {
               success: false,
-              message: "couldnt insert expenseItem on invoice",
+              message: "couldnt insert expenseItem on expense",
               data: insertedExpenseItem,
             }
           }
@@ -200,12 +163,6 @@ export class ExpensesService {
       await trx.commit();
       result = await this.modelClass.query()
       .findById(createdExpense.id)
-      .withGraphFetched({
-        supplier: {},
-        tax: {},
-        paymentMethod: {},
-        expenseItems: {},
-      });
       return {
         success: true,
         message: 'Expense created successfully.',
@@ -222,11 +179,20 @@ export class ExpensesService {
     }
   }
 
-  async update(payload, currentUser): Promise<ResponseData> {
+  async update(payload,  items: Array<CreateExpenseItemDto>, currentUser): Promise<ResponseData> {
+    const expenseItemsPayload: Array<CreateExpenseItemDto> = items
+    if (!expenseItemsPayload.length) {
+      return {
+        success: false,
+        message: 'Items cant be Empty.',
+        data: {},
+      };
+    }
     const expensePayload = payload
     const expense = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
     .findById(expensePayload.id);
+    let result: any
     if (expense) {
       if (expensePayload.taxId) {
         const taxFnd = await this.taxService.findById(expensePayload.taxId,currentUser)
@@ -259,8 +225,45 @@ export class ExpensesService {
           };
         }
       }
+      let newSubTotalAmount: number = 0
+      const trx = await this.modelClass.startTransaction()
+      try {
+        // start operation for adding expenses and expenseItems with relatedQuery depending on parent
 
-      const subTotalAmount = expense.subTotalAmount
+        const deletedExpenseItem = await this.expenseItemModel.query(trx)
+        .where({brandCode: currentUser.brandCode, expenseId: expense.id})
+        .delete()
+        for (let item of expenseItemsPayload) {
+          const addingItem = item
+          addingItem.expenseId = expense.id
+          addingItem.name = item.name
+          addingItem.description = item.description
+          addingItem.unitPrice = item.unitPrice
+          addingItem.qty = item.qty
+          addingItem.brandCode = currentUser.brandCode
+          addingItem['createdBy'] = currentUser.username
+
+          const createdExpenseItem = await this.expenseItemModel.query(trx)
+          .insert(addingItem)
+          if (!createdExpenseItem) {
+            throw createdExpenseItem
+          }
+          if (item.qty !== 0) {
+            newSubTotalAmount = newSubTotalAmount + Number(item.qty * item.unitPrice)
+          }
+        }
+
+        await trx.commit();
+      } catch (err) {
+        await trx.rollback();
+        result = err
+        return {
+          success: false,
+          message: `Something went wrong. Neither Expense nor ExpenseItems were inserted.`,
+          data: result,
+        }
+      }
+      const subTotalAmount = newSubTotalAmount
       // const taxRate: number = expensePayload.taxId ? expensePayload.taxRate : expense.taxRate
       // const discount: number = expensePayload.discount ? expensePayload.discount : expense.discount
       // const newTotalAmount = subTotalAmount + (( subTotalAmount * taxRate ) - ( subTotalAmount * discount ))
@@ -271,15 +274,15 @@ export class ExpensesService {
       var discount:number = subTotalAmount * prepDiscount
       expensePayload.subTotalAmount = subTotalAmount
       let grandTotal = Number(subTotalAmount) + Number(taxRate)
-      const newTotalAmount = Number(parseFloat((grandTotal - Number(discount)).toString()).toFixed(2))
-
+      const newTotalAmount: number = Number(parseFloat((grandTotal - Number(discount)).toString()).toFixed(2))
       const updatedExpense = await this.modelClass.query()
         .update({
           dueDate: expensePayload.dueDate ? expensePayload.dueDate : expense.dueDate,
-          exchangeRate: expensePayload.exchangeRate ? expensePayload.exchangeRate | 1 : expense.exchangeRate,
+          exchangeRate: expensePayload.exchangeRate ? expensePayload.exchangeRate: expense.exchangeRate,
           taxRate: prepTaxRate,
           discount: prepDiscount,
           totalAmount: newTotalAmount,
+          subTotalAmount: subTotalAmount,
           billingAddress: expensePayload.billingAddress ? expensePayload.billingAddress : expense.billingAddress,
           supplierId: expensePayload.supplierId ? expensePayload.supplierId : expense.supplierId,
           paymentMethodId: expensePayload.paymentMethodId ? expensePayload.paymentMethodId : expense.paymentMethodId,

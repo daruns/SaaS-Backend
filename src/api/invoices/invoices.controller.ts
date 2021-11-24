@@ -4,11 +4,8 @@ import {
   Param,
   ParseIntPipe,
   Body,
-  Put,
-  Delete,
   Post,
   UseGuards,
-  Req,
   Request,
 } from '@nestjs/common';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
@@ -45,8 +42,8 @@ export class InvoicesController {
 
   @Post('update')
   // update commnet on invoice
-  update(@Body() payload: UpdateInvoiceDto, @Request() req) {
-    return this.invoicesService.update(payload, req.user);
+  update(@Body() payload: UpdateInvoiceDto, @Body('items') invoiceItems: CreateInvoiceItemDto[], @Request() req) {
+    return this.invoicesService.update(payload, invoiceItems, req.user);
   }
 
   @Post('delete')

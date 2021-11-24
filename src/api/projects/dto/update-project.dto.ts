@@ -20,4 +20,6 @@ export class UpdateProjectDto {
   status: string
   deleted: number
   clientId: number
+  members: number[]
+  leaders: number[]
 }

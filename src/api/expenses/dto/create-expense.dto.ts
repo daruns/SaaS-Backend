@@ -27,11 +27,12 @@ export class CreateExpenseItemDto {
   name: string
   description: string
   brandCode: string
-  @IsNotEmpty()
+  // @IsNotEmpty()
   itemId: number
-  @IsNotEmpty()
+  // @IsNotEmpty()
   category: boolean
   @IsNotEmpty()
+  @IsInt()
   unitPrice: number
   @IsNotEmpty()
   @IsInt()

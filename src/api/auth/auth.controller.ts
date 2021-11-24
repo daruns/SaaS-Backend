@@ -35,7 +35,7 @@ import { EditProfileDto } from './dto/editProfile.dto';
 
     @UseGuards(JwtAuthGuard)
     @Post('editProfile')
-    async editProfile( @Body(ValidationPipe) editProfileDto: EditProfileDto, @Request() req) {
+    async editProfile( @Body(ValidationPipe) editProfileDto: EditProfileDto, @Req() req) {
       console.log(req.user)
       if (!req.user.id) throw new UnauthorizedException()
       const myUser = await this.authService.editProfile(editProfileDto, req.user);

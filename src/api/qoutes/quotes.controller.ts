@@ -4,11 +4,8 @@ import {
   Param,
   ParseIntPipe,
   Body,
-  Put,
-  Delete,
   Post,
   UseGuards,
-  Req,
   Request,
 } from '@nestjs/common';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
@@ -45,8 +42,8 @@ export class QuotesController {
 
   @Post('update')
   // update commnet on quote
-  update(@Body() payload: UpdateQuoteDto, @Request() req) {
-    return this.quotesService.update(payload, req.user);
+  update(@Body() payload: UpdateQuoteDto, @Body('items') quoteItems: CreateQuoteItemDto[], @Request() req) {
+    return this.quotesService.update(payload, quoteItems, req.user);
   }
 
   @Post('delete')

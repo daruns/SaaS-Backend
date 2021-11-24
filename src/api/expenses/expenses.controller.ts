@@ -45,8 +45,8 @@ export class ExpensesController {
 
   @Post('update')
   // update commnet on expense
-  update(@Body() payload: UpdateExpenseDto, @Request() req) {
-    return this.expensesService.update(payload, req.user);
+  update(@Body() payload: UpdateExpenseDto,@Body('items') expenseItems: Array<CreateExpenseItemDto>, @Request() req) {
+    return this.expensesService.update(payload, expenseItems, req.user);
   }
 
   @Post('delete')

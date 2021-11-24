@@ -33,7 +33,7 @@ export class UserModel extends BaseModel {
   passwordResetToken: string
   passwordResetTokenExpire: Date
   lastResetAt: Date
-  userId: string
+  userId: number
   brandCode: string
 
   user: UserModel;

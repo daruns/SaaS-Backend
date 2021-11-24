@@ -9,6 +9,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { UserModel } from 'src/database/models/user.model';
 import { AddMembersToTaskDto } from './dto/add-membersToTask.dto';
 import { BoardsService } from '../boards/boards.service';
+import { idText } from 'typescript';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -29,11 +30,20 @@ export class TasksService {
     const tasks = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
     .withGraphFetched({
-      members: {},
       board: {
         boardAttribute: {}
       },
       project: {}
+    })
+    .withGraphFetched(
+      'memberUsers(selectNameAndId)'
+    )
+    .modifiers({
+      selectNameAndId(builder) {
+        builder.select('name');
+        builder.select('users.id as \'userId\'');
+        builder.select('taskMemberUsers.id as \'memberId\'');
+      },
     });
     return {
       success: true,
@@ -45,16 +55,25 @@ export class TasksService {
   // find one task info by taskId
   async findById(id: number, currentUser): Promise<ResponseData> {
     const task = await this.modelClass
-      .query()
-      .where({brandCode: currentUser.brandCode})  
-      .findById(id)
-      .withGraphFetched({
-        members: {},
-        board: {
-          boardAttribute: {}
-        },
-        project: {}
-      });
+    .query()
+    .where({brandCode: currentUser.brandCode})
+    .findById(id)
+    .withGraphFetched({
+      board: {
+        boardAttribute: {}
+      },
+      project: {}
+    })
+    .withGraphFetched(
+      'memberUsers(selectNameAndId)'
+    )
+    .modifiers({
+      selectNameAndId(builder) {
+        builder.select('name');
+        builder.select('users.id as \'userId\'');
+        builder.select('taskMemberUsers.id as \'memberId\'');
+      },
+    });
     if (task) {
       return {
         success: true,
@@ -137,7 +156,7 @@ export class TasksService {
           success: true,
           message: 'Task created successfully.',
           data: result,
-        };      
+        };
       }
     } catch(err) {
       trx.rollback();
@@ -151,10 +170,12 @@ export class TasksService {
   }
 
   async update(payload: UpdateTaskDto, currentUser): Promise<ResponseData> {
-    const taskPayload = payload
+    const {members, ...taskPayload} = payload
+
     const task = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
     .findById(taskPayload.id);
+
     if (task) {
       if (taskPayload.boardId) {
         const boardFnd = await this.boardsService.findById(taskPayload.boardId,currentUser)
@@ -168,13 +189,51 @@ export class TasksService {
         }
       }
 
-      const updatedInvoice = await this.modelClass.query()
+      var result : any
+      const trx = await this.modelClass.startTransaction()
+
+      try {
+        // start operation for updating task and members with
+        const oldTaskMembers = this.memberModelClass.query(trx).where({taskId: taskPayload.id})
+        const deletedMembers = await oldTaskMembers.delete()
+        console.log(await oldTaskMembers)
+        if (deletedMembers || !(await oldTaskMembers) ) {
+          for (let member of members) {
+            const memberfnd = await this.userModel.query().findOne({id: member, brandCode: currentUser.brandCode})
+            if (!memberfnd) {
+              return {
+                success: false,
+                message: 'Member Error: User ' + member + ' doesnt exist.',
+                data: {},
+              };
+            }
+            const membersParams = {memberId: member , taskId: taskPayload.id}
+            let finishedInsert = await this.memberModelClass.query(trx).insert(membersParams)
+            if (!finishedInsert) {
+              throw finishedInsert
+            }
+          }
+          await trx.commit()
+        }
+      } catch(err) {
+        trx.rollback();
+        result = err
+        return {
+          success: false,
+          message: `Something went wrong. Task were not inserted.`,
+          data: result,
+        };
+      }
+
+      const updatedTask = await this.modelClass.query()
         .update({
           name: taskPayload.name ? taskPayload.name : task.name,
           description: taskPayload.description ? taskPayload.description : task.description,
           priority: taskPayload.priority ? taskPayload.priority : task.priority,
+          plannedStartDate: taskPayload.plannedStartDate ? taskPayload.plannedStartDate : task.plannedStartDate,
+          plannedEndDate: taskPayload.plannedEndDate ? taskPayload.plannedEndDate : task.plannedEndDate,
           actualStartDate: taskPayload.actualStartDate ? taskPayload.actualStartDate : task.actualStartDate,
-          actualdEndDate: taskPayload.actualdEndDate ? taskPayload.actualdEndDate : task.actualdEndDate,        
+          actualdEndDate: taskPayload.actualdEndDate ? taskPayload.actualdEndDate : task.actualdEndDate,
           boardId: taskPayload.boardId ? taskPayload.boardId : task.boardId,
           status: taskPayload.status ? taskPayload.status : task.status,
           deleted: taskPayload.deleted ? taskPayload.deleted : task.deleted,
@@ -183,8 +242,8 @@ export class TasksService {
         .where({ id: taskPayload.id });
       return {
         success: true,
-        message: 'Invoice details updated successfully.',
-        data: updatedInvoice,
+        message: 'Task details updated successfully.',
+        data: updatedTask,
       };
     } else {
       return {
@@ -214,7 +273,7 @@ export class TasksService {
       }
 
       for (let memberId of taskPayload.members) {
-        const addMember = await this.memberModelClass.query()  
+        const addMember = await this.memberModelClass.query()
         .insert({memberId: memberId, taskId: taskPayload.id});
         if (!addMember) throwError(addMember)
       }
@@ -250,7 +309,7 @@ export class TasksService {
         };
       }
 
-      const addMember = await this.memberModelClass.query()  
+      const addMember = await this.memberModelClass.query()
       .delete()
       .where({taskId: taskPayload.id})
       .whereIn('memberId', taskPayload.members)
@@ -278,7 +337,7 @@ export class TasksService {
     if (tasks) {
       return {
         success: true,
-        message: 'Invoice deleted successfully.',
+        message: 'Task deleted successfully.',
         data: tasks,
       };
     } else {

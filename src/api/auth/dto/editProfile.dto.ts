@@ -1,14 +1,13 @@
 import { IsNotEmpty, Length, IsEmail, IsOptional, IsString, Matches } from 'class-validator';
-import { PhoneNumberRegex } from 'src/app/app.service'
+import { PhoneNumberRegex, ToPhone } from 'src/app/app.service'
 
 export class EditProfileDto{
 	@IsOptional()
 	@Length(8,30)
 	password: string
-	@IsOptional()
-	@IsString()
-	@Matches(PhoneNumberRegex.reg)
-	phoneNumber: string
+	@ToPhone
+	@IsString({ message: 'must be a valid number' })
+	readonly phoneNumber!: string
 	userType: string
 	avatar: string
 	name: string

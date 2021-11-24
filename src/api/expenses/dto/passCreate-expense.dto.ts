@@ -18,18 +18,12 @@ export class PassCreateExpenseDto {
   supplierId: number
 }
 
-export class PassCreateExpenseItemDto extends CreateExpenseItemDto {
+export class PassCreateExpenseItemDto {
   expenseId: number
   name: string
-  category: boolean
   description: string
-  billingAddress: string
-  paymentMethod: string
   brandCode: string
-  itemId: number
   unitPrice: number
   qty: number
-  purchasedAt: Date
-  expireDate: Date
-  supplier: string
+  createdBy: string
 }

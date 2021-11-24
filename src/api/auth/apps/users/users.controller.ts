@@ -11,6 +11,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -29,6 +30,18 @@ export class UsersController {
     return users;
   }
 
+  @Get('allWithBrandClients')
+  async allWithBrandClients(@Req() req) {
+    const users = await this.usersService.allWithBrandClients(req.user);
+    return users;
+  }
+
+  @Get('allWithBrandNoClients')
+  async allWithBrandNoClients(@Req() req) {
+    const users = await this.usersService.allWithBrandNoClients(req.user);
+    return users;
+  }
+
   @Get(':id')
   async findOne(@Param('id', new ParseIntPipe()) id: number, @Req() req) {
     const post = await this.usersService.findById(id);
@@ -41,8 +54,8 @@ export class UsersController {
   }
 
   @Post('update')
-  update(@Body() user) {
-    return this.usersService.update(user);
+  update(@Body() user: UpdateUserDto, @Req() req) {
+    return this.usersService.update(user, req.user);
   }
 
   @Post('delete')

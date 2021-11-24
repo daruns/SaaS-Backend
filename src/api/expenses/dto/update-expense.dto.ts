@@ -1,5 +1,6 @@
 import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsEmail, IsOptional, IsIn, IsDecimal, IsNotIn } from 'class-validator';
 import { PhoneNumberRegex } from 'src/app/app.service'
+import { CreateExpenseItemDto } from './create-expense.dto';
 
 export class UpdateExpenseDto {
   @IsNotEmpty()
@@ -20,6 +21,5 @@ export class UpdateExpenseDto {
   @IsNotEmpty()
   currencyCode: string
   @IsOptional()
-  @IsNotEmpty()
   status: string
 }

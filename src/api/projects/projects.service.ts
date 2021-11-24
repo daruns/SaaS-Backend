@@ -36,17 +36,34 @@ export class ProjectsService {
   async findAll(currentUser): Promise<ResponseData> {
     const projects = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
-    .withGraphFetched({
-      client: {},
-      leaderUsers: {},
-      memberUsers: {},
-      tasks: {
-        board: {
-          boardAttribute: {}
-        },
-        members: {},
-      }
-    });
+    .modifiers({
+      selectMemberNameAndId(builder) {
+        builder.select('name');
+        builder.select('users.id as \'userId\'');
+        builder.select('projectMemberUsers.id as \'memberId\'');
+      },
+      selectLeaderNameAndId(builder) {
+        builder.select('name');
+        builder.select('users.id as \'userId\'');
+        builder.select('projectLeaderUsers.id as \'leaderId\'');
+      },
+      selectTaskMemberNameAndId(builder) {
+        builder.select('name');
+        builder.select('users.id as \'userId\'');
+        builder.select('taskMemberUsers.id as \'memberId\'');
+      },
+    })
+    .withGraphFetched(
+      `
+        [
+          client,
+          memberUsers(selectMemberNameAndId),
+          leaderUsers(selectLeaderNameAndId),
+          tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]]
+        ]
+      `
+    )
+
     return {
       success: true,
       message: 'Project details fetch successfully.',
@@ -60,18 +77,34 @@ export class ProjectsService {
       .query()
       .where({brandCode: currentUser.brandCode})  
       .findById(id)
-      .withGraphFetched({
-        tasks: {
-          members: {},
-          board: {
-            boardAttribute: {}
-          },
+      .modifiers({
+        selectMemberNameAndId(builder) {
+          builder.select('name');
+          builder.select('users.id as \'userId\'');
+          builder.select('projectMemberUsers.id as \'memberId\'');
         },
-        client: {},
-        leaderUsers: {},
-        memberUsers: {},
-      });
-    if (project) {
+        selectLeaderNameAndId(builder) {
+          builder.select('name');
+          builder.select('users.id as \'userId\'');
+          builder.select('projectLeaderUsers.id as \'leaderId\'');
+        },
+        selectTaskMemberNameAndId(builder) {
+          builder.select('name');
+          builder.select('users.id as \'userId\'');
+          builder.select('taskMemberUsers.id as \'memberId\'');
+        },
+      })
+      .withGraphFetched(
+        `
+          [
+            client,
+            memberUsers(selectMemberNameAndId),
+            leaderUsers(selectLeaderNameAndId),
+            tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]]
+          ]
+        `
+      )
+      if (project) {
       return {
         success: true,
         message: 'Project details fetch successfully.',
@@ -161,14 +194,7 @@ export class ProjectsService {
           }
         }
 
-        result = await this.modelClass.query(trx).findById(createdProject.id).withGraphFetched({
-          // client: {},
-          // members: {},
-          // leaders: {},
-          // boards: {
-          //   boardAttribute: {}
-          // },
-        })
+        result = await this.modelClass.query(trx).findById(createdProject.id)
         await trx.commit()
         return {
           success: true,
@@ -188,7 +214,7 @@ export class ProjectsService {
   }
 
   async update(payload: UpdateProjectDto, currentUser): Promise<ResponseData> {
-    const projectPayload = payload
+    const {members, leaders, ...projectPayload} = payload
     const project = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
     .findById(projectPayload.id);
@@ -205,11 +231,71 @@ export class ProjectsService {
         }
       }
 
-      const updatedInvoice = await this.modelClass.query()
+      var result : any
+      const trx = await this.modelClass.startTransaction()
+
+      try {
+        // start operation for updating Project and leaders and members
+        const oldProjectLeaders = this.leaderModelClass.query(trx).where({projectId: projectPayload.id})
+        const oldProjectMembers = this.memberModelClass.query(trx).where({projectId: projectPayload.id})
+        const deletedLeaders = await oldProjectLeaders.delete()
+        const deletedMembers = await oldProjectMembers.delete()
+
+        if ( (deletedLeaders || !(await oldProjectLeaders)) ) {
+
+          for (let leader of leaders) {
+            const leaderfnd = await this.userModel.query().findOne({id: leader, brandCode: currentUser.brandCode})
+            if (!leaderfnd) {
+              return {
+                success: false,
+                message: 'Member Error: User ' + leader + ' doesnt exist.',
+                data: {},
+              };
+            }
+            const leadersParams = {leaderId: leader , projectId: projectPayload.id}
+            let finishedInsert = await this.leaderModelClass.query(trx).insert(leadersParams)
+            if (!finishedInsert) {
+              throw finishedInsert
+            }
+          }
+        }
+
+        if ( (deletedMembers || !(await oldProjectMembers)) ) {
+
+          for (let member of members) {
+            const memberfnd = await this.userModel.query().findOne({id: member, brandCode: currentUser.brandCode})
+            if (!memberfnd) {
+              return {
+                success: false,
+                message: 'Member Error: User ' + member + ' doesnt exist.',
+                data: {},
+              };
+            }
+            const membersParams = {memberId: member , projectId: projectPayload.id}
+            let finishedInsert = await this.memberModelClass.query(trx).insert(membersParams)
+            if (!finishedInsert) {
+              throw finishedInsert
+            }
+          }
+          await trx.commit()
+        }
+      } catch(err) {
+        trx.rollback();
+        result = err
+        return {
+          success: false,
+          message: `Something went wrong. Task were not inserted.`,
+          data: result,
+        };
+      }
+
+      const updatedProject = await this.modelClass.query()
         .update({
           name: projectPayload.name ? projectPayload.name : project.name,
           actualStartDate: projectPayload.actualStartDate ? projectPayload.actualStartDate : project.actualStartDate,
           actualdEndDate: projectPayload.actualdEndDate ? projectPayload.actualdEndDate : project.actualdEndDate,
+          plannedEndDate: projectPayload.plannedEndDate ? projectPayload.plannedEndDate : project.plannedEndDate,
+          plannedStartDate: projectPayload.plannedStartDate ? projectPayload.plannedStartDate : project.plannedStartDate,
           rate: projectPayload.rate ? projectPayload.rate : project.rate,
           rateType: projectPayload.rateType ? projectPayload.rateType : project.rateType,
           priority: projectPayload.priority ? projectPayload.priority : project.priority,
@@ -222,8 +308,8 @@ export class ProjectsService {
         .where({ id: projectPayload.id });
       return {
         success: true,
-        message: 'Invoice details updated successfully.',
-        data: updatedInvoice,
+        message: 'Project details updated successfully.',
+        data: updatedProject,
       };
     } else {
       return {
@@ -391,7 +477,7 @@ export class ProjectsService {
     if (projects) {
       return {
         success: true,
-        message: 'Invoice deleted successfully.',
+        message: 'Project deleted successfully.',
         data: projects,
       };
     } else {

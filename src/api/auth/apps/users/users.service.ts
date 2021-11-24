@@ -2,9 +2,7 @@ import { Injectable, Inject, UseGuards, Req } from '@nestjs/common';
 import { UserModel } from 'src/database/models/user.model';
 import { ModelClass } from 'objection';
 import * as bcrypt from 'bcrypt';
-import { Exclude } from 'class-transformer';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
-import { Request } from 'supertest';
 import { BrandsService } from 'src/api/brands/brands.service';
 
 export interface ResponseData {
@@ -23,10 +21,45 @@ export class UsersService {
 
   // user list with list of posts and comments on post
   async allWithBrand(currentUser): Promise<ResponseData> {
-    const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).withGraphFetched({
-    });
+    const users = await this.modelClass.query().where({brandCode: currentUser.brandCode})
     users.map(user => {
       delete user.password
+      delete user.activationToken
+      delete user.passwordResetToken
+      delete user.passwordResetTokenExpire
+      delete user.activationTokenExpire
+    })
+    return {
+      success: true,
+      message: 'User details fetch successfully.',
+      data: users,
+    };
+  }
+
+  async allWithBrandClients(currentUser): Promise<ResponseData> {
+    const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).where({userType: "partner"})
+    users.map(user => {
+      delete user.password
+      delete user.activationToken
+      delete user.passwordResetToken
+      delete user.passwordResetTokenExpire
+      delete user.activationTokenExpire
+    })
+    return {
+      success: true,
+      message: 'User details fetch successfully.',
+      data: users,
+    };
+  }
+
+  async allWithBrandNoClients(currentUser): Promise<ResponseData> {
+    const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).whereNot({userType: "partner"})
+    users.map(user => {
+      delete user.password
+      delete user.activationToken
+      delete user.passwordResetToken
+      delete user.passwordResetTokenExpire
+      delete user.activationTokenExpire
     })
     return {
       success: true,
@@ -50,6 +83,10 @@ export class UsersService {
     });
     users.map(user => {
       delete user.password
+      delete user.activationToken
+      delete user.passwordResetToken
+      delete user.passwordResetTokenExpire
+      delete user.activationTokenExpire
     })
     return {
       success: true,
@@ -204,7 +241,7 @@ export class UsersService {
   }
 
   // Update user before save encrypt password
-  async update(payload): Promise<ResponseData> {
+  async update(payload, currentUser): Promise<ResponseData> {
     const user = await this.modelClass.query().findById(payload.id);
     if (user) {
       if (payload.password) {
@@ -232,7 +269,7 @@ export class UsersService {
           brandCode: payload.brandCode ? payload.brandCode : user.brandCode,
           deleted: payload.deleted ? payload.deleted : user.deleted,
           status: payload.status ? payload.status : user.status,
-          updatedBy: '',
+          updatedBy: currentUser.username,
         })
         .where({ id: payload.id });
       return {

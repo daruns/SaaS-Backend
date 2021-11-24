@@ -9,7 +9,11 @@ export class UpdateTaskDto {
   priority: string
   actualStartDate: Date
   actualdEndDate: Date
+  plannedStartDate: Date
+  plannedEndDate: Date
   boardId: number
   status: string
   deleted: number
+  @IsNotEmpty()
+  members: number[]
 }

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsOptional, IsNotIn } from 'class-validator';
+import { IsNotEmpty, IsInt } from 'class-validator';
 
 export class CreateExpenseSubCategoryDto {
   @IsNotEmpty({ message: 'Name is required' })

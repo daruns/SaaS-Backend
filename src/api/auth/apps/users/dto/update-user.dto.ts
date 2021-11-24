@@ -1,25 +1,26 @@
-import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Matches } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Matches, IsInt, IsOptional } from 'class-validator';
 import { PhoneNumberRegex, ToPhone } from 'src/app/app.service'
 
-export class CreateUserDto {
-  @IsNotEmpty({ message: 'Name is required' })
+export class UpdateUserDto {
+  @IsNotEmpty()
+  @IsInt()
+  id: number;
   name: string;
-  @IsNotEmpty({ message: 'Email is required' })
+  @IsOptional()
   @IsEmail({}, { message: 'Email address is invalid' })
   email: string;
-  @IsNotEmpty({ message: 'Username is required' })
   username: string
-  @IsNotEmpty({ message: 'Password is required' })
+  @IsOptional()
   @MinLength(8, { message: 'Password must have 8 chars' })
   @MaxLength(30, { message: 'Password is too long. only 30 chars allow.' })
   password: string;
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   @ToPhone
+  @IsString({message: "must be a valid phonenumber"})
   phoneNumber: string
-  @IsNotEmpty()
   userType: string
   avatar: string
+  userId: number
   department: string
   reportsTo: string
   activationToken: string
@@ -29,4 +30,6 @@ export class CreateUserDto {
   passwordResetTokenExpire: Date
   lastResetAt: Date
   brandCode: string
+  status: string
+  deleted: number
 }

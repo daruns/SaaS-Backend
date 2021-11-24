@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Req } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { SignupDto } from 'src/api/auth/dto/signup.dto';
@@ -66,7 +66,7 @@ export class AuthService {
     const userFound = await this.usersService.findById(currentUser.id)
     if (userFound.success && userFound.data.brandCode === currentUser.brandCode){
       editProfileDto['id'] = currentUser.id
-      const createUser = await this.usersService.update(editProfileDto)
+      const createUser = await this.usersService.update(editProfileDto,currentUser)
       if (createUser.success) {
         return {
           success: true,

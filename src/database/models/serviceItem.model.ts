@@ -1,5 +1,6 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
+import { SubServiceItemModel } from './subServiceItem.model';
 
 const tbName = 'serviceItems';
 export class ServiceItemModel extends BaseModel {
@@ -14,6 +15,16 @@ export class ServiceItemModel extends BaseModel {
   supplier: string
   brandCode: string
 
+  subServiceItems: SubServiceItemModel[];
+
   static relationMappings = {
+    subServiceItems: {
+      modelClass: `${__dirname}/subServiceItem.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `${tbName}.id`,
+        to: 'subServiceItems.serviceItemId',
+      },
+    },
   };
 }

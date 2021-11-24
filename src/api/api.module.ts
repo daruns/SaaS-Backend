@@ -21,6 +21,8 @@ import { TaxesModule } from './taxes/taxes.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { PaymentMethodsModule } from './paymentMethods/paymentMethods.module';
 import { ExpensesModule } from './expenses/expenses.module';
+import { AppService } from 'src/app/app.service';
+import { JoinedItemsModule } from './joinedItems/joinedItems.module';
 
 @Module({
   imports: [
@@ -46,6 +48,7 @@ import { ExpensesModule } from './expenses/expenses.module';
     SuppliersModule,
     PaymentMethodsModule,
     ExpensesModule,
+    JoinedItemsModule,
   ],
   providers: [],
 })
