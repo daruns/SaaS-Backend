@@ -91,7 +91,7 @@ export class QuotesService {
     let result : any
 
     const trx = await this.modelClass.startTransaction()
-    quotePayload.quoteNumber = `INVOICE_${Number(new Date())}`
+    quotePayload.quoteNumber = `QUOTE_${Number(new Date())}`
     quotePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString()
     quotePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString()
     quotePayload.brandCode = currentUser.brandCode
@@ -275,18 +275,18 @@ export class QuotesService {
           return {
             success: false,
             message: 'Client doesnt exist.',
-            data: {},
+            data: clientFnd.message,
           };
         }
       }
       if (quotePayload.clientContactId) {
-        const clientContactFnd = await this.clientContactsSerive.findById(quotePayload.clientId,currentUser)
+        const clientContactFnd = await this.clientContactsSerive.findById(quotePayload.clientContactId,currentUser)
         console.log(clientContactFnd)
         if (!clientContactFnd.success) {
           return {
             success: false,
             message: 'Client contact doesnt exist.',
-            data: {},
+            data: clientContactFnd.message,
           };
         }
       }

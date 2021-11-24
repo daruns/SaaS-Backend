@@ -23,8 +23,6 @@ export class ExpensesService {
     private readonly supplierService: SuppliersService,
     private readonly taxService: TaxesService,
     private readonly paymentMethodService: PaymentMethodsService,
-    private readonly categoryService: ExpenseCategoriesService,
-    private readonly subCategoryService: ExpenseSubCategoriesService,
   ) {}
 
   // expense list
@@ -140,7 +138,7 @@ export class ExpensesService {
     expensePayload.subTotalAmount = subTotalAmount
     let grandTotal = Number(subTotalAmount) + Number(taxRate)
     grandTotal = Number(grandTotal) - Number(discount)
-    
+
     expensePayload.totalAmount = Number(parseFloat((Number(grandTotal)).toString()).toFixed(2))
 
     try {

@@ -263,7 +263,7 @@ export class InvoicesService {
         data: {},
       };
     }
-
+    console.log(invoicePayload)
     const invoice = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
     .findById(invoicePayload.id);
@@ -275,18 +275,18 @@ export class InvoicesService {
           return {
             success: false,
             message: 'Client doesnt exist.',
-            data: {},
+            data: clientFnd.message,
           };
         }
       }
       if (invoicePayload.clientContactId) {
-        const clientContactFnd = await this.clientContactsSerive.findById(invoicePayload.clientId,currentUser)
+        const clientContactFnd = await this.clientContactsSerive.findById(invoicePayload.clientContactId,currentUser)
         console.log(clientContactFnd)
         if (!clientContactFnd.success) {
           return {
             success: false,
             message: 'Client contact doesnt exist.',
-            data: {},
+            data: clientContactFnd.message,
           };
         }
       }
