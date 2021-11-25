@@ -41,8 +41,8 @@ export class TasksService {
     .modifiers({
       selectNameAndId(builder) {
         builder.select('name');
-        builder.select('users.id as \'userId\'');
-        builder.select('taskMemberUsers.id as \'memberId\'');
+        builder.select('users.id as userId');
+        builder.select('taskMemberUsers.id as memberId');
       },
     });
     return {
@@ -70,8 +70,8 @@ export class TasksService {
     .modifiers({
       selectNameAndId(builder) {
         builder.select('name');
-        builder.select('users.id as \'userId\'');
-        builder.select('taskMemberUsers.id as \'memberId\'');
+        builder.select('users.id as userId');
+        builder.select('taskMemberUsers.id as memberId');
       },
     });
     if (task) {

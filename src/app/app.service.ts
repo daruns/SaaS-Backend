@@ -1,6 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Transform } from "class-transformer";
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { parsePhoneNumberFromString, isSupportedCountry } from 'libphonenumber-js';
+import { extname, parse } from 'path';
+// import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+
+export const imageFileFilter = (req, file, callback) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    return callback(new Error('Only image files are allowed!'), false);
+  }
+  callback(null, true);
+};
+
+export const editFileName = (req, file, callback) => {
+  const name = file.originalname.split('.')[0];
+  const fileExtName = extname(file.originalname);
+  const randomName = Array(16)
+    .fill(null)
+    .map(() => Math.round(Math.random() * 16).toString(16))
+    .join('');
+  callback(null, `${name}-${randomName}${fileExtName}`);
+};
+
+export const documentFileFilter = (req, file, callback) => {
+  if (!file.originalname.match(/\.(doc|DOC|pdf|PDF)$/)) {
+    return callback(new Error('Only image files are allowed!'), false);
+  }
+  callback(null, true);
+};
 
 export class PhoneNumberRegex {
   static reg = /^\+964\d{1,12}$/
@@ -16,14 +42,15 @@ export interface ResponseData {
   readonly data: any;
 }
 
-const validCountries = ['IQ'];
+const validCountries: Array<string> = ['IQ'];
 export const ToPhone = Transform(
   (value: any) => {
-if (typeof value.value !== 'string') return false;
-		
-    const parsed = parsePhoneNumberFromString(value.value);
+    if (typeof value !== 'string') return false;
+
+    const parsed = parsePhoneNumberFromString(value);
     if (!parsed) return false;
-    if (!validCountries.includes(parsed.country)) return false;
+    if (!isSupportedCountry(parsed.country)) return false;
+
     return parsed.number;
   },
   { toClassOnly: true },

@@ -9,6 +9,8 @@ export class CreateExpenseDto {
   billingAddress: string
   description: string
   @IsNotEmpty()
+  category: string
+  @IsNotEmpty()
   // @IsNotIn([0])
   discount: number
   @IsNotEmpty()

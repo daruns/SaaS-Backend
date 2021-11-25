@@ -39,18 +39,18 @@ export class ProjectsService {
     .modifiers({
       selectMemberNameAndId(builder) {
         builder.select('name');
-        builder.select('users.id as \'userId\'');
-        builder.select('projectMemberUsers.id as \'memberId\'');
+        builder.select('users.id as userId');
+        builder.select('projectMemberUsers.id as memberId');
       },
       selectLeaderNameAndId(builder) {
         builder.select('name');
-        builder.select('users.id as \'userId\'');
-        builder.select('projectLeaderUsers.id as \'leaderId\'');
+        builder.select('users.id as userId');
+        builder.select('projectLeaderUsers.id as leaderId');
       },
       selectTaskMemberNameAndId(builder) {
         builder.select('name');
-        builder.select('users.id as \'userId\'');
-        builder.select('taskMemberUsers.id as \'memberId\'');
+        builder.select('users.id as userId');
+        builder.select('taskMemberUsers.id as memberId');
       },
     })
     .withGraphFetched(
@@ -80,18 +80,18 @@ export class ProjectsService {
       .modifiers({
         selectMemberNameAndId(builder) {
           builder.select('name');
-          builder.select('users.id as \'userId\'');
-          builder.select('projectMemberUsers.id as \'memberId\'');
+          builder.select('users.id as userId');
+          builder.select('projectMemberUsers.id as memberId');
         },
         selectLeaderNameAndId(builder) {
           builder.select('name');
-          builder.select('users.id as \'userId\'');
-          builder.select('projectLeaderUsers.id as \'leaderId\'');
+          builder.select('users.id as userId');
+          builder.select('projectLeaderUsers.id as leaderId');
         },
         selectTaskMemberNameAndId(builder) {
           builder.select('name');
-          builder.select('users.id as \'userId\'');
-          builder.select('taskMemberUsers.id as \'memberId\'');
+          builder.select('users.id as userId');
+          builder.select('taskMemberUsers.id as memberId');
         },
       })
       .withGraphFetched(

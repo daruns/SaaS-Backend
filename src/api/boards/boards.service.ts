@@ -22,16 +22,25 @@ export class BoardsService {
   async findAll(currentUser): Promise<ResponseData> {
     const boards = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
-    .withGraphFetched({
-      tasks: {
-        members: {},
-        project: {
-          leaders: {},
-          members: {},
-        }
+    .modifiers({
+      selectTaskMemberNameAndId(builder) {
+        builder.select('name');
+        builder.select('users.id as userId');
+        builder.select('taskMemberUsers.id as memberId');
       },
-      boardAttribute: {}
     })
+    .withGraphFetched(
+      `
+        [
+          boardAttribute,
+          tasks.[
+            memberUsers(selectTaskMemberNameAndId),
+            project.[leaders,members]
+          ]
+        ]
+      `
+    )
+
     return {
       success: true,
       message: 'Board details fetch successfully.',
@@ -45,17 +54,25 @@ export class BoardsService {
       .query()
       .where({ brandCode: currentUser.brandCode })
       .findById(id)
-      .withGraphFetched({
-        tasks: {
-          members: {},
-          project: {
-            leaders: {},
-            members: {},
-          }
+      .modifiers({
+        selectTaskMemberNameAndId(builder) {
+          builder.select('name');
+          builder.select('users.id as userId');
+          builder.select('taskMemberUsers.id as memberId');
         },
-        boardAttribute: {}
       })
-    if (board) {
+      .withGraphFetched(
+        `
+          [
+            boardAttribute,
+            tasks.[
+              memberUsers(selectTaskMemberNameAndId),
+              project.[leaders,members]
+            ]
+          ]
+        `
+      )
+      if (board) {
       return {
         success: true,
         message: 'Board details fetch successfully.',
@@ -94,8 +111,8 @@ export class BoardsService {
 
       const attributePayloadReady = {
         boardId: identifiers.id,
-        color: boardPayload.color ? boardPayload.color : "grey",
-        position: boardPayload.position ? boardPayload.position : 4,        
+        color: boardPayload.color,
+        position: boardPayload.position,
       }
       const createdAttribute = await this.addAttribute(attributePayloadReady, currentUser)
       const createBoard = await this.modelClass.query().findById(identifiers.id)
@@ -180,8 +197,21 @@ export class BoardsService {
     let boardPayload = payload
     const board = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
-    .findById(boardPayload.id);
+    .findById(boardPayload.id)
+    .withGraphFetched({
+      boardAttribute: {},
+    });
+    const boardAttribute = board.boardAttribute
+    console.log(boardAttribute)
     if (board) {
+
+      const attributePayloadReady = {
+        boardId: board.id,
+        color: boardPayload.color ? boardPayload.color : boardAttribute.color,
+        position: boardPayload.position ? boardPayload.position : boardAttribute.position,
+      }
+      const createdAttribute = await this.addAttribute(attributePayloadReady, currentUser)
+
       const updatedBoard = await this.modelClass
       .query()
       .update({

@@ -26,4 +26,10 @@ export class JoinedItemsController {
     const joinedItems = await this.joinedItemsService.findAll(req.user);
     return joinedItems;
   }
+
+  @Get('joinedExpenseCategories')
+  async findAllExpenseCategories(@Request() req) {
+    const joinedItems = await this.joinedItemsService.findAllExpenseCategories(req.user);
+    return joinedItems;
+  }
 }

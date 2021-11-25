@@ -12,6 +12,7 @@ export class ExpenseModel extends BaseModel {
   expenseNumber: string
   brandCode: string
   description: string
+  category: string
   date: Date
   dueDate: Date
   currencyCode: string

@@ -1,9 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ServiceItemModel } from 'src/database/models/serviceItem.model';
-import { SubServiceItemModel } from 'src/database/models/subServiceItem.model';
 import { InventoryItemModel } from 'src/database/models/inventoryItem.model';
 import { NonInventoryItemModel } from 'src/database/models/nonInventoryItem.model';
 import { ModelClass } from 'objection';
+import { ExpenseCategoryModel } from 'src/database/models/expenseCategory.model';
+import { ExpenseSubCategoryModel } from 'src/database/models/expenseSubCategory.model';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -15,8 +16,9 @@ export class JoinedItemsService {
   constructor(
     @Inject('NonInventoryItemModel') private nonInventoryItemClass: ModelClass<NonInventoryItemModel>,
     @Inject('InventoryItemModel') private inventoryItemModelClass: ModelClass<InventoryItemModel>,
-    @Inject('SubServiceItemModel') private subServiceItemModelClass: ModelClass<SubServiceItemModel>,
     @Inject('ServiceItemModel') private serviceItemModelClass: ModelClass<ServiceItemModel>,
+    @Inject('ExpenseCategoryModel') private expenseCategoryModelClass: ModelClass<ExpenseCategoryModel>,
+    @Inject('ExpenseSubCategoryModel') private expenseSubCategoryModelClass: ModelClass<ExpenseSubCategoryModel>,
   ) {}
 
   async findAll(currentUser) {
@@ -85,5 +87,38 @@ export class JoinedItemsService {
       message: 'JoinedItem details of InventoryItems and NonInventoryItems and Services and SubServices fetch successfully.',
       data: result,
     };
+  }
+
+  async findAllExpenseCategories(currentUser) {
+    let result = []
+    const expenseCategories = await this.expenseCategoryModelClass.query()
+    .select('id','name')
+    .where({ brandCode: currentUser.brandCode })
+    .withGraphFetched(
+      'expenseSubCategories(selectName)'
+    )
+    .modifiers({
+      selectName(builder) {
+        builder.select('name');
+      },
+    });
+
+    expenseCategories.forEach(serv => {
+      result.push({
+        name: serv.name,
+      })
+      serv.expenseSubCategories.forEach(subServ => {
+        result.push({
+          name: serv.name + ", " + subServ.name,
+        })
+      })
+    })
+
+    return {
+      success: true,
+      message: 'JoinedExpenseCategories details of Categories and SubCategories fetch successfully.',
+      data: result,
+    };
+
   }
 }

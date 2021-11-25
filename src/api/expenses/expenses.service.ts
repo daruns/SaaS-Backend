@@ -286,6 +286,7 @@ export class ExpensesService {
           paymentMethodId: expensePayload.paymentMethodId ? expensePayload.paymentMethodId : expense.paymentMethodId,
           taxId: expensePayload.taxId ? expensePayload.taxId : expense.taxId,
           description: expensePayload.description ? expensePayload.description : expense.description,
+          category: expensePayload.category ? expensePayload.category : expense.category,
           paymentMethod: expensePayload.paymentMethod ? expensePayload.paymentMethod : expense.paymentMethod,
           currencyCode: expensePayload.currencyCode ? expensePayload.currencyCode : expense.currencyCode,
           status: expensePayload.status ? expensePayload.status : expense.status,

@@ -8,4 +8,6 @@ export class UpdateBoardDto {
   description: string
   status: string
   deleted: number
+  color: string
+  position: number
 }

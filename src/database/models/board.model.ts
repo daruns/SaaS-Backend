@@ -13,7 +13,7 @@ export class BoardModel extends BaseModel {
   brandCode: string
   userId: number
 
-  boardAttribute: BoardAttributeModel[];
+  boardAttribute: BoardAttributeModel;
   user: UserModel;
   tasks: TaskModel[];
 
@@ -30,7 +30,7 @@ export class BoardModel extends BaseModel {
     // list of all client on current user
     boardAttribute: {
       modelClass: `${__dirname}/boardAttribute.model`,
-      relation: Model.HasManyRelation,
+      relation: Model.HasOneRelation,
       join: {
         from: `${tableName}.id`,
         to: 'boardAttributes.boardId',

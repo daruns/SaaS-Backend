@@ -8,6 +8,7 @@ export class UpdateExpenseDto {
   id: number
   billingAddress: string
   description: string
+  category: string
   paymentMethodId: number
   supplierId: number
   taxId: number
