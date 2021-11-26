@@ -6,6 +6,7 @@ import { ResponseData } from 'src/app/app.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { CreateClientUserDto } from './dto/create-client-user.dto';
 import { UserModel } from 'src/database/models/user.model';
+import { UpdateClientUserDto } from './dto/update-client-user.dto';
 
 @Injectable()
 export class ClientsService {
@@ -21,11 +22,12 @@ export class ClientsService {
       .query()
       .where({ brandCode: currentUser.brandCode })
       .withGraphFetched({
-        user: true,
+        user: {},
         clientContacts: {},
         meetings: {},
         socialMedias: {},
       });
+    clients.map(e => {delete e.user.password})
     if (clients.length) {
       return {
         success: true,
@@ -53,6 +55,7 @@ export class ClientsService {
         meetings: {},
         socialMedias: {},
       });
+    // delete client.user.password
     if (client) {
       return {
         success: true,
@@ -67,39 +70,25 @@ export class ClientsService {
       };
     }
   }
+
   // Create client
-  async create(payload, user, currentUser): Promise<ResponseData> {
+  async create(payload, currentUser): Promise<ResponseData> {
     const newClient = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findOne({email: payload.email})
-    const userParams = user
+    const userEmail = await this.userClass.query().findOne({email: payload.email})
+    if (userEmail) {
+      return {
+        success: false,
+        message: 'User Already exist with this email address.',
+        data: {},
+      };
+    }
+
+    payload.clientType = payload.clientType.toLowerCase()
     if (!newClient) {
-      if (user) {
-        const userUsername = await this.usersService.findByUsername(userParams.username)
-        const userEmail = await this.usersService.findByEmail(payload.email)
-        console.log([payload,userParams])
-        if (userUsername.success && userEmail.success) {
-          return {
-            success: false,
-            message: 'User Already exist with this email or username.',
-            data: {},
-          };
-        }
-      }
-
       let result : any
-
-      const trx = await this.modelClass.startTransaction()
-      try {
-        userParams.userType = 'partner'
-        userParams.name = payload.name
-        userParams.email = payload.email
-        userParams.brandCode = currentUser.brandCode
-        userParams.phoneNumber = payload.phoneNumbers
-        userParams.createdBy = currentUser.username
-        userParams.reportsTo = currentUser.username
-          
-        let newparamspayload = {
+      let newparamspayload = {
         name : payload.name,
         phoneNumbers : payload.phoneNumbers,
         clientType : payload.clientType,
@@ -112,18 +101,12 @@ export class ClientsService {
         status : "active",
         createdBy : currentUser.username,
         brandCode: currentUser.brandCode,
-        }
-        if (userParams.username.length > 3 && userParams.username.length > 7) {
-          const createdUser = await this.userClass.query(trx).insert(userParams)
-          var createdClient = await createdUser
-            .$relatedQuery('clients', trx)
-            .insert(newparamspayload);
-        } else {
-          var createdClient = await this.modelClass.query(trx).insert(newparamspayload)
-        }
-        const identifier = await this.modelClass.query(trx).findById(createdClient.id).withGraphFetched({
-          user: {},
-        });
+      }
+
+      const trx = await this.modelClass.startTransaction()
+      try {
+        var createdClient = await this.modelClass.query(trx).insert(newparamspayload)
+        const identifier = await this.modelClass.query(trx).findById(createdClient.id)
         await trx.commit();
 
         result = identifier
@@ -135,24 +118,24 @@ export class ClientsService {
         };  
       } catch (err) {
         await trx.rollback();
-        console.log(`Something went wrong. Neither Jennifer nor Scrappy were inserted\n ${err}`);
+        console.log(`Something went wrong. Client couldnt be inserted\n ${err}`);
         result = err
         return {
           success: false,
-          message: `Something went wrong. Neither Client nor User were inserted.`,
+          message: `Something went wrong. Client couldnt be inserted.`,
           data: err,
         };
       }
     } else {
       return {
         success: false,
-        message: 'Client already exists with this email address!!!',
+        message: 'Client already exists with this email address!',
         data: {},
       };
     }
   }
+
   async update(payload,currentUser): Promise<ResponseData> {
-    const CUser = await this.getUserById(currentUser.id)
     const client = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findById(payload.id);
@@ -171,7 +154,7 @@ export class ClientsService {
           zipCode: payload.zipCode ? payload.zipCode : client.zipCode,
           status: payload.status ? payload.status : client.status,
           deleted: payload.deleted ? payload.deleted : client.deleted,
-          updatedBy: CUser.username,  
+          updatedBy: currentUser.username,
         })
         .where({ id: payload.id });
       return {
@@ -187,6 +170,116 @@ export class ClientsService {
       };
     }
   }
+
+  // addUser client
+  async addUser(payload: CreateClientUserDto, currentUser): Promise<ResponseData> {
+    const client = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findById(payload.id);
+    if (client) {
+      const userEmail = await this.userClass.query().findOne({email: client.email})
+      if (userEmail) {
+        return {
+          success: false,
+          message: 'User Already exist with this Email address.',
+          data: {},
+        }
+      }
+      const userUsername = await this.userClass.query().findOne({username: payload.username})
+      if (userUsername) {
+        return {
+          success: false,
+          message: 'User Already exist with this Username address.',
+          data: {},
+        };
+      }
+      const userParams:CreateClientUserDto = payload
+      delete userParams.id
+      userParams.avatar = client.logo
+      userParams.phoneNumber = client.phoneNumbers
+      userParams.createdBy = currentUser.username
+      userParams.brandCode = currentUser.brandCode
+      userParams.reportsTo = currentUser.username
+      userParams.email = client.email
+      // userParams.userType = 'partner' already initiallized from CreateClientUserDto dto its fixed cant be changed
+      const trx = await this.modelClass.startTransaction()
+      try {
+        const createdUser = await this.userClass.query(trx).insert(userParams)
+        await this.modelClass.query(trx).findById(client.id).update({userId: createdUser.id})
+        await trx.commit()
+        console.log(createdUser)
+        return {
+          success: true,
+          message: "Client User added successfully",
+          data: {}
+        }
+      } catch (error) {
+        trx.rollback()
+        return {
+          success: false,
+          message: "AddUser: error occured during adding user to the client!",
+          data: error,
+        }
+      }
+    } else {
+      return {
+        success: false,
+        message: "Client doenst exist",
+        data: {}
+      }
+    }
+  }
+
+  // editUser client
+  async editUser(payload: UpdateClientUserDto, currentUser): Promise<ResponseData> {
+    console.log(payload)
+    const client = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode })
+    .findById(payload.id)
+    .withGraphFetched({user:true});
+    delete client.user.password
+    if (client) {
+      const userDataById = await this.userClass.query().findById(client.user.id)
+      if (!userDataById) {
+        return {
+          success: false,
+          message: 'User Doesnt exist with for this Client.',
+          data: {},
+        }
+      }
+      console.log(userDataById)
+      let userParams:UpdateClientUserDto = {
+
+        id: userDataById.id,
+        updatedBy: currentUser.username,
+        name: payload.name ? payload.name : userDataById.name,
+        password: payload.password,
+        reportsTo: payload.reportsTo ? payload.reportsTo : userDataById.reportsTo,
+        status: payload.status ? payload.status : userDataById.status,
+      }
+      var updatedUser = await this.usersService.update(userParams,currentUser)
+      if (!updatedUser.success) {
+        return {
+          success: false,
+          message: updatedUser.message,
+          data: updatedUser.data,
+        }
+      }
+      console.log(updatedUser)
+      return {
+        success: true,
+        message: "Client User updated successfully",
+        data: {}
+      }
+    } else {
+      return {
+        success: false,
+        message: "Client doenst exist",
+        data: {}
+      }
+    }
+  }
+
   // Delete client
   async deleteById(payload: {id: number}, currentUser): Promise<ResponseData> {
     const clients = await this.modelClass
@@ -210,10 +303,4 @@ export class ClientsService {
       };
     }
   }
-
-  async getUserById(id:number) {
-    const CUser = await this.usersService.findById(id)
-    return CUser.data
-  }
-  
 }

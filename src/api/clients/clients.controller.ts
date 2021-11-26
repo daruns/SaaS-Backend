@@ -16,6 +16,7 @@ import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateClientUserDto } from './dto/create-client-user.dto';
+import { UpdateClientUserDto } from './dto/update-client-user.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('clients')
@@ -37,8 +38,8 @@ export class ClientsController {
   }
 
   @Post('create')
-  async create(@Body() client: CreateClientDto,@Body('user') user: CreateClientUserDto, @Request() req) {
-    const createdClient = await this.clientsService.create(client, user, req.user);
+  async create(@Body() client: CreateClientDto, @Request() req) {
+    const createdClient = await this.clientsService.create(client, req.user);
     return createdClient
   }
 
@@ -46,6 +47,17 @@ export class ClientsController {
   // update commnet on client
   update(@Body() payload: UpdateClientDto, @Request() req) {
     return this.clientsService.update(payload, req.user);
+  }
+
+  @Post('addUser')
+  async addUser(@Body() clientUser: CreateClientUserDto, @Request() req) {
+    const addedUser = await this.clientsService.addUser(clientUser, req.user);
+    return addedUser
+  }
+  @Post('editUser')
+  // editUser commnet on client
+  editUser(@Body() payload: UpdateClientUserDto, @Request() req) {
+    return this.clientsService.editUser(payload, req.user);
   }
 
   @Post('delete')

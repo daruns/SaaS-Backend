@@ -5,11 +5,11 @@ import moment = require('moment');
 import { CreateTaskDto } from './dto/create-task.dto';
 import { throwError } from 'rxjs';
 import { TaskMemberModel } from 'src/database/models/taskMember.model';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { ChangeBoardDto, UpdateTaskDto } from './dto/update-task.dto';
 import { UserModel } from 'src/database/models/user.model';
 import { AddMembersToTaskDto } from './dto/add-membersToTask.dto';
 import { BoardsService } from '../boards/boards.service';
-import { idText } from 'typescript';
+import { BoardModel } from 'src/database/models/board.model';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -22,6 +22,7 @@ export class TasksService {
     @Inject('TaskModel') private modelClass: ModelClass<TaskModel>,
     @Inject('TaskMemberModel') private memberModelClass: ModelClass<TaskMemberModel>,
     @Inject('UserModel') private userModel: ModelClass<UserModel>,
+    @Inject('BoardModel') private boardModel: ModelClass<BoardModel>,
     private readonly boardsService: BoardsService,
   ) {}
 
@@ -243,6 +244,40 @@ export class TasksService {
       return {
         success: true,
         message: 'Task details updated successfully.',
+        data: updatedTask,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'No task found.',
+        data: {},
+      };
+    }
+  }
+
+  async changeBoard(payload: ChangeBoardDto, currentUser): Promise<ResponseData> {
+    const task = await this.modelClass.query()
+    .where({brandCode: currentUser.brandCode})
+    .findById(payload.id);
+    const boardFnd = await this.boardModel.query().findOne({id: payload.boardId,brandCode: currentUser.brandCode})
+    if (!boardFnd) {
+      return {
+        success: false,
+        message: 'Task Error: Board doesnt exist.',
+        data: {},
+      };
+    }
+
+    if (task) {
+      const updatedTask = await this.modelClass.query()
+        .update({
+          boardId: payload.boardId,
+          updatedBy: currentUser.username,
+        })
+        .where({ id: payload.id });
+      return {
+        success: true,
+        message: 'Task Board changed successfully.',
         data: updatedTask,
       };
     } else {

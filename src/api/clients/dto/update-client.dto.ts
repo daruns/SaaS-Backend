@@ -1,5 +1,6 @@
 import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsOptional } from 'class-validator';
 import { PhoneNumberRegex } from 'src/app/app.service'
+import { CreateClientUserDto } from './create-client-user.dto';
 
 export class UpdateClientDto {
   @IsNotEmpty({ message: 'ClientId is required' })
@@ -19,4 +20,5 @@ export class UpdateClientDto {
   rate: number
   zipCode: string
   status: string
+  user: CreateClientUserDto
 }

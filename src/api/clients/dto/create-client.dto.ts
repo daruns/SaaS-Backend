@@ -1,14 +1,13 @@
-import { IsEmail, IsNotEmpty, MinLength, MaxLength, IsString, Matches, IsInt, Length, Max, Min } from 'class-validator';
-import { max, min } from 'rxjs/operators';
-import { PhoneNumberRegex } from 'src/app/app.service';
+import { IsEmail, IsNotEmpty, IsString, IsInt, Max, Min } from 'class-validator';
+import { ToPhone } from 'src/app/app.service';
 
 export class CreateClientDto {
   @IsNotEmpty()
   name: string
   logo: string
-  // @Matches(PhoneNumberRegex.reg)
-  @IsString()
   @IsNotEmpty()
+  @ToPhone
+  @IsString()
   phoneNumbers: string
   clientType: string
   businessType: string

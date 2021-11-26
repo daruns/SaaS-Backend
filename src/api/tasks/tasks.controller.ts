@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { ChangeBoardDto, UpdateTaskDto } from './dto/update-task.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AddMembersToTaskDto } from './dto/add-membersToTask.dto';
 
@@ -53,6 +53,12 @@ export class TasksController {
   async removeMembers(@Body() payload: AddMembersToTaskDto, @Request() req) {
     const createdTask = await this.tasksService.removeMembers(payload, req.user);
     return createdTask
+  }
+
+  @Post('changeBoard')
+  // changeBoard commnet on task
+  changeBoard(@Body() payload: ChangeBoardDto, @Request() req) {
+    return this.tasksService.changeBoard(payload, req.user);
   }
 
   @Post('update')

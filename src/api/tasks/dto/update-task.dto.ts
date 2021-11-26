@@ -17,3 +17,12 @@ export class UpdateTaskDto {
   @IsNotEmpty()
   members: number[]
 }
+
+export class ChangeBoardDto {
+  @IsInt()
+  @IsNotEmpty()
+  id: number
+  @IsInt()
+  @IsNotEmpty()
+  boardId: number
+}
