@@ -21,13 +21,12 @@ export class HttpErrorHandler implements ExceptionFilter {
     Logger.error(message);
     response.status(404).json({
       success: false,
-      path: request.url,
       message: get(
         exception,
         'message.message',
         get(exception, 'message.error', 'Invalid url!'),
       ),
-      data: {},
+      data: {exception: exception},
     });
   }
 }

@@ -34,9 +34,7 @@ export class AuthService {
       subdomain: signupDto.subdomain,
     }
     const createBrand = await this.brandService.create(createBrandDto)
-    console.log("brandif")
     if (createBrand.success){
-      console.log("brandinif")
 
       const createUserDto = {
         username: signupDto.username,
@@ -48,7 +46,7 @@ export class AuthService {
       }
         const createUser  = await this.usersService.create(createUserDto)
         delete createUser.data.password
-        console.log("finished")
+        // dummy data
         const finishedPending = await this.boardModelClass.query().insert({name:'Pending', description: '', brandCode: createUser.data.brandCode, createdBy: createUser.data.username, userId: createUser.data.id})
         await this.boardAttributeClass.query().insert({color: 'yellow', position: 1, userId: createUser.data.id, brandCode: createUser.data.brandCode, createdBy: createUser.data.username, boardId: finishedPending.id})
         const finishedInProgress = await this.boardModelClass.query().insert({name:'In-Progress', description: '', brandCode: createUser.data.brandCode, createdBy: createUser.data.username, userId: createUser.data.id})

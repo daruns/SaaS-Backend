@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppService, FileUploadService } from './app.service';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpErrorHandler } from '../shared/Handlers/http-error.handler';
 import { LoggingInterceptor } from '../shared/Interceptors/logging.interceptor';
@@ -13,6 +13,7 @@ import { DatabaseModule } from 'src/database/database.module';
   controllers: [AppController],
   providers: [
     AppService,
+    FileUploadService,
     {
       provide: APP_FILTER,
       useClass: HttpErrorHandler,

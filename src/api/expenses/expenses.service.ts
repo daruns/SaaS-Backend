@@ -7,8 +7,10 @@ import { CreateExpenseDto, CreateExpenseItemDto } from './dto/create-expense.dto
 import { SuppliersService } from '../suppliers/suppliers.service';
 import { TaxesService } from '../taxes/taxes.service';
 import { PaymentMethodsService } from '../paymentMethods/paymentMethods.service';
-import { ExpenseCategoriesService } from '../expenseCategories/expenseCategories.service';
-import { ExpenseSubCategoriesService } from '../expenseSubCategories/expenseSubCategories.service';
+import { FileParamDto, FileUploadService } from 'src/app/app.service';
+import { ExpenseAttachmentModel } from 'src/database/models/expenseAttachment.model';
+import { AddFileDto } from './dto/addFile.dto';
+import { AttachmentModel } from 'src/database/models/attachment.model';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -20,9 +22,12 @@ export class ExpensesService {
   constructor(
     @Inject('ExpenseModel') private modelClass: ModelClass<ExpenseModel>,
     @Inject('ExpenseItemModel') private expenseItemModel: ModelClass<ExpenseItemModel>,
+    @Inject('ExpenseAttachmentModel') private expenseAttachmentModel: ModelClass<ExpenseAttachmentModel>,
+    @Inject('AttachmentModel') private attachmentModel: ModelClass<AttachmentModel>,
     private readonly supplierService: SuppliersService,
     private readonly taxService: TaxesService,
     private readonly paymentMethodService: PaymentMethodsService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   // expense list
@@ -34,7 +39,8 @@ export class ExpensesService {
       tax: {},
       paymentMethod: {},
       expenseItems: {},
-  });
+      attachments: {},
+    });
     return {
       success: true,
       message: 'Expenses details fetch successfully.',
@@ -45,15 +51,16 @@ export class ExpensesService {
   // find one expense info by expenseId
   async findById(id: number, currentUser): Promise<ResponseData> {
     const expense = await this.modelClass
-      .query()
-      .where({brandCode: currentUser.brandCode})  
-      .findById(id)
-      .withGraphFetched({
-        supplier: {},
-        tax: {},
-        paymentMethod: {},
-        expenseItems: {},
-      });
+    .query()
+    .where({brandCode: currentUser.brandCode})
+    .findById(id)
+    .withGraphFetched({
+      supplier: {},
+      tax: {},
+      paymentMethod: {},
+      expenseItems: {},
+      attachments: {},
+    });
     if (expense) {
       return {
         success: true,
@@ -150,12 +157,12 @@ export class ExpensesService {
         const insertedExpenseItem = await createdExpense.$relatedQuery('expenseItems',trx)
         .insert(item)
         if (!insertedExpenseItem) {
-            return {
-              success: false,
-              message: "couldnt insert expenseItem on expense",
-              data: insertedExpenseItem,
-            }
+          return {
+            success: false,
+            message: "couldnt insert expenseItem on expense",
+            data: insertedExpenseItem,
           }
+        }
       }
 
       await trx.commit();
@@ -173,6 +180,168 @@ export class ExpensesService {
         success: false,
         message: `Something went wrong. Neither Expense nor ExpenseItems were inserted.`,
         data: result,
+      };
+    }
+  }
+
+  async removeFile(payload: {id: number,attachId: number}, currentUser): Promise<ResponseData> {
+    const expense = await this.modelClass.query()
+    .where({brandCode: currentUser.brandCode})
+    .findById(payload.id)
+    .withGraphFetched({attachments: {}});
+    if (!expense) {
+      return {
+        success: false,
+        message: "Expense not found",
+        data: {},
+      }
+    }
+
+    await this.expenseAttachmentModel.query()
+    .delete()
+    .where({attachmentId: payload.attachId,expenseId: payload.id})
+    const deletedFileService = await this.fileUploadService.removeFile(payload.attachId,currentUser);
+    if (!deletedFileService.success) {
+      throw {
+        message: deletedFileService.message,
+        data: deletedFileService.data,
+      }
+    } else {
+    }
+    return {
+      success: true,
+      message: 'Expense Attachments removed successfully.',
+      data: {},
+    }
+  }
+
+  async replaceFiles(payload: AddFileDto, currentUser): Promise<ResponseData> {
+    const {files,id} = payload
+    const expense = await this.modelClass.query()
+    .where({brandCode: currentUser.brandCode})
+    .findById(id)
+    .withGraphFetched({attachments: {}});
+    if (!expense) {
+      return {
+        success: false,
+        message: "Expense not found",
+        data: {},
+      }
+    }
+
+    const trx = await this.modelClass.startTransaction()
+    try {
+      // const uploadedFileService = await this.fileUploadService.removeFile(prepFile,currentUser);
+      const deletedExpenseAttach = await this.expenseAttachmentModel.query(trx)
+      .delete()
+      .where({expenseId: id})
+      const deletedAttach = await this.attachmentModel.query(trx)
+      .delete()
+      .findByIds(expense.attachments?.map(e => e.id))
+      if (!deletedExpenseAttach || !deletedAttach) {
+        throw [deletedExpenseAttach, deletedAttach]
+      }
+      for (let file of files) {
+        const prepFile: FileParamDto = {
+          originalname: file.originalname,
+          buffer: file.buffer,
+          mimetype: file.mimetype,
+          size: file.size,
+        }
+
+        const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
+        if (!uploadedFileService.success) {
+          throw {
+            message: uploadedFileService.message,
+            data: uploadedFileService.data,
+          }
+        }
+
+        const insertedAttach = await this.expenseAttachmentModel.query(trx)
+        .insert({
+          attachmentId: uploadedFileService.data.id,
+          expenseId: expense.id
+        });
+        if (!insertedAttach) {
+          throw {
+            message: "couldnt insert expenseAttachment on expense",
+            data: insertedAttach,
+          }
+        }
+      }
+
+      await trx.commit();
+      return {
+        success: true,
+        message: 'Expense Attachments replaced successfully.',
+        data: {},
+      }
+    } catch (err) {
+      await trx.rollback();
+      return {
+        success: false,
+        message: `Something went wrong. ExpenseAttachments were not replaced.`,
+        data: err,
+      };
+    }
+  }
+
+  async addFile(payload: AddFileDto, currentUser): Promise<ResponseData> {
+    const {files,id} = payload
+    const expense = await this.modelClass.query()
+    .where({brandCode: currentUser.brandCode})
+    .findById(id);
+    if (!expense) {
+      return {
+        success: false,
+        message: "Expense not found",
+        data: {},
+      }
+    }
+
+    const trx = await this.modelClass.startTransaction()
+    try {
+      for (let file of files) {
+        const prepFile: FileParamDto = {
+          originalname: file.originalname,
+          buffer: file.buffer,
+          mimetype: file.mimetype,
+          size: file.size,
+        }
+
+        const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
+        if (!uploadedFileService.success) {
+          throw {
+            message: uploadedFileService.message,
+            data: uploadedFileService.data,
+          }
+        }
+
+        const insertedAttach = await this.expenseAttachmentModel.query(trx)
+        .insert({
+          attachmentId: uploadedFileService.data.id,
+          expenseId: expense.id
+        });
+        if (!insertedAttach) {
+          throw {
+            message: "couldnt insert expenseAttachment on expense",
+            data: insertedAttach,
+          }
+        }
+      }
+
+      await trx.commit();
+      return {
+        success: true,
+        message: 'Expense Attachments added successfully.',
+        data: {},
+      }
+    } catch (err) {
+      await trx.rollback();
+      return {
+        success: false,
+        message: `Something went wrong. ExpenseAttachments were not inserted.`,
+        data: err,
       };
     }
   }
@@ -265,7 +434,7 @@ export class ExpensesService {
       // const taxRate: number = expensePayload.taxId ? expensePayload.taxRate : expense.taxRate
       // const discount: number = expensePayload.discount ? expensePayload.discount : expense.discount
       // const newTotalAmount = subTotalAmount + (( subTotalAmount * taxRate ) - ( subTotalAmount * discount ))
-      
+
       let prepTaxRate = expensePayload.taxId ? expensePayload.taxRate : expense.taxRate
       let prepDiscount = expensePayload.discount ? expensePayload.discount : expense.discount
       var taxRate:number = subTotalAmount * prepTaxRate

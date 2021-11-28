@@ -6,6 +6,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { CustomValidatePipe } from './shared/pipes/validation.pipes';
 import * as rateLimit from "express-rate-limit";
 import * as helmet from "helmet";
+import { config } from "aws-sdk";
+// import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Read port number from env file
 const port = process.env.PORT || 3000;
@@ -16,10 +18,24 @@ const limiter = rateLimit({
 });
 
 async function bootstrap() {
+  config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
+  })
+  console.log("AWS Region: ", config.region);
+
   // Create nestFactory instance for make server instance
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(limiter);
 
+  // const options = new DocumentBuilder()
+  //   .setTitle("Oneconnect UI")
+  //   .setDescription(`The Oneconnect API description`)
+  //   .setVersion("1.0.0")
+  //   .build();
+  // const document = SwaggerModule.createDocument(app, options);
+  // SwaggerModule.setup('swagger', app, document);
   // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
   // see https://expressjs.com/en/guide/behind-proxies.html
   // app.set('trust proxy', 1);

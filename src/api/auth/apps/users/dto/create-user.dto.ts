@@ -1,5 +1,5 @@
 import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Matches } from 'class-validator';
-import { PhoneNumberRegex, ToPhone } from 'src/app/app.service'
+import { FileParamDto, PhoneNumberRegex, ToPhone } from 'src/app/app.service'
 
 export class CreateUserDto {
   @IsNotEmpty({ message: 'Name is required' })
@@ -19,7 +19,7 @@ export class CreateUserDto {
   phoneNumber: string
   @IsNotEmpty()
   userType: string
-  avatar: string
+  avatar: string|FileParamDto
   department: string
   reportsTo: string
   activationToken: string

@@ -1,5 +1,5 @@
 import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Matches, IsInt, IsOptional } from 'class-validator';
-import { PhoneNumberRegex, ToPhone } from 'src/app/app.service'
+import { FileParamDto, PhoneNumberRegex, ToPhone } from 'src/app/app.service'
 
 export class UpdateUserDto {
   @IsNotEmpty()
@@ -19,7 +19,7 @@ export class UpdateUserDto {
   @IsString({message: "must be a valid phonenumber"})
   phoneNumber: string
   userType: string
-  avatar: string
+  avatar: string|FileParamDto
   userId: number
   department: string
   reportsTo: string

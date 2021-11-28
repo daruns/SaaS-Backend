@@ -10,11 +10,17 @@ import {
   UseGuards,
   Req,
   Request,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { ExpensesService } from './expenses.service';
 import { CreateExpenseDto, CreateExpenseItemDto } from './dto/create-expense.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { documentFileFilter, imageFileFilter } from 'src/app/app.service';
+import { AddFileDto } from './dto/addFile.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('expenses')
@@ -41,6 +47,30 @@ export class ExpensesController {
     delete (expense['items'])
     const createdExpense = await this.expensesService.create(expense, expenseItems, req.user);
     return createdExpense
+  }
+
+  @Post('addFile')
+  @UseInterceptors(FilesInterceptor("files", 1, {fileFilter: documentFileFilter}))
+  async addFile(@Body("id") id: number, @UploadedFiles() files, @Request() req) {
+    const payload: AddFileDto = {id: id, files: files}
+    console.log(payload)
+    const addFiledExpense = await this.expensesService.addFile(payload, req.user);
+    return addFiledExpense
+  }
+
+  @Post('replaceFiles')
+  @UseInterceptors(FilesInterceptor("files", 1, {fileFilter: documentFileFilter}))
+  async replaceFiles(@Body("id") id: number, @UploadedFiles() files, @Request() req) {
+    const payload: AddFileDto = {id: id, files: files}
+    console.log(payload)
+    const addFiledExpense = await this.expensesService.replaceFiles(payload, req.user);
+    return addFiledExpense
+  }
+
+  @Post('removeFile')
+  async removeFile(@Body() body: {id: number, attachId: number}, @Request() req) {
+    const addFiledExpense = await this.expensesService.removeFile(body, req.user);
+    return addFiledExpense
   }
 
   @Post('update')

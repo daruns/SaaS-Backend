@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { UsersService } from 'src/api/auth/apps/users/users.service';
 import { BrandsService } from 'src/api/brands/brands.service';
+import { FileUploadService } from 'src/app/app.service';
 // import { BrandModel } from 'src/database/models/brand.model';
 // import { BrandsModule } from '../brands/brands.module';
 
@@ -21,7 +22,7 @@ import { LocalStrategy } from './strategies/local.strategy';
       // publicKey: process.env.KEY_PUBLICKEY,
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, UsersService, BrandsService],
+  providers: [AuthService, LocalStrategy, JwtStrategy, UsersService, BrandsService, FileUploadService],
   controllers: [AuthController],
   exports: [AuthService],
 })

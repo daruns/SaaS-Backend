@@ -51,6 +51,8 @@ import { TaxModel } from './models/tax.model';
 import { PaymentMethodModel } from './models/paymentMethod.model';
 import { ExpenseModel } from './models/expense.model';
 import { ExpenseItemModel } from './models/expenseItem.model';
+import { AttachmentModel } from './models/attachment.model';
+import { ExpenseAttachmentModel } from './models/expenseAttachment.model';
 
 const models = [
   UserModel,
@@ -84,6 +86,8 @@ const models = [
   PaymentMethodModel,
   ExpenseModel,
   ExpenseItemModel,
+  AttachmentModel,
+  ExpenseAttachmentModel,
 ];
 
 const modelProvider = map(models, model => {

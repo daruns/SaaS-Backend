@@ -6,7 +6,9 @@ import {
     Req,
     Request,
     UnauthorizedException,
+    UploadedFile,
     UseGuards,
+    UseInterceptors,
     ValidationPipe,
   } from '@nestjs/common';
   import { AuthService } from './auth.service';
@@ -15,6 +17,8 @@ import {
   import { LocalAuthGuard } from './guards/local-auth.guard';
   import { SignupDto } from './dto/signup.dto';
 import { EditProfileDto } from './dto/editProfile.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { imageFileFilter } from 'src/app/app.service';
 
   @Controller('auth')
   export class AuthController {
@@ -22,7 +26,6 @@ import { EditProfileDto } from './dto/editProfile.dto';
 
     @Post('/signup')
     async signUp( @Body(ValidationPipe) signupDto ) {
-      console.log(signupDto)
         const savedUser = await this.authService.signUp(signupDto);
         return savedUser
     }
@@ -35,9 +38,10 @@ import { EditProfileDto } from './dto/editProfile.dto';
 
     @UseGuards(JwtAuthGuard)
     @Post('editProfile')
-    async editProfile( @Body(ValidationPipe) editProfileDto: EditProfileDto, @Req() req) {
-      console.log(req.user)
+    @UseInterceptors(FileInterceptor("avatar", { fileFilter: imageFileFilter}))
+    async editProfile( @Body(ValidationPipe) editProfileDto: EditProfileDto,@UploadedFile() file: Express.Multer.File, @Req() req) {
       if (!req.user.id) throw new UnauthorizedException()
+      editProfileDto.avatar = file
       const myUser = await this.authService.editProfile(editProfileDto, req.user);
       return myUser;
     }
@@ -45,7 +49,6 @@ import { EditProfileDto } from './dto/editProfile.dto';
     @UseGuards(JwtAuthGuard)
     @Get('me')
     async getMe(@Request() req) {
-      console.log(req.user)
       if (!req.user.id) throw new UnauthorizedException()
       const myUser = await this.authService.me(req.user.id);
       delete myUser.password

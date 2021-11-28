@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { FileUploadService } from 'src/app/app.service';
 import { ExpenseCategoriesService } from '../expenseCategories/expenseCategories.service';
 import { ExpenseSubCategoriesService } from '../expenseSubCategories/expenseSubCategories.service';
 import { PaymentMethodsModule } from '../paymentMethods/paymentMethods.module';
@@ -14,6 +15,7 @@ import { ExpensesService } from './expenses.service';
   imports: [SuppliersModule, PaymentMethodsModule, TaxesModule],
   controllers: [ExpensesController],
   providers: [
+    FileUploadService,
     ExpensesService,
     ExpenseCategoriesService,
     ExpenseSubCategoriesService,

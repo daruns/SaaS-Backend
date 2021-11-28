@@ -4,6 +4,7 @@ import { ModelClass } from 'objection';
 import * as bcrypt from 'bcrypt';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 import { BrandsService } from 'src/api/brands/brands.service';
+import {FileParamDto, FileUploadService} from "src/app/app.service"
 
 export interface ResponseData {
   readonly success: boolean;
@@ -16,7 +17,8 @@ export interface ResponseData {
 export class UsersService {
   constructor(
     @Inject('UserModel') private modelClass: ModelClass<UserModel>,
-    private brandService: BrandsService
+    private brandService: BrandsService,
+    private fileUploadService: FileUploadService,
     ) {}
 
   // user list with list of posts and comments on post
@@ -204,6 +206,14 @@ export class UsersService {
     if (!newUser.length) {
       const hashedPassword = await bcrypt.hash(payload.password, 10);
       payload.password = hashedPassword
+      if (payload.avatar) {
+        const avatarUploaded: FileParamDto = payload.avatar
+        const fileUploaded = await this.fileUploadService.addFile(avatarUploaded, {brandCode: payload.brandCode, username: payload.username})
+        if (fileUploaded.success) {
+          console.log(fileUploaded.data)
+          payload.avatar = fileUploaded.data.url
+        } else return fileUploaded
+      }
       try {
         // const createBrandDto = {
         //   name: payload.brandCode,
@@ -247,6 +257,14 @@ export class UsersService {
       if (payload.password) {
         const hashedPassword = await bcrypt.hash(payload.password, 10);
         payload.password = hashedPassword
+      }
+      if (payload.avatar) {
+        const avatarUploaded = payload.avatar
+        const fileUploaded = await this.fileUploadService.addFile(avatarUploaded, currentUser)
+        if (fileUploaded.success) {
+          console.log(fileUploaded.data)
+          payload.avatar = fileUploaded.data.url
+        } else return fileUploaded
       }
 
       const updatedUser = await this.modelClass
