@@ -51,6 +51,7 @@ export class ProjectsService {
         builder.select('users.id as userId');
       },
       selectAttachUrl(builder) {
+        builder.select('attachments.id as attachId');
         builder.select('url');
       },
     })

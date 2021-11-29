@@ -27,7 +27,7 @@ export class ClientsService {
         meetings: {},
         socialMedias: {},
       });
-    clients.map(e => {delete e.user.password})
+    clients.map(e => {if (e.user) delete e.user.password })
     if (clients.length) {
       return {
         success: true,
