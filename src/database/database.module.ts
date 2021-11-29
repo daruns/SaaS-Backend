@@ -53,6 +53,7 @@ import { ExpenseModel } from './models/expense.model';
 import { ExpenseItemModel } from './models/expenseItem.model';
 import { AttachmentModel } from './models/attachment.model';
 import { ExpenseAttachmentModel } from './models/expenseAttachment.model';
+import { ProjectAttachmentModel } from './models/projectAttachment.model';
 
 const models = [
   UserModel,
@@ -88,6 +89,7 @@ const models = [
   ExpenseItemModel,
   AttachmentModel,
   ExpenseAttachmentModel,
+  ProjectAttachmentModel,
 ];
 
 const modelProvider = map(models, model => {

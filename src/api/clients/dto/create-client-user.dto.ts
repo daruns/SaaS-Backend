@@ -3,7 +3,6 @@ import { ToPhone } from 'src/app/app.service';
 
 export class CreateClientUserDto {
   @IsNotEmpty()
-  @IsInt()
   id: number
   name: string
   @MinLength(3, { message: 'username must more than 3 chars' })

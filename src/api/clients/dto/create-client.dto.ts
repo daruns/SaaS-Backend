@@ -1,10 +1,10 @@
 import { IsEmail, IsNotEmpty, IsString, IsInt, Max, Min } from 'class-validator';
-import { ToPhone } from 'src/app/app.service';
+import { FileParamDto, ToPhone } from 'src/app/app.service';
 
 export class CreateClientDto {
   @IsNotEmpty()
   name: string
-  logo: string
+  logo: string|FileParamDto
   @IsNotEmpty()
   @ToPhone
   @IsString()

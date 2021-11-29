@@ -20,6 +20,7 @@ export async function up(knex: Knex): Promise<any> {
     .index()
     .references('id')
     .inTable('attachments')
+    .onDelete('CASCADE');
 
     table.string('status');
     table.integer('deleted');

@@ -18,9 +18,7 @@ import { ExpensesService } from './expenses.service';
 import { CreateExpenseDto, CreateExpenseItemDto } from './dto/create-expense.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { documentFileFilter, imageFileFilter } from 'src/app/app.service';
-import { AddFileDto } from './dto/addFile.dto';
+import { AddFileDto } from 'src/app/app.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('expenses')
@@ -50,7 +48,7 @@ export class ExpensesController {
   }
 
   @Post('addFile')
-  @UseInterceptors(FilesInterceptor("files", 1, {fileFilter: documentFileFilter}))
+  @UseInterceptors(FilesInterceptor("files", 1))
   async addFile(@Body("id") id: number, @UploadedFiles() files, @Request() req) {
     const payload: AddFileDto = {id: id, files: files}
     console.log(payload)
@@ -59,7 +57,7 @@ export class ExpensesController {
   }
 
   @Post('replaceFiles')
-  @UseInterceptors(FilesInterceptor("files", 1, {fileFilter: documentFileFilter}))
+  @UseInterceptors(FilesInterceptor("files", 1))
   async replaceFiles(@Body("id") id: number, @UploadedFiles() files, @Request() req) {
     const payload: AddFileDto = {id: id, files: files}
     console.log(payload)

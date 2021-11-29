@@ -1,5 +1,6 @@
 import { Req, Res, Injectable, BadRequestException, UploadedFile, Inject, HttpException } from '@nestjs/common';
 import { Transform } from "class-transformer";
+import { IsInt, IsNotEmpty } from "class-validator";
 import { parsePhoneNumberFromString, isSupportedCountry } from 'libphonenumber-js';
 import { extname, parse } from 'path';
 import * as multer from 'multer';
@@ -41,6 +42,13 @@ export class linkAddressRegex {
   static reg = /((http|https):\/\/)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)/
 }
 
+export class AddFileDto {
+    @IsInt()
+    @IsNotEmpty()
+    id: number
+    @IsNotEmpty()
+    files: Array<Express.Multer.File>
+}
 export interface FileParamDto {
   originalname: string
   mimetype: string
@@ -98,6 +106,8 @@ export class FileUploadService {
       Bucket: AWS_S3_BUCKET_NAME,
       Body: buffer,
       Key: uuid() + originalname,
+      // ACL: file.publicRead ? file.publicRead : "public-read",  ###### TODO: need to put public read for specific files
+      ACL: "public-read",
     }
     return await s3.upload(params)
     .promise()

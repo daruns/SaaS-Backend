@@ -2,8 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { ClientModel } from 'src/database/models/client.model';
 import { ModelClass } from 'objection';
 import { UsersService } from 'src/api/auth/apps/users/users.service';
-import { ResponseData } from 'src/app/app.service';
-import { CreateClientDto } from './dto/create-client.dto';
+import { FileParamDto, FileUploadService, ResponseData } from 'src/app/app.service';
 import { CreateClientUserDto } from './dto/create-client-user.dto';
 import { UserModel } from 'src/database/models/user.model';
 import { UpdateClientUserDto } from './dto/update-client-user.dto';
@@ -14,6 +13,7 @@ export class ClientsService {
     @Inject('ClientModel') private modelClass: ModelClass<ClientModel>,
     @Inject('UserModel') private userClass: ModelClass<UserModel>,
     private readonly usersService: UsersService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   // client list
@@ -87,6 +87,13 @@ export class ClientsService {
 
     payload.clientType = payload.clientType.toLowerCase()
     if (!newClient) {
+      if (payload.logo) {
+        const logoUploaded: FileParamDto = payload.logo
+        const fileUploaded = await this.fileUploadService.addFile(logoUploaded, currentUser)
+        if (fileUploaded.success) {
+          payload.logo = fileUploaded.data.url
+        } else return fileUploaded
+      }
       let result : any
       let newparamspayload = {
         name : payload.name,
@@ -94,6 +101,7 @@ export class ClientsService {
         clientType : payload.clientType,
         businessType : payload.businessType,
         email : payload.email,
+        logo: payload.logo,
         website : payload.website,
         address : payload.address,
         rate : payload.rate,
@@ -140,6 +148,14 @@ export class ClientsService {
     .where({ brandCode: currentUser.brandCode })
     .findById(payload.id);
     if (client) {
+      if (payload.logo) {
+        const logoUploaded: FileParamDto = payload.logo
+        const fileUploaded = await this.fileUploadService.addFile(logoUploaded, currentUser)
+        if (fileUploaded.success) {
+          payload.logo = fileUploaded.data.url
+          console.log(fileUploaded)
+        } else return fileUploaded
+      }
       const updatedClient = await this.modelClass
         .query()
         .update({
@@ -232,7 +248,6 @@ export class ClientsService {
 
   // editUser client
   async editUser(payload: UpdateClientUserDto, currentUser): Promise<ResponseData> {
-    console.log(payload)
     const client = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findById(payload.id)
@@ -247,9 +262,7 @@ export class ClientsService {
           data: {},
         }
       }
-      console.log(userDataById)
       let userParams:UpdateClientUserDto = {
-
         id: userDataById.id,
         updatedBy: currentUser.username,
         name: payload.name ? payload.name : userDataById.name,
@@ -265,7 +278,6 @@ export class ClientsService {
           data: updatedUser.data,
         }
       }
-      console.log(updatedUser)
       return {
         success: true,
         message: "Client User updated successfully",

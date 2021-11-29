@@ -7,9 +7,8 @@ import { CreateExpenseDto, CreateExpenseItemDto } from './dto/create-expense.dto
 import { SuppliersService } from '../suppliers/suppliers.service';
 import { TaxesService } from '../taxes/taxes.service';
 import { PaymentMethodsService } from '../paymentMethods/paymentMethods.service';
-import { FileParamDto, FileUploadService } from 'src/app/app.service';
+import { AddFileDto, FileParamDto, FileUploadService } from 'src/app/app.service';
 import { ExpenseAttachmentModel } from 'src/database/models/expenseAttachment.model';
-import { AddFileDto } from './dto/addFile.dto';
 import { AttachmentModel } from 'src/database/models/attachment.model';
 
 export interface ResponseData {
@@ -196,6 +195,16 @@ export class ExpensesService {
         data: {},
       }
     }
+    const expenseAttachment = await this.expenseAttachmentModel.query()
+    .findOne({expenseId: expense.id, attachmentId: payload.attachId})
+
+    if (!expenseAttachment) {
+      return {
+        success: false,
+        message: "attachment on this Expense not found",
+        data: {},
+      }
+    }
 
     await this.expenseAttachmentModel.query()
     .delete()
@@ -228,38 +237,42 @@ export class ExpensesService {
         data: {},
       }
     }
+    const allFileIds = []
+    for (let file of files) {
+      const prepFile: FileParamDto = {
+        originalname: file.originalname,
+        buffer: file.buffer,
+        mimetype: file.mimetype,
+        size: file.size,
+      }
 
+      const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
+      if (!uploadedFileService.success) {
+        return {
+          success: false,
+          message: uploadedFileService.message,
+          data: uploadedFileService.data,
+        }
+      }
+      allFileIds.push(uploadedFileService.data.id)
+    }
+
+    for (let attId of expense.attachments) {
+      this.fileUploadService.removeFile(attId.id,currentUser)
+    }
     const trx = await this.modelClass.startTransaction()
     try {
       // const uploadedFileService = await this.fileUploadService.removeFile(prepFile,currentUser);
-      const deletedExpenseAttach = await this.expenseAttachmentModel.query(trx)
+      this.expenseAttachmentModel.query(trx)
       .delete()
       .where({expenseId: id})
-      const deletedAttach = await this.attachmentModel.query(trx)
+      this.attachmentModel.query(trx)
       .delete()
       .findByIds(expense.attachments?.map(e => e.id))
-      if (!deletedExpenseAttach || !deletedAttach) {
-        throw [deletedExpenseAttach, deletedAttach]
-      }
-      for (let file of files) {
-        const prepFile: FileParamDto = {
-          originalname: file.originalname,
-          buffer: file.buffer,
-          mimetype: file.mimetype,
-          size: file.size,
-        }
-
-        const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
-        if (!uploadedFileService.success) {
-          throw {
-            message: uploadedFileService.message,
-            data: uploadedFileService.data,
-          }
-        }
-
+      for (let file of allFileIds) {
         const insertedAttach = await this.expenseAttachmentModel.query(trx)
         .insert({
-          attachmentId: uploadedFileService.data.id,
+          attachmentId: file,
           expenseId: expense.id
         });
         if (!insertedAttach) {

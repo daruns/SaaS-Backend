@@ -5,6 +5,8 @@ import { ProjectLeaderModel } from './projectLeader.model';
 import { ProjectMemberModel } from './projectMember.model';
 import { UserModel } from './user.model';
 import { TaskModel } from './task.model';
+import { ProjectAttachmentModel } from './projectAttachment.model';
+import { AttachmentModel } from './attachment.model';
 
 const tableName = 'projects'
 export class ProjectModel extends BaseModel {
@@ -28,6 +30,8 @@ export class ProjectModel extends BaseModel {
   leaderUsers: UserModel[]
   memberUsers: UserModel[]
   tasks: TaskModel[]
+  projectAttachments: ProjectAttachmentModel[];
+  attachments: AttachmentModel[];
   // boards: BoardModel[];
 
 
@@ -92,7 +96,27 @@ export class ProjectModel extends BaseModel {
           from: `${tableName}.id`,
           to: 'tasks.projectId',
         },
-    }
+    },
+    projectAttachments: {
+      modelClass: `${__dirname}/projectAttachment.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `${tableName}.id`,
+        to: 'projectAttachments.projectId',
+      },
+    },
+    attachments: {
+      modelClass: `${__dirname}/attachment.model`,
+      relation: Model.ManyToManyRelation,
+      join: {
+        from: `${tableName}.id`,
+        through: {
+          from: 'projectAttachments.projectId',
+          to: 'projectAttachments.attachmentId'
+        },
+        to: 'attachments.id',
+      },
+    },
     // boards: {
     //   modelClass: `${__dirname}/board.model`,
     //   relation: Model.HasManyRelation,

@@ -10,6 +10,8 @@ import {
   UseGuards,
   Req,
   Request,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { ClientsService } from './clients.service';
@@ -17,6 +19,7 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateClientUserDto } from './dto/create-client-user.dto';
 import { UpdateClientUserDto } from './dto/update-client-user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(JwtAuthGuard)
 @Controller('clients')
@@ -38,14 +41,19 @@ export class ClientsController {
   }
 
   @Post('create')
-  async create(@Body() client: CreateClientDto, @Request() req) {
-    const createdClient = await this.clientsService.create(client, req.user);
+  @UseInterceptors(FileInterceptor("logo"))
+  async create(@Body() payload: CreateClientDto, @UploadedFile() file: Express.Multer.File, @Request() req) {
+    payload.logo = file
+    const createdClient = await this.clientsService.create(payload, req.user);
     return createdClient
   }
 
   @Post('update')
   // update commnet on client
-  update(@Body() payload: UpdateClientDto, @Request() req) {
+  @UseInterceptors(FileInterceptor("logo"))
+  update(@Body() payload: UpdateClientDto, @UploadedFile() file: Express.Multer.File, @Request() req) {
+    payload.logo = file
+    payload.id = Number(payload.id)
     return this.clientsService.update(payload, req.user);
   }
 

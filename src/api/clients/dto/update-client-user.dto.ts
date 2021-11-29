@@ -1,10 +1,9 @@
 import { IsEmail, IsNotEmpty, MinLength, MaxLength, IsOptional, IsString, IsInt } from 'class-validator';
-import { ToPhone } from 'src/app/app.service';
+import { FileParamDto, ToPhone } from 'src/app/app.service';
 
 export class UpdateClientUserDto {
   @IsNotEmpty()
-  @IsInt()
-  id: number
+  id: string|number
   name: string
   @IsOptional()
   @MinLength(8, { message: 'Password must have 8 chars' })

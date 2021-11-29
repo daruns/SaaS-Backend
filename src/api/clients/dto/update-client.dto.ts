@@ -1,13 +1,12 @@
 import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsOptional } from 'class-validator';
-import { PhoneNumberRegex } from 'src/app/app.service'
+import { FileParamDto, PhoneNumberRegex } from 'src/app/app.service'
 import { CreateClientUserDto } from './create-client-user.dto';
 
 export class UpdateClientDto {
   @IsNotEmpty({ message: 'ClientId is required' })
-  @IsInt({ message: 'Client id must be integer' })
-  id: number;
+  id: number|string
   name: string
-  logo: string
+  logo: string|FileParamDto
   @IsString()
   @IsOptional()
   @Matches(PhoneNumberRegex.reg)

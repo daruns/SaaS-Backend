@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ProjectModel } from 'src/database/models/project.model';
-import { ModelClass, raw } from 'objection';
+import { ModelClass } from 'objection';
 import moment = require('moment');
 import { CreateProjectDto } from './dto/create-project.dto';
 import { throwError } from 'rxjs';
@@ -9,11 +9,11 @@ import { ProjectLeaderModel } from 'src/database/models/projectLeader.model';
 import { ProjectMemberModel } from 'src/database/models/projectMember.model';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { UserModel } from 'src/database/models/user.model';
-import { BoardModel } from 'src/database/models/board.model';
-import { BoardAttributeModel } from 'src/database/models/boardAttribute.model';
-import { finished } from 'stream';
 import { AddLeadersToProjectDto } from './dto/add-leadersToProject.dto';
 import { AddMembersToProjectDto } from './dto/add-membersToProject.dto';
+import { ProjectAttachmentModel } from 'src/database/models/projectAttachment.model';
+import { AddFileDto, FileParamDto, FileUploadService } from 'src/app/app.service';
+import { AttachmentModel } from 'src/database/models/attachment.model';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -27,9 +27,10 @@ export class ProjectsService {
     @Inject('ProjectLeaderModel') private leaderModelClass: ModelClass<ProjectLeaderModel>,
     @Inject('ProjectMemberModel') private memberModelClass: ModelClass<ProjectMemberModel>,
     @Inject('UserModel') private userModel: ModelClass<UserModel>,
-    @Inject('BoardModel') private boardModelClass: ModelClass<BoardModel>,
-    @Inject('BoardAttributeModel') private boardAttributeClass: ModelClass<BoardAttributeModel>,
+    @Inject('ProjectAttachmentModel') private projectAttachmentModel: ModelClass<ProjectAttachmentModel>,
+    @Inject('AttachmentModel') private attachmentModel: ModelClass<AttachmentModel>,
     private readonly clientsSerive: ClientsService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   // project list
@@ -40,17 +41,17 @@ export class ProjectsService {
       selectMemberNameAndId(builder) {
         builder.select('name');
         builder.select('users.id as userId');
-        builder.select('projectMemberUsers.id as memberId');
       },
       selectLeaderNameAndId(builder) {
         builder.select('name');
         builder.select('users.id as userId');
-        builder.select('projectLeaderUsers.id as leaderId');
       },
       selectTaskMemberNameAndId(builder) {
         builder.select('name');
         builder.select('users.id as userId');
-        builder.select('taskMemberUsers.id as memberId');
+      },
+      selectAttachUrl(builder) {
+        builder.select('url');
       },
     })
     .withGraphFetched(
@@ -59,7 +60,8 @@ export class ProjectsService {
           client,
           memberUsers(selectMemberNameAndId),
           leaderUsers(selectLeaderNameAndId),
-          tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]]
+          tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
+          attachments
         ]
       `
     )
@@ -81,17 +83,18 @@ export class ProjectsService {
         selectMemberNameAndId(builder) {
           builder.select('name');
           builder.select('users.id as userId');
-          builder.select('projectMemberUsers.id as memberId');
         },
         selectLeaderNameAndId(builder) {
           builder.select('name');
           builder.select('users.id as userId');
-          builder.select('projectLeaderUsers.id as leaderId');
         },
         selectTaskMemberNameAndId(builder) {
           builder.select('name');
           builder.select('users.id as userId');
-          builder.select('taskMemberUsers.id as memberId');
+        },
+        selectAttachUrl(builder) {
+          builder.select('attachments.id as attachId');
+          builder.select('url');
         },
       })
       .withGraphFetched(
@@ -100,7 +103,8 @@ export class ProjectsService {
             client,
             memberUsers(selectMemberNameAndId),
             leaderUsers(selectLeaderNameAndId),
-            tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]]
+            tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
+            attachments
           ]
         `
       )
@@ -464,6 +468,181 @@ export class ProjectsService {
         success: false,
         message: 'Members doesnt exist on this project.',
         data: {},
+      };
+    }
+  }
+
+  async removeFile(payload: {id: number,attachId: number}, currentUser): Promise<ResponseData> {
+    const project = await this.modelClass.query()
+    .where({brandCode: currentUser.brandCode})
+    .findById(payload.id)
+    .withGraphFetched({attachments: {}});
+    if (!project) {
+      return {
+        success: false,
+        message: "Project not found",
+        data: {},
+      }
+    }
+    const projectAttachment = await this.projectAttachmentModel.query()
+    .findOne({projectId: project.id, attachmentId: payload.attachId})
+
+    if (!projectAttachment) {
+      return {
+        success: false,
+        message: "attachment on this Project not found",
+        data: {},
+      }
+    }
+    await this.projectAttachmentModel.query()
+    .delete()
+    .where({attachmentId: payload.attachId,projectId: payload.id})
+    const deletedFileService = await this.fileUploadService.removeFile(payload.attachId,currentUser);
+    if (!deletedFileService.success) {
+      return deletedFileService
+    }
+    return {
+      success: true,
+      message: 'Project Attachments removed successfully.',
+      data: {},
+    }
+  }
+
+  async replaceFiles(payload: AddFileDto, currentUser): Promise<ResponseData> {
+    const {files,id} = payload
+    const project = await this.modelClass.query()
+    .where({brandCode: currentUser.brandCode})
+    .findById(id)
+    .withGraphFetched({attachments: {}});
+    if (!project) {
+      return {
+        success: false,
+        message: "Project not found",
+        data: {},
+      }
+    }
+
+    const allFileIds = []
+    for (let file of files) {
+      const prepFile: FileParamDto = {
+        originalname: file.originalname,
+        buffer: file.buffer,
+        mimetype: file.mimetype,
+        size: file.size,
+      }
+
+      const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
+      if (!uploadedFileService.success) {
+        return {
+          success: false,
+          message: uploadedFileService.message,
+          data: uploadedFileService.data,
+        }
+      }
+      allFileIds.push(uploadedFileService.data.id)
+    }
+    for (let attId of project.attachments) {
+      this.fileUploadService.removeFile(attId.id,currentUser)
+    }
+
+    const trx = await this.modelClass.startTransaction()
+    try {
+      this.projectAttachmentModel.query(trx)
+      .delete()
+      .where({projectId: id})
+      this.attachmentModel.query(trx)
+      .delete()
+      .findByIds(project.attachments?.map(e => e.id))
+      for (let attachId of allFileIds) {
+        const insertedAttach = await this.projectAttachmentModel.query(trx)
+        .insert({
+          attachmentId: attachId,
+          projectId: project.id
+        });
+        if (!insertedAttach) {
+          throw {
+            message: "couldnt insert projectAttachment on project",
+            reason: insertedAttach,
+          }
+        }
+      }
+
+      await trx.commit();
+      return {
+        success: true,
+        message: 'Project Attachments replaced successfully.',
+        data: {},
+      }
+    } catch (err) {
+      await trx.rollback();
+      return {
+        success: false,
+        message: `Something went wrong. ProjectAttachments were not replaced.`,
+        data: err,
+      };
+    }
+  }
+
+  async addFile(payload: AddFileDto, currentUser): Promise<ResponseData> {
+    const {files,id} = payload
+    const project = await this.modelClass.query()
+    .where({brandCode: currentUser.brandCode})
+    .findById(id);
+    if (!project) {
+      return {
+        success: false,
+        message: "Project not found",
+        data: {},
+      }
+    }
+    const allFileIds = []
+    for (let file of files) {
+      const prepFile: FileParamDto = {
+        originalname: file.originalname,
+        buffer: file.buffer,
+        mimetype: file.mimetype,
+        size: file.size,
+      }
+
+      const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
+      if (!uploadedFileService.success) {
+        return {
+          success: false,
+          message: uploadedFileService.message,
+          data: uploadedFileService.data,
+        }
+      }
+      allFileIds.push(uploadedFileService.data.id)
+    }
+
+    const trx = await this.modelClass.startTransaction()
+    try {
+      for (let attachId of allFileIds) {
+        const insertedAttach = await this.projectAttachmentModel.query(trx)
+        .insert({
+          attachmentId: attachId,
+          projectId: project.id
+        });
+        if (!insertedAttach) {
+          throw {
+            message: "couldnt insert projectAttachment on project",
+            data: insertedAttach,
+          }
+        }
+      }
+
+      await trx.commit();
+      return {
+        success: true,
+        message: 'Project Attachments added successfully.',
+        data: {},
+      }
+    } catch (err) {
+      await trx.rollback();
+      return {
+        success: false,
+        message: `Something went wrong. ProjectAttachments were not inserted.`,
+        data: err,
       };
     }
   }
