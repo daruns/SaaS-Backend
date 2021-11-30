@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<any> {
     table.string("phoneNumbers")
     table.string("clientType")
     table.string("businessType")
-    table.string("email").index().unique();
+    table.string("email").index();
     table.string("website")
     table.string("address")
     table.integer("rate")

@@ -6,6 +6,9 @@ import { FileParamDto, FileUploadService, ResponseData } from 'src/app/app.servi
 import { CreateClientUserDto } from './dto/create-client-user.dto';
 import { UserModel } from 'src/database/models/user.model';
 import { UpdateClientUserDto } from './dto/update-client-user.dto';
+import { UpdateClientDto } from './dto/update-client.dto';
+import { CreateClientDto } from './dto/create-client.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ClientsService {
@@ -55,8 +58,8 @@ export class ClientsService {
         meetings: {},
         socialMedias: {},
       });
-    // delete client.user.password
     if (client) {
+      delete client.user?.password
       return {
         success: true,
         message: 'Client details fetch successfully.',
@@ -72,7 +75,7 @@ export class ClientsService {
   }
 
   // Create client
-  async create(payload, currentUser): Promise<ResponseData> {
+  async create(payload:CreateClientDto, currentUser): Promise<ResponseData> {
     const newClient = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findOne({email: payload.email})
@@ -85,13 +88,15 @@ export class ClientsService {
       };
     }
 
-    payload.clientType = payload.clientType.toLowerCase()
+    payload.clientType = payload.clientType?.toLowerCase()
     if (!newClient) {
+      let preplogo: string = ""
       if (payload.logo) {
         const logoUploaded: FileParamDto = payload.logo
         const fileUploaded = await this.fileUploadService.addFile(logoUploaded, currentUser)
         if (fileUploaded.success) {
-          payload.logo = fileUploaded.data.url
+          preplogo = fileUploaded.data.url
+          console.log(fileUploaded)
         } else return fileUploaded
       }
       let result : any
@@ -101,7 +106,7 @@ export class ClientsService {
         clientType : payload.clientType,
         businessType : payload.businessType,
         email : payload.email,
-        logo: payload.logo,
+        logo: preplogo,
         website : payload.website,
         address : payload.address,
         rate : payload.rate,
@@ -143,24 +148,26 @@ export class ClientsService {
     }
   }
 
-  async update(payload,currentUser): Promise<ResponseData> {
+  async update(payload: UpdateClientDto,currentUser): Promise<ResponseData> {
     const client = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findById(payload.id);
     if (client) {
+      let preplogo: string = client.logo
       if (payload.logo) {
         const logoUploaded: FileParamDto = payload.logo
         const fileUploaded = await this.fileUploadService.addFile(logoUploaded, currentUser)
         if (fileUploaded.success) {
-          payload.logo = fileUploaded.data.url
+          preplogo = fileUploaded.data.url
           console.log(fileUploaded)
         } else return fileUploaded
       }
+      console.log(payload)
       const updatedClient = await this.modelClass
         .query()
         .update({
           name: payload.name ? payload.name : client.name,
-          logo: payload.logo ? payload.logo : client.logo,
+          logo: preplogo,
           phoneNumbers: payload.phoneNumbers ? payload.phoneNumbers : client.phoneNumbers,
           clientType: payload.clientType ? payload.clientType : client.clientType,
           businessType: payload.businessType ? payload.businessType : client.businessType,
@@ -169,7 +176,6 @@ export class ClientsService {
           rate: payload.rate ? payload.rate : client.rate,
           zipCode: payload.zipCode ? payload.zipCode : client.zipCode,
           status: payload.status ? payload.status : client.status,
-          deleted: payload.deleted ? payload.deleted : client.deleted,
           updatedBy: currentUser.username,
         })
         .where({ id: payload.id });
@@ -177,6 +183,31 @@ export class ClientsService {
         success: true,
         message: 'Client details updated successfully.',
         data: updatedClient,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'No client found.',
+        data: {},
+      };
+    }
+  }
+
+  // Delete client
+  async deleteById(payload: {id: number}, currentUser): Promise<ResponseData> {
+    const clients = await this.modelClass
+      .query()
+      .findOne({
+        brandCode: currentUser.brandCode,
+        id: payload.id,
+        userId: null,
+      })
+      .delete();
+    if (clients) {
+      return {
+        success: true,
+        message: 'Client deleted successfully.',
+        data: clients,
       };
     } else {
       return {
@@ -208,6 +239,10 @@ export class ClientsService {
           message: 'User Already exist with this Username address.',
           data: {},
         };
+      }
+      if (payload.password) {
+        const hashedPassword = await bcrypt.hash(payload.password, 10);
+        payload.password = hashedPassword
       }
       const userParams:CreateClientUserDto = payload
       delete userParams.id
@@ -251,17 +286,26 @@ export class ClientsService {
     const client = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findById(payload.id)
-    .withGraphFetched({user:true});
-    delete client.user.password
-    if (client) {
-      const userDataById = await this.userClass.query().findById(client.user.id)
-      if (!userDataById) {
-        return {
-          success: false,
-          message: 'User Doesnt exist with for this Client.',
-          data: {},
-        }
+    .withGraphFetched({
+      user: {}
+    });
+    if (!client) {
+      return {
+        success: false,
+        message: 'This client Doesnt exist.',
+        data: {},
       }
+    }
+    const userDataById = await this.userClass.query().findById(client.user.id)
+    if (!userDataById) {
+      return {
+        success: false,
+        message: 'User Doesnt exist with for this Client.',
+        data: {},
+      }
+    }
+    delete client.user?.password
+    if (client) {
       let userParams:UpdateClientUserDto = {
         id: userDataById.id,
         updatedBy: currentUser.username,
@@ -292,27 +336,37 @@ export class ClientsService {
     }
   }
 
-  // Delete client
-  async deleteById(payload: {id: number}, currentUser): Promise<ResponseData> {
-    const clients = await this.modelClass
+  // Delete userClient
+  async removeUser(payload: {id: number, userId: number}, currentUser): Promise<ResponseData> {
+    const client = await this.modelClass
       .query()
       .findOne({
         brandCode: currentUser.brandCode,
-        id: payload
+        id: payload.id,
+        userId: payload.userId,
       })
-      .delete();
-    if (clients) {
-      return {
-        success: true,
-        message: 'Client deleted successfully.',
-        data: clients,
-      };
-    } else {
+    const clientUser = await this.userClass
+      .query()
+      .findOne({id: payload.userId, brandCode: currentUser.brandCode})
+    if (!client) {
       return {
         success: false,
-        message: 'No client found.',
+        message: 'No client with this userId found.',
         data: {},
       };
     }
+    if (clientUser) {
+      return {
+        success: false,
+        message: 'user couldnt be found on this client.',
+        data: {},
+      };
+    }
+    this.usersService.delete(payload, currentUser)
+    return {
+      success: true,
+      message: 'Client User deleted successfully.',
+      data: clientUser,
+    };
   }
 }

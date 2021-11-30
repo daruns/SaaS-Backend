@@ -20,7 +20,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateClientUserDto } from './dto/create-client-user.dto';
 import { UpdateClientUserDto } from './dto/update-client-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import { FileParamDto } from "src/app/app.service";
 @UseGuards(JwtAuthGuard)
 @Controller('clients')
 export class ClientsController {

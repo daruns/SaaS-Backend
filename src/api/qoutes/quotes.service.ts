@@ -3,15 +3,11 @@ import { QuoteModel } from 'src/database/models/quote.model';
 import { QuoteItemModel } from 'src/database/models/quoteItem.model';
 import { ModelClass } from 'objection';
 import moment = require('moment');
-import { map } from 'rxjs/operators';
-import { isIdentifier } from 'typescript';
-import { CreateQuoteDto, CreateQuoteItemDto } from './dto/create-quote.dto';
-import { PassCreateQuoteDto, PassCreateQuoteItemDto } from './dto/passCreate-quote.dto';
-import { stringify } from 'querystring';
+import { CreateQuoteItemDto } from './dto/create-quote.dto';
+import { PassCreateQuoteDto } from './dto/passCreate-quote.dto';
 import { InventoryItemsService } from '../inventoryItems/inventoryItems.service';
 import { ServiceItemsService } from '../serviceItems/serviceItems.service';
 import { NonInventoryItemsService } from '../nonInventoryItems/nonInventoryItems.service';
-import { throwError } from 'rxjs';
 import { ClientsService } from '../clients/clients.service';
 import { ClientContactsService } from '../clientContacts/clientContacts.service';
 import { SubServiceItemsService } from '../subServiceItems/subServiceItems.service';
@@ -263,7 +259,7 @@ export class QuotesService {
         data: {},
       };
     }
-
+    console.log(quotePayload)
     const quote = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
     .findById(quotePayload.id);
@@ -368,7 +364,7 @@ export class QuotesService {
 
           const createdQuoteItem = await this.quoteItemModel.query(trx)
           .insert(finalItem);
-          
+
           if (createdQuoteItem) {
             const invservnonItem = {qty: finalItem['qty'], id: finalItem['itemId']}
             if (item.category === "inventoryItem") {
@@ -420,7 +416,7 @@ export class QuotesService {
           success: true,
           message: 'Quote details updated successfully',
           data: result,
-        };  
+        };
       } catch (err) {
         await trx.rollback();
         result = err

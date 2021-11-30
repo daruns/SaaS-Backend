@@ -16,7 +16,6 @@ export class CreateProjectDto {
   rateType: string
   priority: string
   description: string
-  // attachments: 
   @IsNotEmpty()
   clientId: number
   @IsNotEmpty()

@@ -75,6 +75,15 @@ export const ToPhone = Transform(
   },
   { toClassOnly: true },
 );
+export const ToRate = Transform(
+  (value: string|number) => {
+    const parsed = Number(value);
+    if (parsed === NaN) return false;
+    if (!(parsed >= 0) && !(parsed < 11)) return false;
+    return parsed;
+  },
+  { toClassOnly: true },
+);
 
 @Injectable()
 export class AppService {

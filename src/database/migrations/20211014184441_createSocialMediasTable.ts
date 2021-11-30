@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
     table.string("name")
-    table.string("linkAddress").index().unique()
+    table.string("linkAddress").index();
     table.string("addressDomain")
     table
       .integer('clientId')

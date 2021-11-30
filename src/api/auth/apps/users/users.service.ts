@@ -305,11 +305,11 @@ export class UsersService {
   }
 
   // Delete user before save encrypt password
-  async delete(payload): Promise<ResponseData> {
+  async delete(payload, currentUser): Promise<ResponseData> {
     const user = await this.modelClass
       .query()
       .delete()
-      .where({ id: payload.id });
+      .where({ id: payload.id, brandCode: currentUser.brandCode });
     if (user) {
       return {
         success: true,

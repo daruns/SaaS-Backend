@@ -66,7 +66,7 @@ export class UsersController {
   }
 
   @Post('delete')
-  delete(@Body() user) {
-    return this.usersService.delete(user);
+  delete(@Body() user, @Req() req) {
+    return this.usersService.delete(user, req.user);
   }
 }

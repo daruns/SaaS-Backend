@@ -1,4 +1,6 @@
-import { CreateQuoteItemDto } from './create-quote.dto';
+import {IsInt, IsDate, IsNotIn } from 'class-validator';
+import { isDate } from 'moment';
+import { CreateQuoteDto, CreateQuoteItemDto } from './create-quote.dto';
 
 export class PassCreateQuoteDto {
   quoteNumber: string
