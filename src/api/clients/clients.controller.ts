@@ -62,6 +62,7 @@ export class ClientsController {
     const addedUser = await this.clientsService.addUser(clientUser, req.user);
     return addedUser
   }
+
   @Post('editUser')
   // editUser commnet on client
   editUser(@Body() payload: UpdateClientUserDto, @Request() req) {
@@ -70,7 +71,13 @@ export class ClientsController {
 
   @Post('delete')
   // delete client by id
-  deleteById(@Body() payload, @Request() req) {
-    return this.clientsService.deleteById(payload.id, req.user);
+  deleteById(@Body() payload: {id: number}, @Request() req) {
+    return this.clientsService.deleteById(payload, req.user);
+  }
+
+  @Post('removeUser')
+  // delete client by id
+  removeUser(@Body() payload: {id: number, userId: number}, @Request() req) {
+    return this.clientsService.removeUser(payload, req.user);
   }
 }

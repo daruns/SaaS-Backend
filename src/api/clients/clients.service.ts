@@ -195,19 +195,29 @@ export class ClientsService {
 
   // Delete client
   async deleteById(payload: {id: number}, currentUser): Promise<ResponseData> {
-    const clients = await this.modelClass
+    const client = await this.modelClass
       .query()
       .findOne({
         brandCode: currentUser.brandCode,
         id: payload.id,
-        userId: null,
       })
-      .delete();
-    if (clients) {
+    if (client) {
+      this.modelClass
+      .query()
+      .findOne({
+        brandCode: currentUser.brandCode,
+        id: payload.id,
+      }).delete();
+      if (client.userId) {
+        this.userClass
+        .query()
+        .findOne({id: client.userId, brandCode: currentUser.brandCode})
+        .delete()
+      }
       return {
         success: true,
         message: 'Client deleted successfully.',
-        data: clients,
+        data: {},
       };
     } else {
       return {
@@ -366,7 +376,7 @@ export class ClientsService {
     return {
       success: true,
       message: 'Client User deleted successfully.',
-      data: clientUser,
+      data: {},
     };
   }
 }
