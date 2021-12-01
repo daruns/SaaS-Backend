@@ -3,8 +3,6 @@ import { FileParamDto, PhoneNumberRegex, ToPhone, SkipEmpty } from 'src/app/app.
 
 export class EditProfileDto{
 	@IsOptional()
-	@SkipEmpty
-	@IsOptional({message: "password must be longer than 8 characters"})
 	password: string
 	@IsOptional()
 	@ToPhone
