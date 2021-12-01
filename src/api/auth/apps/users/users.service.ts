@@ -208,7 +208,7 @@ export class UsersService {
       payload.password = hashedPassword
       if (payload.avatar) {
         const avatarUploaded: FileParamDto = payload.avatar
-        const fileUploaded = await this.fileUploadService.addFile(avatarUploaded, {brandCode: payload.brandCode, username: payload.username})
+        const fileUploaded = await this.fileUploadService.addFile(avatarUploaded, "avatars", {brandCode: payload.brandCode, username: payload.username})
         if (fileUploaded.success) {
           console.log(fileUploaded.data)
           payload.avatar = fileUploaded.data.url
@@ -260,7 +260,7 @@ export class UsersService {
       }
       if (payload.avatar) {
         const avatarUploaded = payload.avatar
-        const fileUploaded = await this.fileUploadService.addFile(avatarUploaded, currentUser)
+        const fileUploaded = await this.fileUploadService.addFile(avatarUploaded, "avatars", currentUser)
         if (fileUploaded.success) {
           console.log(fileUploaded.data)
           payload.avatar = fileUploaded.data.url

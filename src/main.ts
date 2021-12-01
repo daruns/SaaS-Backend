@@ -23,7 +23,7 @@ async function bootstrap() {
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_REGION,
   })
-  console.log("AWS Region: ", config.region);
+  Logger.log(`AWS S3 Bucket Region: ${config.region}`,'AWSRigistor');
 
   // Create nestFactory instance for make server instance
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

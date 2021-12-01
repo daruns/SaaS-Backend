@@ -29,3 +29,5 @@ export class MeetingModel extends BaseModel {
     },
   };
 }
+
+export default MeetingModel

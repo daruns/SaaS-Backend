@@ -28,3 +28,5 @@ export class SubServiceItemModel extends BaseModel {
     },
   };
 }
+
+export default SubServiceItemModel

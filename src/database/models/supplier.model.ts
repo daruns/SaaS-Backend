@@ -30,3 +30,5 @@ export class SupplierModel extends BaseModel {
     },
   };
 }
+
+export default SupplierModel

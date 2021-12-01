@@ -37,3 +37,5 @@ export class BoardAttributeModel extends BaseModel {
     },
   };
 }
+
+export default BoardAttributeModel

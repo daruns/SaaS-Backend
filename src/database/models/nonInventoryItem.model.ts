@@ -17,3 +17,5 @@ export class NonInventoryItemModel extends BaseModel {
   static relationMappings = {
   };
 }
+
+export default NonInventoryItemModel

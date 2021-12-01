@@ -49,3 +49,5 @@ export class RoleModel extends BaseModel {
     },
   };
 }
+
+export default RoleModel

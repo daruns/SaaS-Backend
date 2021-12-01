@@ -35,3 +35,5 @@ export class BrandModel extends BaseModel {
     },
   };
 }
+
+export default BrandModel

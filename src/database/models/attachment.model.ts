@@ -16,3 +16,4 @@ export class AttachmentModel extends BaseModel {
   static relationMappings = {
   };
 }
+ export default AttachmentModel

@@ -33,3 +33,5 @@ export class ProjectLeaderModel extends BaseModel {
     },
   };
 }
+
+export default ProjectLeaderModel

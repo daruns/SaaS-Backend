@@ -31,3 +31,5 @@ export class QuoteItemModel extends BaseModel {
     },
   };
 }
+
+export default QuoteItemModel

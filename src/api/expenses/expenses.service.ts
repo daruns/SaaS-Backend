@@ -246,7 +246,7 @@ export class ExpensesService {
         size: file.size,
       }
 
-      const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
+      const uploadedFileService = await this.fileUploadService.addFile(prepFile, "expenses",currentUser);
       if (!uploadedFileService.success) {
         return {
           success: false,
@@ -322,7 +322,7 @@ export class ExpensesService {
           size: file.size,
         }
 
-        const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
+        const uploadedFileService = await this.fileUploadService.addFile(prepFile, "expenses", currentUser);
         if (!uploadedFileService.success) {
           throw {
             message: uploadedFileService.message,

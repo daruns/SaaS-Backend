@@ -127,3 +127,5 @@ export class ProjectModel extends BaseModel {
     // }
   };
 }
+
+export default ProjectModel

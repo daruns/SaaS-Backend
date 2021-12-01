@@ -33,3 +33,5 @@ export class ProjectAttachmentModel extends BaseModel {
     },
   };
 }
+
+export default ProjectAttachmentModel

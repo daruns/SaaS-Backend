@@ -57,3 +57,5 @@ export class QuoteModel extends BaseModel {
     },
   };
 }
+
+export default QuoteModel

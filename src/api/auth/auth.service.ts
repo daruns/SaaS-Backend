@@ -64,6 +64,7 @@ export class AuthService {
     const userFound = await this.usersService.findById(currentUser.id)
     if (userFound.success && userFound.data.brandCode === currentUser.brandCode){
       editProfileDto['id'] = currentUser.id
+      if (editProfileDto.password === "") delete editProfileDto.password
       const createUser = await this.usersService.update(editProfileDto,currentUser)
       if (createUser.success) {
         return {

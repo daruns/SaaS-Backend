@@ -24,3 +24,5 @@ export class TaxModel extends BaseModel {
     },
   };
 }
+
+export default TaxModel

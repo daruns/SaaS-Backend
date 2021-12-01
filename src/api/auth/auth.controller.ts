@@ -41,6 +41,7 @@ import { imageFileFilter } from 'src/app/app.service';
     @UseInterceptors(FileInterceptor("avatar", { fileFilter: imageFileFilter}))
     async editProfile( @Body(ValidationPipe) editProfileDto: EditProfileDto,@UploadedFile() file: Express.Multer.File, @Req() req) {
       if (!req.user.id) throw new UnauthorizedException()
+      console.log(file)
       editProfileDto.avatar = file
       const myUser = await this.authService.editProfile(editProfileDto, req.user);
       return myUser;

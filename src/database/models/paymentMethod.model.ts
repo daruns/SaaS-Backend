@@ -26,3 +26,5 @@ export class PaymentMethodModel extends BaseModel {
     },
   };
 }
+
+export default PaymentMethodModel

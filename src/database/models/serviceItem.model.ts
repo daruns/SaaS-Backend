@@ -28,3 +28,5 @@ export class ServiceItemModel extends BaseModel {
     },
   };
 }
+
+export default ServiceItemModel

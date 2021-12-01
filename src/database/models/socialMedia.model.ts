@@ -25,3 +25,5 @@ export class SocialMediaModel extends BaseModel {
     },
   };
 }
+
+export default SocialMediaModel

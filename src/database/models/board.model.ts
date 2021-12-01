@@ -46,3 +46,5 @@ export class BoardModel extends BaseModel {
     },
   };
 }
+
+export default BoardModel

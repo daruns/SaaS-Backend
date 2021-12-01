@@ -31,3 +31,5 @@ export class InvoiceItemModel extends BaseModel {
     },
   };
 }
+
+export default InvoiceItemModel

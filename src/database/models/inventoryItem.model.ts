@@ -17,3 +17,5 @@ export class InventoryItemModel extends BaseModel {
   static relationMappings = {
   };
 }
+
+export default InventoryItemModel

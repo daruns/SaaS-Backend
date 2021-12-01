@@ -63,3 +63,5 @@ export class TaskModel extends BaseModel {
 
   };
 }
+
+export default TaskModel

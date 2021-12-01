@@ -28,3 +28,5 @@ export class ExpenseItemModel extends BaseModel {
     },
   };
 }
+
+export default ExpenseItemModel

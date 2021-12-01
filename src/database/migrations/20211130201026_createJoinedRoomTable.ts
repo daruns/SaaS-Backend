@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
 
-const tableName = typeTableNameHere
+const tableName = "joinedRooms"
 export async function up(knex: Knex): Promise<any> {
   if (await knex.schema.hasTable(tableName)) {
     return;
@@ -9,7 +9,19 @@ export async function up(knex: Knex): Promise<any> {
   Logger.log('Creating ' + tableName + ' table');
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
+    table.string('brandCode')
     table.string('name');
+    table.string("socketId")
+    table.integer("userId")
+    .index()
+    .unsigned()
+    .references("id")
+    .inTable("users");
+    table.integer("roomId")
+    .index()
+    .unsigned()
+    .references("id")
+    .inTable("rooms");
 
     table.string('status');
     table.integer('deleted');

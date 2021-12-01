@@ -24,3 +24,5 @@ export class ExpenseSubCategoryModel extends BaseModel {
     },
   };
 }
+
+export default ExpenseSubCategoryModel

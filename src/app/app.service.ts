@@ -17,6 +17,18 @@ export const imageFileFilter = (req, file, callback) => {
   callback(null, true);
 };
 
+export const ToExstName = (filename) => {
+  return (`.${filename.split(".").pop()}`)
+}
+export const SkipEmpty = Transform(
+  (value: string) => {
+    const parsed = value;
+    if (parsed === "") return parsed;
+    if (!(parsed.length >= 8)) return false;
+  },
+  { toClassOnly: true },
+)
+
 export const editFileName = (req, file, callback) => {
   const name = file.originalname.split('.')[0];
   const fileExtName = extname(file.originalname);
@@ -109,13 +121,15 @@ export class FileUploadService {
     @Inject("AttachmentModel") private attachmentModel: ModelClass<AttachmentModel>
   ) {}
 
-  async addFile(file: FileParamDto, currentUser): Promise<ResponseData> {
+  async addFile(file: FileParamDto,  folder: string, currentUser): Promise<ResponseData> {
     const {buffer, originalname,size, mimetype} = file
     const params = {
       Bucket: AWS_S3_BUCKET_NAME,
       Body: buffer,
-      Key: uuid() + originalname,
-      // ACL: file.publicRead ? file.publicRead : "public-read",  ###### TODO: need to put public read for specific files
+      Key: `${folder}/` + uuid() + "." + originalname.split(".").pop(),
+      // Key: `${folder}/${Gen_v4()}.${extension}`, #### TODO: Folder will be users and client logo and expense and project
+      // ACL: file.publicRead ? file.publicRead : "public-read", ###### TODO: need to put public read for specific files
+      // ContentType: contentType,
       ACL: "public-read",
     }
     return await s3.upload(params)

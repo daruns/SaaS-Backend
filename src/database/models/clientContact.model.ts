@@ -40,3 +40,5 @@ export class ClientContactModel extends BaseModel {
     },
   };
 }
+
+export default ClientContactModel

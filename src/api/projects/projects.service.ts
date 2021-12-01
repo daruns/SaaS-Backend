@@ -532,7 +532,7 @@ export class ProjectsService {
         size: file.size,
       }
 
-      const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
+      const uploadedFileService = await this.fileUploadService.addFile(prepFile, "projects", currentUser);
       if (!uploadedFileService.success) {
         return {
           success: false,
@@ -605,7 +605,7 @@ export class ProjectsService {
         size: file.size,
       }
 
-      const uploadedFileService = await this.fileUploadService.addFile(prepFile,currentUser);
+      const uploadedFileService = await this.fileUploadService.addFile(prepFile, "projects", currentUser);
       if (!uploadedFileService.success) {
         return {
           success: false,

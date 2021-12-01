@@ -75,3 +75,5 @@ export class ClientModel extends BaseModel {
     },
   };
 }
+
+export default ClientModel

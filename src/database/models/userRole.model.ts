@@ -33,3 +33,5 @@ export class UserRoleModel extends BaseModel {
     },
   };
 }
+
+export default UserRoleModel

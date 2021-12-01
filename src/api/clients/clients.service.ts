@@ -93,7 +93,7 @@ export class ClientsService {
       let preplogo: string = ""
       if (payload.logo) {
         const logoUploaded: FileParamDto = payload.logo
-        const fileUploaded = await this.fileUploadService.addFile(logoUploaded, currentUser)
+        const fileUploaded = await this.fileUploadService.addFile(logoUploaded, "clientLogos", currentUser)
         if (fileUploaded.success) {
           preplogo = fileUploaded.data.url
           console.log(fileUploaded)
@@ -156,7 +156,7 @@ export class ClientsService {
       let preplogo: string = client.logo
       if (payload.logo) {
         const logoUploaded: FileParamDto = payload.logo
-        const fileUploaded = await this.fileUploadService.addFile(logoUploaded, currentUser)
+        const fileUploaded = await this.fileUploadService.addFile(logoUploaded, "clientLogos", currentUser)
         if (fileUploaded.success) {
           preplogo = fileUploaded.data.url
           console.log(fileUploaded)

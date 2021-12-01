@@ -29,7 +29,6 @@ module.exports = {
         }
         return next();
       }
-
     },
     seeds: {
       directory: path.join(__dirname, '/seeds'),
@@ -68,6 +67,13 @@ module.exports = {
     migrations: {
       tableName: 'migrations',
       timezone: 'GMT',
+      typeCast: function (field, next) {
+        if (field.type == 'DATETIME') {
+          console.log(field)
+          return moment(field.string()).format('YYYY-MM-DD HH:mm:ss');
+        }
+        return next();
+      }
     },
     ...knexSnakeCaseMappers(),
   },
@@ -75,4 +81,5 @@ module.exports = {
 
 Logger.log(
   `Will connect to mysql://${process.env.MYSQL_USER}@${process.env.MYSQL_HOST}/${process.env.MYSQL_DB}`,
+  'DatabaseConnector'
 );

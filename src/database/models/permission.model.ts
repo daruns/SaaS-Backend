@@ -38,3 +38,5 @@ export class PermissionModel extends BaseModel {
     },
   };
 }
+
+export default PermissionModel

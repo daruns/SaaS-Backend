@@ -33,3 +33,5 @@ export class TaskMemberModel extends BaseModel {
     },
   };
 }
+
+export default TaskMemberModel

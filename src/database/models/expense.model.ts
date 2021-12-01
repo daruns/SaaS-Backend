@@ -90,3 +90,5 @@ export class ExpenseModel extends BaseModel {
     },
   };
 }
+
+export default ExpenseModel

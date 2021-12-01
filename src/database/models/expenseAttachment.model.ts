@@ -33,3 +33,5 @@ export class ExpenseAttachmentModel extends BaseModel {
     },
   };
 }
+
+export default ExpenseAttachmentModel
