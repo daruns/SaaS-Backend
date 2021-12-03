@@ -202,14 +202,14 @@ export class ClientsService {
         id: payload.id,
       })
     if (client) {
-      this.modelClass
+      await this.modelClass
       .query()
       .findOne({
         brandCode: currentUser.brandCode,
         id: payload.id,
       }).delete();
       if (client.userId) {
-        this.userClass
+        await this.userClass
         .query()
         .findOne({id: client.userId, brandCode: currentUser.brandCode})
         .delete()
@@ -372,7 +372,7 @@ export class ClientsService {
         data: {},
       };
     }
-    this.usersService.delete(payload, currentUser)
+    await this.usersService.delete(payload, currentUser)
     return {
       success: true,
       message: 'Client User deleted successfully.',
