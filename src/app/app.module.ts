@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService, FileUploadService } from './app.service';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
@@ -14,18 +14,19 @@ import { DatabaseModule } from 'src/database/database.module';
   providers: [
     AppService,
     FileUploadService,
-    {
-      provide: APP_FILTER,
-      useClass: HttpErrorHandler,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggingInterceptor,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: TimeoutInterceptor,
-    },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: HttpErrorHandler,
+    // },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: LoggingInterceptor,
+    // },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: TimeoutInterceptor,
+    // },
   ],
 })
+
 export class AppModule {}

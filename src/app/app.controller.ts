@@ -10,10 +10,8 @@ export class AppController {
     private readonly fileUploadService: FileUploadService,
   ) {}
 
-  @Get('/upload')
-  @UseGuards(JwtAuthGuard)
-  async getHello(@Request() req,@Body() body: {id: number}) {
-    console.log(body)
-    return await this.fileUploadService.removeFile(body.id, req.user);
+  @Get('')
+  async getHello(@Request() req) {
+    return "sss";
   }
 }

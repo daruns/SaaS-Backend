@@ -1,15 +1,19 @@
 import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { UserModel } from './user.model';
+import JoinedRoomModel from './joinedRoom.model';
+import MessageModel from './message.model';
 
-const tableName = 'connectedSockets'
-export class ConnectedSocketModel extends BaseModel {
+const tableName = 'connectedUsers'
+export class ConnectedUserModel extends BaseModel {
   static tableName = tableName;
   socketId: string
   brandCode: string
   userId: number
 
   user: UserModel;
+  joinedRooms: JoinedRoomModel[];
+  messages: MessageModel[];
 
   static relationMappings = {
     joinedRooms: {
@@ -39,4 +43,4 @@ export class ConnectedSocketModel extends BaseModel {
   };
 }
 
-export default ConnectedSocketModel
+export default ConnectedUserModel

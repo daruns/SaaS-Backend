@@ -23,6 +23,7 @@ import { PaymentMethodsModule } from './paymentMethods/paymentMethods.module';
 import { ExpensesModule } from './expenses/expenses.module';
 import { AppService } from 'src/app/app.service';
 import { JoinedItemsModule } from './joinedItems/joinedItems.module';
+import { ChatsModule } from './chat/chats.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { JoinedItemsModule } from './joinedItems/joinedItems.module';
     PaymentMethodsModule,
     ExpensesModule,
     JoinedItemsModule,
+    ChatsModule,
   ],
   providers: [],
 })
