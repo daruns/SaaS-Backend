@@ -7,11 +7,11 @@ const common_1 = require("@nestjs/common");
 const validation_pipes_1 = require("./shared/pipes/validation.pipes");
 const rateLimit = require("express-rate-limit");
 const aws_sdk_1 = require("aws-sdk");
-const cors = require("cors");
+const fs_1 = require("fs");
 const port = process.env.PORT || 3000;
 const limiter = rateLimit({
     windowMs: Number(process.env.RATELIMIT_MINS) * 60 * 1000,
-    max: Number(10000),
+    max: Number(process.env.RATELIMIT_REQUEST_COUNTS),
     message: "Too many Requests from this Device and IP, please try again after an Half Hour"
 });
 async function bootstrap() {
@@ -21,22 +21,19 @@ async function bootstrap() {
         region: process.env.AWS_REGION,
     });
     common_1.Logger.log(`AWS S3 Bucket Region: ${aws_sdk_1.config.region}`, 'AWSRigistor');
-    const corsConfig = {
-        credentials: true,
-        origin: function (origin, callback) {
-            callback(null, true);
-        },
-    };
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.use(cors(corsConfig));
-    app.use(function (req, res, next) {
-        res.header("Access-Control-Allow-Origin", "http://localhost:5000");
-        res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.header("Access-Control-Allow-Credentials", "true");
-        next();
-    });
+    var httpsOptions;
+    if (process.env.NODE_ENV === "production") {
+        httpsOptions = {
+            key: fs_1.readFileSync(process.env.SSL_PATH),
+            cert: fs_1.readFileSync(process.env.SSL_PATH),
+        };
+    }
+    else {
+        httpsOptions = {};
+    }
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, httpsOptions);
     app.use(limiter);
+    app.enableCors();
     app.useGlobalPipes(new validation_pipes_1.CustomValidatePipe());
     app.useGlobalPipes(new common_1.ValidationPipe({ transform: true }));
     app.setGlobalPrefix('api/v1');
