@@ -1,12 +1,16 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app/app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { CustomValidatePipe } from './shared/pipes/validation.pipes';
 import * as rateLimit from "express-rate-limit";
 import * as helmet from "helmet";
 import { config } from "aws-sdk";
+import { readFileSync } from 'fs';
+import * as http from 'http';
+import * as https from 'https';
+
 // import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Read port number from env file
@@ -26,7 +30,19 @@ async function bootstrap() {
   Logger.log(`AWS S3 Bucket Region: ${config.region}`,'AWSRigistor');
 
   // Create nestFactory instance for make server instance
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  var httpsOptions;
+  if (process.env.NODE_ENV === "production") {
+    httpsOptions = {
+      key: readFileSync(process.env.SSL_PATH),
+      cert: readFileSync(process.env.SSL_PATH),
+    }
+  } else {
+    httpsOptions = {}
+  }
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule,
+    httpsOptions
+    );
   app.use(limiter);
 
   // const options = new DocumentBuilder()
