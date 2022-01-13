@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<any> {
     table.increments('id').unsigned().primary();
     table.string('brandCode')
     table.string('name');
-    table.string("text");
+    table.text("text");
     table.integer("userId")
     .index()
     .unsigned()
@@ -21,7 +21,8 @@ export async function up(knex: Knex): Promise<any> {
     .index()
     .unsigned()
     .references("id")
-    .inTable("rooms");
+    .inTable("rooms")
+    .onDelete('CASCADE');
 
     table.string('status');
     table.integer('deleted');

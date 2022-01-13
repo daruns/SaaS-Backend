@@ -101,9 +101,6 @@ let AuthService = class AuthService {
             },
         };
     }
-    verifyJwt(jwt) {
-        return this.jwtService.verifyAsync(jwt);
-    }
     async validateUser(username, pass) {
         const queryUser = await this.usersService.findByUsername(username);
         const user = queryUser.data;
@@ -118,6 +115,8 @@ let AuthService = class AuthService {
         return null;
     }
     async me(id) {
+        if (!id)
+            throw new common_1.UnauthorizedException();
         const queryUser = await this.usersService.findById(id);
         if (queryUser.success) {
             const user = queryUser.data;

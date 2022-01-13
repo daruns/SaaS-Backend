@@ -82,6 +82,22 @@ exports.ToPhone = class_transformer_1.Transform((value) => {
         return false;
     return parsed.number;
 }, { toClassOnly: true });
+exports.ToLower = class_transformer_1.Transform((value) => {
+    if (typeof value === 'string') {
+        return value.toLowerCase();
+    }
+    else {
+        return value;
+    }
+}, { toClassOnly: true });
+exports.DefaultToFalse = class_transformer_1.Transform((value) => {
+    if (typeof value === 'undefined') {
+        return false;
+    }
+    else {
+        return value;
+    }
+}, { toClassOnly: true });
 exports.ToRate = class_transformer_1.Transform((value) => {
     const parsed = Number(value);
     if (parsed === NaN)

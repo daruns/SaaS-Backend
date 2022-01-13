@@ -11,6 +11,8 @@ async function up(knex) {
         table.increments('id').unsigned().primary();
         table.string('brandCode');
         table.string("name");
+        table.string("avatar");
+        table.string("roomType");
         table.string("description");
         table.integer('creatorId')
             .index()

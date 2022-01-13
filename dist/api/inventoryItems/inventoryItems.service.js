@@ -81,14 +81,14 @@ let InventoryItemsService = class InventoryItemsService {
         if (inventoryItem) {
             if (inventoryItem.qty <= 0) {
                 return {
-                    success: false,
+                    success: true,
                     message: 'Couldnt Reduce the quantity of inventoryItem',
                     data: { msg: "This Item is running out of quantity." },
                 };
             }
             if (!(inventoryItem.qty >= item.qty)) {
                 return {
-                    success: false,
+                    success: true,
                     message: 'Couldnt Reduce the quantity of inventoryItem',
                     data: { msg: "New Quantity is larger than current Quantity." },
                 };
@@ -109,7 +109,7 @@ let InventoryItemsService = class InventoryItemsService {
             }
             else {
                 return {
-                    success: false,
+                    success: true,
                     message: 'InventoryItem details did not updated.',
                     data: updatedInventoryItem,
                 };
@@ -117,7 +117,7 @@ let InventoryItemsService = class InventoryItemsService {
         }
         else {
             return {
-                success: false,
+                success: true,
                 message: 'No inventoryItem found.',
                 data: {},
             };

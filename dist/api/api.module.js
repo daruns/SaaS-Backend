@@ -32,6 +32,7 @@ const expenses_module_1 = require("./expenses/expenses.module");
 const app_service_1 = require("../app/app.service");
 const joinedItems_module_1 = require("./joinedItems/joinedItems.module");
 const chats_module_1 = require("./chat/chats.module");
+const socialMediaStudios_module_1 = require("./socialMediaStudios/socialMediaStudios.module");
 let ApiModule = class ApiModule {
 };
 ApiModule = __decorate([
@@ -61,6 +62,7 @@ ApiModule = __decorate([
             expenses_module_1.ExpensesModule,
             joinedItems_module_1.JoinedItemsModule,
             chats_module_1.ChatsModule,
+            socialMediaStudios_module_1.SocialMediaStudiosModule,
         ],
         providers: [],
     })

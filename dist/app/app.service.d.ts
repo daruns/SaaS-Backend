@@ -29,6 +29,8 @@ export interface ResponseData {
     readonly data: any;
 }
 export declare const ToPhone: (target: any, key: string) => void;
+export declare const ToLower: (target: any, key: string) => void;
+export declare const DefaultToFalse: (target: any, key: string) => void;
 export declare const ToRate: (target: any, key: string) => void;
 export declare class AppService {
     getHello(): Promise<ResponseData>;

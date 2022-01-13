@@ -22,7 +22,6 @@ export declare class AuthService {
     signUp(signupDto: SignupDto): Promise<ResponseData>;
     editProfile(editProfileDto: EditProfileDto, currentUser: any): Promise<ResponseData>;
     signIn(user: any): Promise<ResponseData>;
-    verifyJwt(jwt: string): Promise<any>;
     validateUser(username: string, pass: string): Promise<Record<null, QueryAuthUser>>;
     me(id: number): Promise<any>;
 }

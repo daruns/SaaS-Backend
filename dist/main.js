@@ -35,7 +35,12 @@ async function bootstrap() {
     app.use(limiter);
     app.enableCors();
     app.useGlobalPipes(new validation_pipes_1.CustomValidatePipe());
-    app.useGlobalPipes(new common_1.ValidationPipe({ transform: true }));
+    app.useGlobalPipes(new common_1.ValidationPipe({
+        transform: true,
+        transformOptions: {
+            enableImplicitConversion: true,
+        },
+    }));
     app.setGlobalPrefix('api/v1');
     common_1.Logger.log(`Server ready at http://127.0.0.1:${port} `, 'ServerStarted');
     await app.listen(port);

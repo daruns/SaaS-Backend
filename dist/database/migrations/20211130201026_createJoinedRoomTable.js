@@ -21,7 +21,8 @@ async function up(knex) {
             .index()
             .unsigned()
             .references("id")
-            .inTable("rooms");
+            .inTable("rooms")
+            .onDelete('CASCADE');
         table.string('status');
         table.integer('deleted');
         table.string('createdBy');

@@ -24,6 +24,7 @@ import { ExpensesModule } from './expenses/expenses.module';
 import { AppService } from 'src/app/app.service';
 import { JoinedItemsModule } from './joinedItems/joinedItems.module';
 import { ChatsModule } from './chat/chats.module';
+import { SocialMediaStudiosModule } from './socialMediaStudios/socialMediaStudios.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { ChatsModule } from './chat/chats.module';
     ExpensesModule,
     JoinedItemsModule,
     ChatsModule,
+    SocialMediaStudiosModule,
   ],
   providers: [],
 })

@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, Req } from '@nestjs/common';
+import { Inject, Injectable, Logger, Req, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { SignupDto } from 'src/api/auth/dto/signup.dto';
@@ -120,6 +120,7 @@ export class AuthService {
   }
 
   async me(id: number) {
+    if (!id) throw new UnauthorizedException()
     const queryUser = await this.usersService.findById(id);
     if (queryUser.success) {
       const user = queryUser.data;

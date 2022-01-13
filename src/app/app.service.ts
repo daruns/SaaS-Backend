@@ -87,6 +87,28 @@ export const ToPhone = Transform(
   },
   { toClassOnly: true },
 );
+export const ToLower = Transform(
+  (value: any) => {
+    if (typeof value === 'string') {
+      return value.toLowerCase();
+    } else {
+      return value
+    }
+  },
+  { toClassOnly: true },
+);
+
+export const DefaultToFalse = Transform(
+  (value: any) => {
+    if (typeof value === 'undefined') {
+      return false;
+    } else {
+      return value
+    }
+  },
+  { toClassOnly: true },
+);
+
 export const ToRate = Transform(
   (value: string|number) => {
     const parsed = Number(value);

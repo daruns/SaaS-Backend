@@ -59,7 +59,12 @@ async function bootstrap() {
   // Custome validation on request using pipe and class-validator
   app.enableCors();
   app.useGlobalPipes(new CustomValidatePipe());
-  app.useGlobalPipes(new ValidationPipe({transform: true}));
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true, // allow conversion underneath
+    },
+  }));
 
   // Add prefix to all api for request
   app.setGlobalPrefix('api/v1');

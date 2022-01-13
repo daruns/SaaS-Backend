@@ -18,7 +18,8 @@ export async function up(knex: Knex): Promise<any> {
     .index()
     .unsigned()
     .references("id")
-    .inTable("messages");
+    .inTable("messages")
+    .onDelete('CASCADE');
 
     table.string('status');
     table.integer('deleted');
