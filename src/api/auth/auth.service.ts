@@ -120,14 +120,16 @@ export class AuthService {
   }
 
   async me(id: number) {
-    if (!id) throw new UnauthorizedException()
-    const queryUser = await this.usersService.findById(id);
-    if (queryUser.success) {
-      const user = queryUser.data;
-      return user;
+    if (typeof id !== 'number') {
+      throw new UnauthorizedException()
     } else {
-      return null
+      const queryUser = await this.usersService.findById(id);
+      if (queryUser.success) {
+        const user = queryUser.data;
+        return user;
+      }
     }
+    return null
   }
 }
 

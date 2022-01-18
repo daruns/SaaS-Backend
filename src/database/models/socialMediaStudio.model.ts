@@ -22,12 +22,21 @@ export class SocialMediaStudioModel extends BaseModel {
   creatorId: number
   description: string
 
+  creator: UserModel;
   client: ClientModel;
   users: UserModel[];
   medias: MediaModel[];
   socialMediaStudioUsers: SocialMediaStudioUserModel[];
 
   static relationMappings = {
+    creator: {
+      modelClass: `${__dirname}/user.model`,
+      relation: Model.BelongsToOneRelation,
+      join: {
+        from: `${tableName}.creatorId`,
+        to: 'users.id'
+      }
+    },
     // list of all socialMediaStudio on current user
     medias: {
       modelClass: `${__dirname}/media.model`,

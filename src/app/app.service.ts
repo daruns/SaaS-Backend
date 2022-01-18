@@ -9,6 +9,7 @@ import * as multerS3 from 'multer-s3';
 import  { v4 as uuid} from "uuid"
 import { AttachmentModel } from 'src/database/models/attachment.model';
 import { ModelClass } from 'objection';
+import moment = require('moment');
 
 export const imageFileFilter = (req, file, callback) => {
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -87,6 +88,41 @@ export const ToPhone = Transform(
   },
   { toClassOnly: true },
 );
+
+export const DefaultToNow = Transform(
+  (value: any) => {
+    if (moment(value).isValid()) {
+      value = moment(value).format('YYYY-MM-DD HH:mm:ss')
+    }
+    if (!moment(value,'YYYY-MM-DD HH:mm', true).isValid()) {
+      const finVal = moment(value,'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss').toString()
+      return finVal
+    } else if (!moment(value,'YYYY-MM-DD HH:mm:ss',true).isValid()) {
+      const finVal = moment(value,'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss').toString()
+      return finVal
+    } else {
+      const finVal = moment(new Date()).format('YYYY-MM-DD HH:mm:ss').toString()
+      return finVal
+    }
+  },
+  {toClassOnly: true}
+)
+
+export const ToInteger = Transform(
+  (value: any) => {
+    if (typeof value !== 'number') {
+      const parsedVal = parseInt(value)
+      if (parsedVal.toString() !== 'NaN') {
+        return parsedVal
+      } else {
+        return null
+      }
+    } else {
+      return value
+    }
+  },
+  {toClassOnly: true}
+)
 export const ToLower = Transform(
   (value: any) => {
     if (typeof value === 'string') {

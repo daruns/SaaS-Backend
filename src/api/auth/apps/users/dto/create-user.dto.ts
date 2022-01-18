@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Matches } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Matches, IsIn } from 'class-validator';
 import { FileParamDto, PhoneNumberRegex, ToPhone } from 'src/app/app.service'
 
 export class CreateUserDto {
@@ -18,6 +18,7 @@ export class CreateUserDto {
   @ToPhone
   phoneNumber: string
   @IsNotEmpty()
+  @IsIn(['owner','admin','agent','partner'])
   userType: string
   avatar: string|FileParamDto
   department: string

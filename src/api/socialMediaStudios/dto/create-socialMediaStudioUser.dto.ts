@@ -11,4 +11,5 @@ export class CreateSocialMediaStudioUserDto {
   @IsBoolean()
   approved: boolean
   createdBy: string
+  brandCode: string
 }
