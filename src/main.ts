@@ -7,7 +7,9 @@ import { CustomValidatePipe } from './shared/pipes/validation.pipes';
 import * as rateLimit from "express-rate-limit";
 import * as helmet from "helmet";
 import { config } from "aws-sdk";
-import { readFileSync } from 'fs';
+// import { readFileSync } from 'fs';
+import * as fs from 'fs';
+
 import * as http from 'http';
 import * as https from 'https';
 
@@ -30,19 +32,19 @@ async function bootstrap() {
   Logger.log(`AWS S3 Bucket Region: ${config.region}`,'AWSRigistor');
 
   // Create nestFactory instance for make server instance
-  var httpsOptions;
+  let httpsOptions;
   if (process.env.NODE_ENV === "production") {
     httpsOptions = {
-      key: readFileSync(process.env.SSL_PATH),
-      cert: readFileSync(process.env.SSL_PATH),
+      key: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
+      cert: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
     }
   } else {
     httpsOptions = {}
   }
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
-    httpsOptions
-    );
+    {httpsOptions}
+  );
   app.use(limiter);
 
   // const options = new DocumentBuilder()

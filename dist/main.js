@@ -7,7 +7,7 @@ const common_1 = require("@nestjs/common");
 const validation_pipes_1 = require("./shared/pipes/validation.pipes");
 const rateLimit = require("express-rate-limit");
 const aws_sdk_1 = require("aws-sdk");
-const fs_1 = require("fs");
+const fs = require("fs");
 const port = process.env.PORT || 3000;
 const limiter = rateLimit({
     windowMs: Number(process.env.RATELIMIT_MINS) * 60 * 1000,
@@ -21,17 +21,17 @@ async function bootstrap() {
         region: process.env.AWS_REGION,
     });
     common_1.Logger.log(`AWS S3 Bucket Region: ${aws_sdk_1.config.region}`, 'AWSRigistor');
-    var httpsOptions;
+    let httpsOptions;
     if (process.env.NODE_ENV === "production") {
         httpsOptions = {
-            key: fs_1.readFileSync(process.env.SSL_PATH),
-            cert: fs_1.readFileSync(process.env.SSL_PATH),
+            key: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
+            cert: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
         };
     }
     else {
         httpsOptions = {};
     }
-    const app = await core_1.NestFactory.create(app_module_1.AppModule, httpsOptions);
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, { httpsOptions });
     app.use(limiter);
     app.enableCors();
     app.useGlobalPipes(new validation_pipes_1.CustomValidatePipe());
