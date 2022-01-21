@@ -31,7 +31,7 @@ async function bootstrap() {
     else {
         httpsOptions = {};
     }
-    const app = await core_1.NestFactory.create(app_module_1.AppModule, { httpsOptions });
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, { cors: true, httpsOptions: httpsOptions });
     app.use(limiter);
     app.enableCors();
     app.useGlobalPipes(new validation_pipes_1.CustomValidatePipe());

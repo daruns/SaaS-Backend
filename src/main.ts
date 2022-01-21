@@ -43,7 +43,7 @@ async function bootstrap() {
   }
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
-    {httpsOptions}
+    { cors: true, httpsOptions: httpsOptions}
   );
   app.use(limiter);
 
