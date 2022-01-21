@@ -410,7 +410,6 @@ export class SocialMediaStudiosService {
             createdBy: currentUser.username
           }
           let finishedInsert = await this.socialMediaStudioUserModel.query(trx).insert(usersParams)
-          console.log(finishedInsert)
           if (!finishedInsert) {
             throw finishedInsert
           }
