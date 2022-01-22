@@ -5142,7 +5142,7 @@
         "affectsGlobalScope": false
       },
       "../src/api/socialMediaStudios/socialMediaStudios.service.ts": {
-        "version": "1fa26a05742047304a900d32a79cc7c128907fc09034540b3ced57176f1b52e5",
+        "version": "28dfb711c9a3853ebd43d49d067f69d99ab9c6da6d1fd87c9fe0641fbe340238",
         "signature": "64e80ac14ec77d75ca3f7bf7e75ed454992e560b11691aaec164ca684dcac5b6",
         "affectsGlobalScope": false
       },

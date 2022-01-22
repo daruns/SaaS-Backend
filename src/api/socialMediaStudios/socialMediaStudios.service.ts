@@ -927,7 +927,7 @@ export class SocialMediaStudiosService {
     .where({socialMediaStudioId: socialMediaStudios.id})
     .whereIn('userId', payload.users)
     .whereNot({userId: socialMediaStudios.creatorId})
-    if (SMUsersFnd.length) {
+    if (!SMUsersFnd.length) {
       return {
         success: false,
         message: 'No socialMediaStudio users found.',
