@@ -48,7 +48,7 @@ let SocialMediaStudiosService = class SocialMediaStudiosService {
             console.log("final ids: ", finalIds);
             const socialMediaStudio = await this.modelClass
                 .query()
-                .select('social_media_studios.id')
+                .select('id')
                 .select('social_media_studios.name')
                 .select('social_media_studios.client_id')
                 .select('social_media_studios.planned_start_date')
@@ -113,6 +113,7 @@ let SocialMediaStudiosService = class SocialMediaStudiosService {
             socialMediaStudioUsers(selectSocialMediaUsersParams).[user(selectUsersParams)],
           ]
         `);
+            console.log(socialMediaStudio);
             if (socialMediaStudio) {
                 return {
                     success: true,
@@ -148,7 +149,7 @@ let SocialMediaStudiosService = class SocialMediaStudiosService {
         if (creatorFnd || memberFnd) {
             const socialMediaStudio = await this.modelClass
                 .query()
-                .select('social_media_studios.id')
+                .select('id')
                 .select('social_media_studios.name')
                 .select('social_media_studios.client_id')
                 .select('social_media_studios.planned_start_date')
@@ -249,7 +250,7 @@ let SocialMediaStudiosService = class SocialMediaStudiosService {
             finalIds = _.uniq(finalIds);
             const socialMediaStudio = await this.modelClass
                 .query()
-                .select('social_media_studios.id')
+                .select('id')
                 .select('social_media_studios.name')
                 .select('social_media_studios.client_id')
                 .select('social_media_studios.planned_start_date')
@@ -565,7 +566,7 @@ let SocialMediaStudiosService = class SocialMediaStudiosService {
             .where('creatorId', currentUser.id);
         const memberFnd = await this.socialMediaStudioUserModel
             .query()
-            .select('social_media_studios.id')
+            .select('id')
             .join('social_media_studios', 'social_media_studio_users.social_media_studio_id', '=', 'social_media_studios.id')
             .whereIn('social_media_studios.stage', ['production', 'review', 'completed'])
             .where('social_media_studios.brand_code', currentUser.brandCode)
@@ -716,7 +717,7 @@ let SocialMediaStudiosService = class SocialMediaStudiosService {
             .where('creatorId', currentUser.id);
         const memberFnd = await this.socialMediaStudioUserModel
             .query()
-            .select('social_media_studios.id')
+            .select('id')
             .select('social_media_studio_users.can_edit')
             .join('social_media_studios', 'social_media_studio_users.social_media_studio_id', '=', 'social_media_studios.id')
             .whereIn('social_media_studios.stage', ['production', 'review', 'completed'])
@@ -815,7 +816,7 @@ let SocialMediaStudiosService = class SocialMediaStudiosService {
             .where('creatorId', currentUser.id);
         const memberFnd = await this.socialMediaStudioUserModel
             .query()
-            .select('social_media_studios.id')
+            .select('id')
             .join('social_media_studios', 'social_media_studio_users.social_media_studio_id', '=', 'social_media_studios.id')
             .whereIn('social_media_studios.stage', ['production', 'review', 'completed'])
             .where('social_media_studios.brand_code', currentUser.brandCode)

@@ -16,7 +16,7 @@ import * as https from 'https';
 // import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Read port number from env file
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const limiter = rateLimit({
   windowMs: Number(process.env.RATELIMIT_MINS) * 60 * 1000, // 15 minutes
   max: Number(process.env.RATELIMIT_REQUEST_COUNTS), // limit each IP to 100 requests per windowMs
@@ -35,15 +35,18 @@ async function bootstrap() {
   let httpsOptions;
   if (process.env.NODE_ENV === "production") {
     httpsOptions = {
-      key: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
-      cert: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
+      cors: true,
+      httpsOptions: {
+        key: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
+        cert: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
+      }
     }
   } else {
     httpsOptions = {}
   }
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
-    { cors: true, httpsOptions: httpsOptions}
+    httpsOptions,
   );
   app.use(limiter);
 

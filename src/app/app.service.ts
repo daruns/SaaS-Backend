@@ -91,8 +91,11 @@ export const ToPhone = Transform(
 
 export const DefaultToNow = Transform(
   (value: any) => {
+    console.log("Date -type: ",typeof value, "|| value: ", value)
     if (moment(value).isValid()) {
-      value = moment(value).format('YYYY-MM-DD HH:mm:ss')
+      value = moment(value).format('YYYY-MM-DD HH:mm:ss').toString()
+    } else {
+      value = moment(new Date()).format('YYYY-MM-DD HH:mm:ss').toString()
     }
     if (!moment(value,'YYYY-MM-DD HH:mm', true).isValid()) {
       const finVal = moment(value,'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss').toString()

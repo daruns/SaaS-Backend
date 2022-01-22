@@ -8,7 +8,7 @@ const validation_pipes_1 = require("./shared/pipes/validation.pipes");
 const rateLimit = require("express-rate-limit");
 const aws_sdk_1 = require("aws-sdk");
 const fs = require("fs");
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const limiter = rateLimit({
     windowMs: Number(process.env.RATELIMIT_MINS) * 60 * 1000,
     max: Number(process.env.RATELIMIT_REQUEST_COUNTS),
@@ -24,14 +24,17 @@ async function bootstrap() {
     let httpsOptions;
     if (process.env.NODE_ENV === "production") {
         httpsOptions = {
-            key: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
-            cert: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
+            cors: true,
+            httpsOptions: {
+                key: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
+                cert: fs.readFileSync(process.env.SSL_PATH, 'utf8'),
+            }
         };
     }
     else {
         httpsOptions = {};
     }
-    const app = await core_1.NestFactory.create(app_module_1.AppModule, { cors: true, httpsOptions: httpsOptions });
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, httpsOptions);
     app.use(limiter);
     app.enableCors();
     app.useGlobalPipes(new validation_pipes_1.CustomValidatePipe());
