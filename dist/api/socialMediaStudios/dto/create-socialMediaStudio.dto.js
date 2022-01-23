@@ -49,7 +49,6 @@ __decorate([
 ], CreateSocialMediaStudioDto.prototype, "stage", void 0);
 __decorate([
     class_validator_1.IsInt({ message: 'ClientId must be integer' }),
-    class_validator_1.IsOptional(),
     __metadata("design:type", Number)
 ], CreateSocialMediaStudioDto.prototype, "clientId", void 0);
 exports.CreateSocialMediaStudioDto = CreateSocialMediaStudioDto;

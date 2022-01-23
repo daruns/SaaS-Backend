@@ -49,7 +49,6 @@ export class SocialMediaStudiosService {
     if (creatorFnd.length || memberFnd.length) {
       let finalIds = creatorFnd.map(e => e.id)
       finalIds = _.uniq(finalIds)
-      console.log("final ids: ",finalIds)
       const socialMediaStudio = await this.modelClass
       .query()
       .select('id')
@@ -119,7 +118,6 @@ export class SocialMediaStudiosService {
           ]
         `
       )
-      console.log(socialMediaStudio);
       
       if (socialMediaStudio) {
         return {
@@ -381,7 +379,7 @@ export class SocialMediaStudiosService {
       // start operation for adding socialMediaStudio and users with relatedQuery depending on parent
       const createdSocialMediaStudio = await this.modelClass.query(trx).insert(socialMediaStudioParams)
       if (createdSocialMediaStudio) {
-        let usersUnify: {userId: number, canEdit: boolean, approved: boolean}[]
+        let usersUnify: {userId: number, canEdit: boolean, approved: boolean}[] = []
         if (users.length !== 0) {
           usersUnify = users
           usersUnify = _.uniqBy(usersUnify,'userId')
@@ -443,7 +441,6 @@ export class SocialMediaStudiosService {
     .select('social_media_studios.creator_id')
     .select('social_media_studios.description')
     .findById(insertedId);
-    console.log("result", result)
     return {
       success: true,
       message: 'SocialMediaStudio created successfully.',
@@ -540,7 +537,6 @@ export class SocialMediaStudiosService {
     const {attachments, ...mediaParams} = mediaPayload
     mediaParams['brandCode'] = currentUser.brandCode
     mediaParams['createdBy'] = currentUser.username
-    console.log("mediaParams: ",mediaParams)
     const createdMedia = await this.mediaModel.query().insert(mediaParams)
     if (createdMedia) {
       if (attachments?.length) {
@@ -678,7 +674,6 @@ export class SocialMediaStudiosService {
 
         if (socialMediaStudioPayload.clientId) {
           const clientFnd = await this.clientSerive.findById(socialMediaStudioPayload.clientId,currentUser)
-          console.log(clientFnd)
           if (!clientFnd.success) {
             return {
               success: false,

@@ -5092,7 +5092,7 @@
         "affectsGlobalScope": false
       },
       "../src/api/socialMediaStudios/dto/create-socialMediaStudio.dto.ts": {
-        "version": "3cf31b70f903b44c822eda3bc99660581d210a0d5978392750527efeb8e4550d",
+        "version": "6ed1f4a97f305969d31819ac60b0b2ef4c57396473279dd3bb221d392e16d82d",
         "signature": "58244511ccbc16eb6697d7b510a6e375507cca3c947d484c8ac2f1adc83750ce",
         "affectsGlobalScope": false
       },
@@ -5142,12 +5142,12 @@
         "affectsGlobalScope": false
       },
       "../src/api/socialMediaStudios/socialMediaStudios.service.ts": {
-        "version": "28dfb711c9a3853ebd43d49d067f69d99ab9c6da6d1fd87c9fe0641fbe340238",
+        "version": "0e04401859ae366b675da71dd3886ef3726d04585cecdceeaf71d52513154baf",
         "signature": "64e80ac14ec77d75ca3f7bf7e75ed454992e560b11691aaec164ca684dcac5b6",
         "affectsGlobalScope": false
       },
       "../src/api/socialMediaStudios/socialMediaStudios.controller.ts": {
-        "version": "c5096c30824f1a55dd3a169f9d2f997289789157d9005cd85b01d26812de3883",
+        "version": "0f16a79b0d06418600d4eb769e82a343d1a00b5ab24f138c1ad8a1bc541f0e05",
         "signature": "66f27bab53851fea2abc43b02211c9939358c6c962b73ced359224142e1e94c9",
         "affectsGlobalScope": false
       },
@@ -5177,7 +5177,7 @@
         "affectsGlobalScope": false
       },
       "../src/app/app.module.ts": {
-        "version": "632bacab91d9e6ab33b0c5d4678f45ae14d1c4158077d21533c16f1b68f1d5f2",
+        "version": "e58590e3c1521c00912a8ce5fe084bd82bb1c9747794e2233abb185f2a0beab0",
         "signature": "b82491e2990291580288c5602d4c017238977749d52b17391f0e45d9a29be644",
         "affectsGlobalScope": false
       },
@@ -5437,7 +5437,7 @@
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211101215350_addProjectsTable.ts": {
-        "version": "e627b89a41ee794682fde02702af36126334c3e0c6e6b0849b44be0e400464a0",
+        "version": "161e5193d1ed49f1af7bc3204b9334748f86521ef404c1bcf309e41feff3d57b",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },

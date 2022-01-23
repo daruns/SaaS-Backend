@@ -23,7 +23,7 @@ export async function up(knex: Knex): Promise<any> {
     table.integer('rate');
     table.string('rateType');
     table.string('priority');
-    table.string('description');
+    table.text('description');
 
     table.string('status');
     table.integer('deleted');

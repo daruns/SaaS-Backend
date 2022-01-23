@@ -21,7 +21,6 @@ export class CreateSocialMediaStudioDto {
   priority: string
   description: string
   @IsInt({ message: 'ClientId must be integer' })
-  @IsOptional()
   clientId: number
   users: SocialMediaStudioUserDto[]
 }

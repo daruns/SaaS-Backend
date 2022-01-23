@@ -24,7 +24,7 @@ async function up(knex) {
         table.integer('rate');
         table.string('rateType');
         table.string('priority');
-        table.string('description');
+        table.text('description');
         table.string('status');
         table.integer('deleted');
         table.string('createdBy');

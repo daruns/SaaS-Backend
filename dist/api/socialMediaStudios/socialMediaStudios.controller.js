@@ -53,7 +53,7 @@ let SocialMediaStudiosController = class SocialMediaStudiosController {
         return socialMedia;
     }
     async createMedia(attachments, media, req) {
-        console.log("ss", media);
+        console.log("create", media);
         media.attachments = attachments;
         const createMedia = await this.socialMediaStudiosService.createMedia(media, req);
         return createMedia;

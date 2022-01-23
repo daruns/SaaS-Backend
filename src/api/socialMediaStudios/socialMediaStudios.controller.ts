@@ -70,7 +70,7 @@ export class SocialMediaStudiosController {
   @Post('createMedia')
   @UseInterceptors(FilesInterceptor("attachments", 30))
   async createMedia(@UploadedFiles() attachments: Array<FileParamDto>, @Body() media: CreateMediaDto, @Request() req) {
-    console.log("ss",media)
+    console.log("create",media)
     media.attachments = attachments
     const createMedia = await this.socialMediaStudiosService.createMedia(media,req)
     return createMedia
