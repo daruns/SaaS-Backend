@@ -4387,7 +4387,7 @@
         "affectsGlobalScope": false
       },
       "../src/api/auth/auth.service.ts": {
-        "version": "f2cac572e36e344f2c7366ba3d44dde5eaf29e17cf928274b68dcb31febbe71e",
+        "version": "c802e9b6417b4d2377c2ab1f0fc65bf01eca72b369b571b03a22dad2d331a9d9",
         "signature": "1c1a19da4b52453d484808ca8363c55cc8b73f8637c653117a79cee6a6d13405",
         "affectsGlobalScope": false
       },

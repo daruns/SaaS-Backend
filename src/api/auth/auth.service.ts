@@ -85,7 +85,7 @@ export class AuthService {
   }
 
   async signIn(user): Promise<ResponseData> {
-    
+    if (!user.id) {throw new UnauthorizedException()}
     const payload = {
       id: user.id,
       username: user.username,
@@ -121,7 +121,7 @@ export class AuthService {
 
   async me(id: number) {
     if (typeof id !== 'number') {
-      throw new UnauthorizedException()
+      return null
     } else {
       const queryUser = await this.usersService.findById(id);
       if (queryUser.success) {

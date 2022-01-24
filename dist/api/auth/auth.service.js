@@ -81,6 +81,9 @@ let AuthService = class AuthService {
         }
     }
     async signIn(user) {
+        if (!user.id) {
+            throw new common_1.UnauthorizedException();
+        }
         const payload = {
             id: user.id,
             username: user.username,
@@ -113,7 +116,7 @@ let AuthService = class AuthService {
     }
     async me(id) {
         if (typeof id !== 'number') {
-            throw new common_1.UnauthorizedException();
+            return null;
         }
         else {
             const queryUser = await this.usersService.findById(id);
