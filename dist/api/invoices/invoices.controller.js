@@ -37,6 +37,7 @@ let InvoicesController = class InvoicesController {
         return createdInvoice;
     }
     update(payload, invoiceItems, req) {
+        delete (payload['items']);
         return this.invoicesService.update(payload, invoiceItems, req.user);
     }
     deleteById(payload, req) {

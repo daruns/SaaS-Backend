@@ -28,14 +28,14 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateClientDto.prototype, "name", void 0);
 __decorate([
-    class_validator_1.IsString(),
+    app_service_1.ToPhone,
     class_validator_1.IsOptional(),
-    class_validator_1.Matches(app_service_1.PhoneNumberRegex.reg),
     __metadata("design:type", String)
 ], UpdateClientDto.prototype, "phoneNumbers", void 0);
 __decorate([
     class_validator_1.IsOptional(),
     class_validator_1.IsString(),
+    app_service_1.DefaultTo('lead'),
     __metadata("design:type", String)
 ], UpdateClientDto.prototype, "clientType", void 0);
 __decorate([

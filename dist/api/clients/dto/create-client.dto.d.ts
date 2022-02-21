@@ -10,5 +10,4 @@ export declare class CreateClientDto {
     address: string;
     rate: number;
     zipCode: string;
-    status: string;
 }

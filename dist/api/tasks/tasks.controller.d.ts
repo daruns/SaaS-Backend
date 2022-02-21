@@ -10,6 +10,11 @@ export declare class TasksController {
     create(task: CreateTaskDto, req: any): Promise<import("./tasks.service").ResponseData>;
     addMembers(payload: AddMembersToTaskDto, req: any): Promise<import("./tasks.service").ResponseData>;
     removeMembers(payload: AddMembersToTaskDto, req: any): Promise<import("./tasks.service").ResponseData>;
+    addFile(id: number, files: any, req: any): Promise<import("./tasks.service").ResponseData>;
+    removeFile(body: {
+        id: number;
+        attachId: number;
+    }, req: any): Promise<import("./tasks.service").ResponseData>;
     changeBoard(payload: ChangeBoardDto, req: any): Promise<import("./tasks.service").ResponseData>;
     update(payload: UpdateTaskDto, req: any): Promise<import("./tasks.service").ResponseData>;
     deleteById(payload: any, req: any): Promise<import("./tasks.service").ResponseData>;

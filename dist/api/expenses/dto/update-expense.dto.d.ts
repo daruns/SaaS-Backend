@@ -8,6 +8,7 @@ export declare class UpdateExpenseDto {
     taxId: number;
     discount: number;
     taxRate: number;
+    bankFee: number;
     exchangeRate: number;
     currencyCode: string;
     status: string;

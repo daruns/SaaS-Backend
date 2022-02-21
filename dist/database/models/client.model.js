@@ -49,6 +49,22 @@ ClientModel.relationMappings = {
             to: 'invoices.clientId',
         },
     },
+    quotes: {
+        modelClass: `${__dirname}/quote.model`,
+        relation: objection_1.Model.HasManyRelation,
+        join: {
+            from: `${tableName}.id`,
+            to: 'quotes.clientId',
+        },
+    },
+    projects: {
+        modelClass: `${__dirname}/project.model`,
+        relation: objection_1.Model.HasManyRelation,
+        join: {
+            from: `${tableName}.id`,
+            to: 'projects.clientId',
+        },
+    },
 };
 exports.default = ClientModel;
 //# sourceMappingURL=client.model.js.map

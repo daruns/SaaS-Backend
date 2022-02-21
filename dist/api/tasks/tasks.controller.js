@@ -20,6 +20,7 @@ const create_task_dto_1 = require("./dto/create-task.dto");
 const update_task_dto_1 = require("./dto/update-task.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const add_membersToTask_dto_1 = require("./dto/add-membersToTask.dto");
+const platform_express_1 = require("@nestjs/platform-express");
 let TasksController = class TasksController {
     constructor(tasksService) {
         this.tasksService = tasksService;
@@ -43,6 +44,16 @@ let TasksController = class TasksController {
     async removeMembers(payload, req) {
         const createdTask = await this.tasksService.removeMembers(payload, req.user);
         return createdTask;
+    }
+    async addFile(id, files, req) {
+        const payload = { id: id, files: files };
+        console.log(payload);
+        const addFiledExpense = await this.tasksService.addFile(payload, req.user);
+        return addFiledExpense;
+    }
+    async removeFile(body, req) {
+        const addFiledExpense = await this.tasksService.removeFile(body, req.user);
+        return addFiledExpense;
     }
     changeBoard(payload, req) {
         return this.tasksService.changeBoard(payload, req.user);
@@ -95,6 +106,23 @@ __decorate([
     __metadata("design:paramtypes", [add_membersToTask_dto_1.AddMembersToTaskDto, Object]),
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "removeMembers", null);
+__decorate([
+    common_1.Post('addFile'),
+    common_1.UseInterceptors(platform_express_1.FilesInterceptor("files", 25)),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, common_1.Body("id")), __param(1, common_1.UploadedFiles()), __param(2, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object, Object]),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "addFile", null);
+__decorate([
+    common_1.Post('removeFile'),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, common_1.Body()), __param(1, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], TasksController.prototype, "removeFile", null);
 __decorate([
     common_1.Post('changeBoard'),
     openapi.ApiResponse({ status: 201, type: Object }),

@@ -12,8 +12,10 @@ const passport_1 = require("@nestjs/passport");
 let JwtAuthGuard = class JwtAuthGuard extends passport_1.AuthGuard('jwt') {
     handleRequest(err, user, info) {
         if (err || info || !user) {
-            throw err || info || new common_1.UnauthorizedException();
-            return;
+            if (!user) {
+                throw new common_1.UnauthorizedException();
+            }
+            throw new common_1.UnauthorizedException();
         }
         else {
             return user;

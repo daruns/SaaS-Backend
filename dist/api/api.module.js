@@ -33,6 +33,7 @@ const expenses_module_1 = require("./expenses/expenses.module");
 const joinedItems_module_1 = require("./joinedItems/joinedItems.module");
 const chats_module_1 = require("./chat/chats.module");
 const socialMediaStudios_module_1 = require("./socialMediaStudios/socialMediaStudios.module");
+const expenseChildSubCategories_module_1 = require("./expenseChildSubCategories/expenseChildSubCategories.module");
 let ApiModule = class ApiModule {
 };
 ApiModule = __decorate([
@@ -63,6 +64,7 @@ ApiModule = __decorate([
             joinedItems_module_1.JoinedItemsModule,
             chats_module_1.ChatsModule,
             socialMediaStudios_module_1.SocialMediaStudiosModule,
+            expenseChildSubCategories_module_1.ExpenseChildSubCategoriesModule,
         ],
         providers: [],
     })

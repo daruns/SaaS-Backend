@@ -12,6 +12,7 @@ const boards_service_1 = require("../boards/boards.service");
 const tasks_controller_1 = require("./tasks.controller");
 const tasks_service_1 = require("./tasks.service");
 const boards_module_1 = require("../boards/boards.module");
+const app_service_1 = require("../../app/app.service");
 let TasksModule = class TasksModule {
 };
 TasksModule = __decorate([
@@ -19,6 +20,7 @@ TasksModule = __decorate([
         imports: [boards_module_1.BoardsModule],
         controllers: [tasks_controller_1.TasksController],
         providers: [
+            app_service_1.FileUploadService,
             tasks_service_1.TasksService,
             boards_service_1.BoardsService,
         ],

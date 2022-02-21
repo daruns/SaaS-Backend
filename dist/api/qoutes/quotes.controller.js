@@ -37,6 +37,7 @@ let QuotesController = class QuotesController {
         return createdQuote;
     }
     update(payload, quoteItems, req) {
+        delete (payload['items']);
         return this.quotesService.update(payload, quoteItems, req.user);
     }
     deleteById(payload, req) {

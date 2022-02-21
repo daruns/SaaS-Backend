@@ -1677,8 +1677,13 @@
         "affectsGlobalScope": false
       },
       "../src/api/auth/guards/jwt-auth.guard.ts": {
-        "version": "935afbc0cd04ba491685052bd06ba9126ea75417a0faaf4073408902541c721c",
+        "version": "69a8a91f7f1d74926b1f518741daf2bccddcc63de2a98205b28dd0fac21624d5",
         "signature": "33823364474e4a61a3d52f03ddcb4e421af0efd5f1e58d93ab616e8e037aa6cd",
+        "affectsGlobalScope": false
+      },
+      "../src/lib/defaults.ts": {
+        "version": "5aca0df72878e2108d2f02985dfeee300015309634e84b8fbad1d7282b93a80f",
+        "signature": "c0994d8468708ec09e0723cce15b895379e12488f5034c3274a8d6a2cbea731a",
         "affectsGlobalScope": false
       },
       "../node_modules/class-transformer/ClassTransformOptions.d.ts": {
@@ -3677,17 +3682,17 @@
         "affectsGlobalScope": false
       },
       "../src/app/app.service.ts": {
-        "version": "d06bce3552fe0746caff5be4cbc1e60c81f3cbf1a563776cc5fecb8c0c3fd6a8",
-        "signature": "fd0c5ea394960f90f745b05f1a65118ee2d4ad6df233b1114aebc308dc325f77",
+        "version": "3100eb9a0729b3dd1fb8e3d6a2de044b3bddc714705ece972d0260c023c2e840",
+        "signature": "5f251d90618df01891336b533a0d7ede5b2ca601c58c379077545d50e671582f",
         "affectsGlobalScope": false
       },
       "../src/app/app.controller.ts": {
-        "version": "8c8f8581ca3fae70a4e82547d45ea56f39c0182b01c08672a0a591f557af732c",
-        "signature": "83d0a921054416b5e89f0f751020540ae39c89de54fc708b41bbf40c2a0b235e",
+        "version": "3c7e52c17b210a60a92afa8c5ed228c707c49f4c50d81008e5d1ee285601ada1",
+        "signature": "856c3f1e20f966da63ff32c56a686e2fd766ef969ac0b114721e69bb300b1270",
         "affectsGlobalScope": false
       },
       "../src/shared/Handlers/http-error.handler.ts": {
-        "version": "46005a1edf34aa73701497270d34d4ba98af46b92acd11bc03096a39095d75c3",
+        "version": "872642c350fd082379e9661e1721be50f963995c3a88e8802091f41b9b0e4934",
         "signature": "e94c8cfa7ee97a3a666f85e0a0b4f65f385f76979607c83f25ed3a04fcf116da",
         "affectsGlobalScope": false
       },
@@ -4262,8 +4267,8 @@
         "affectsGlobalScope": false
       },
       "../src/database/models/invoice.model.ts": {
-        "version": "90a73f7e19cfe0b351e615956e9be6fe55bc8593cbca7aeb3a9092754595cc96",
-        "signature": "6231190663afac2f5ba7d4ccee3544654a7b806afc2476e97165704ca9ea9077",
+        "version": "5047fdb9c712b4d60779941e1834d32276cfbaefb589cf36997eaf903dfd023d",
+        "signature": "8419e5c56398eaea46198917443d542f9ca4c9f60c221eea7baae95a4adecf05",
         "affectsGlobalScope": false
       },
       "../src/database/models/clientContact.model.ts": {
@@ -4281,9 +4286,54 @@
         "signature": "9300af09eee2223c44089881099f8af4a27845c097e4cd8a5dc113a60265bad2",
         "affectsGlobalScope": false
       },
+      "../src/database/models/projectLeader.model.ts": {
+        "version": "6e5d33d4e205095992b611a207afe37fbd75cce1346c0bec5af57579283cb51e",
+        "signature": "3eeb8ad9652850e04686820f847e204c40698394affbb202469d72fd03b7615d",
+        "affectsGlobalScope": false
+      },
+      "../src/database/models/projectMember.model.ts": {
+        "version": "d144d0611c21d2ec8aaae905178f764ea5a0e1596f386f1d7e0dedd1c95bad1d",
+        "signature": "dd5ed678399f47c13a484dcb61562ddb6437577deca2bfd13962537f0fc649da",
+        "affectsGlobalScope": false
+      },
+      "../src/database/models/boardAttribute.model.ts": {
+        "version": "cc91cc0047edc33f2e6d0e381a7f27b7f16ef86fb6944206df9fc0cc93b7b0bb",
+        "signature": "7c6150c5b1b053a0d610ac86f1dc19fa87be4c1bae35211bce47510e2e10becd",
+        "affectsGlobalScope": false
+      },
+      "../src/database/models/board.model.ts": {
+        "version": "fdbdcc253697fa40b8ac3265c1d5f810e5d9c113111ff3eeba0275bb6dd97fc2",
+        "signature": "40c056360b850a010cb31f4f73d1e1efc51729b7b59a86b6e9f7d9e24c037409",
+        "affectsGlobalScope": false
+      },
+      "../src/database/models/task.model.ts": {
+        "version": "39576e95ce1346ba5c75cafd321fd07ef3a76c5c97dc0531aadb70e47378d4b3",
+        "signature": "8372debf220baecad7208840c660b70f66e9eb8f41eaa1ca717ee747ff6fbac5",
+        "affectsGlobalScope": false
+      },
+      "../src/database/models/projectAttachment.model.ts": {
+        "version": "05d32f30076220b56eba00d85ff50d2e1bdc0dfa477ac3c6067294c050a7bdca",
+        "signature": "ea3004537b7a37b9cc07f0436993b02776f9f25390927f7be399acf40b871842",
+        "affectsGlobalScope": false
+      },
+      "../src/database/models/project.model.ts": {
+        "version": "88d50c6daa601d017f1d6367993689250f67454766031e03d9457e55f821d772",
+        "signature": "3b1bbb3043c351c58ae2ca582575529504ac9e06f2b80cd9cc610d5730bda9e8",
+        "affectsGlobalScope": false
+      },
+      "../src/database/models/quoteItem.model.ts": {
+        "version": "ca665e7a806f945d7389e4b52443523acd56c575ae6b8cfe874779624ea24086",
+        "signature": "008e0c1df9b1f618fef354d528752658b52abe255d28f89e45fc4fa0a3d919ca",
+        "affectsGlobalScope": false
+      },
+      "../src/database/models/quote.model.ts": {
+        "version": "3922809545c7f8c8a6572de808d4504255bb4ded8b7b05a41f77e1e0cd4b18f1",
+        "signature": "65a719f98fe84824ae76f5ec176dc3a49f59169fab4f10f6ea24b98c6f7fea59",
+        "affectsGlobalScope": false
+      },
       "../src/database/models/client.model.ts": {
-        "version": "62fe56ed50aa87d52455194cf26de9c4b41e32d9bb7e20d283b817b186c22760",
-        "signature": "332db42f1ce966a25ecad456c55333f8c6e57415badcfb1311fbb1b682b569b3",
+        "version": "dab368d21ed21a04fb539ef756db818938c36fab0041f303e0d7f5624649be7c",
+        "signature": "c6fda6ae0d5dce1b4baf7183b50ea6c322724252e6b7d3584441529b6eb5b897",
         "affectsGlobalScope": false
       },
       "../src/database/models/permission.model.ts": {
@@ -4306,41 +4356,6 @@
         "signature": "d3866d2ba2a7850f2d472410e24bdf8b7c14e25f082a87e8944a22ed08d77439",
         "affectsGlobalScope": false
       },
-      "../src/database/models/projectMember.model.ts": {
-        "version": "d144d0611c21d2ec8aaae905178f764ea5a0e1596f386f1d7e0dedd1c95bad1d",
-        "signature": "dd5ed678399f47c13a484dcb61562ddb6437577deca2bfd13962537f0fc649da",
-        "affectsGlobalScope": false
-      },
-      "../src/database/models/boardAttribute.model.ts": {
-        "version": "cc91cc0047edc33f2e6d0e381a7f27b7f16ef86fb6944206df9fc0cc93b7b0bb",
-        "signature": "7c6150c5b1b053a0d610ac86f1dc19fa87be4c1bae35211bce47510e2e10becd",
-        "affectsGlobalScope": false
-      },
-      "../src/database/models/board.model.ts": {
-        "version": "fdbdcc253697fa40b8ac3265c1d5f810e5d9c113111ff3eeba0275bb6dd97fc2",
-        "signature": "40c056360b850a010cb31f4f73d1e1efc51729b7b59a86b6e9f7d9e24c037409",
-        "affectsGlobalScope": false
-      },
-      "../src/database/models/task.model.ts": {
-        "version": "7ac977e64d4b9084e068c60dc30d6371f273fe14361c0970fff45add304d7b09",
-        "signature": "535762898afcc4ddf16caf52149dc04387fb5990a94d9b794a3375432b4dd21a",
-        "affectsGlobalScope": false
-      },
-      "../src/database/models/projectAttachment.model.ts": {
-        "version": "05d32f30076220b56eba00d85ff50d2e1bdc0dfa477ac3c6067294c050a7bdca",
-        "signature": "ea3004537b7a37b9cc07f0436993b02776f9f25390927f7be399acf40b871842",
-        "affectsGlobalScope": false
-      },
-      "../src/database/models/project.model.ts": {
-        "version": "88d50c6daa601d017f1d6367993689250f67454766031e03d9457e55f821d772",
-        "signature": "3b1bbb3043c351c58ae2ca582575529504ac9e06f2b80cd9cc610d5730bda9e8",
-        "affectsGlobalScope": false
-      },
-      "../src/database/models/projectLeader.model.ts": {
-        "version": "6e5d33d4e205095992b611a207afe37fbd75cce1346c0bec5af57579283cb51e",
-        "signature": "3eeb8ad9652850e04686820f847e204c40698394affbb202469d72fd03b7615d",
-        "affectsGlobalScope": false
-      },
       "../src/database/models/taskMember.model.ts": {
         "version": "1a96d425b1dac35a585d3d60d50eedd9ad81f84fdda940a53222a8862dca577b",
         "signature": "995cb3e4f1365af484bd01e5c26e594a5bb29c85172cdefcc7bb433b24432055",
@@ -4352,8 +4367,8 @@
         "affectsGlobalScope": false
       },
       "../src/api/brands/brands.service.ts": {
-        "version": "ee1286b543357f0dc1ce9b382e7cfb83e498c108b264dd943aec7435e9f7ff19",
-        "signature": "d7f4804490721ea09e0ec03931470a8ab936000cdc0d9df8f1a68c5b84b6b123",
+        "version": "f55cfbb0799879ab722430696712e316e1d7d4202c6c58ab46f027585dfe232f",
+        "signature": "9d43e3fa272721ce899e09127e50480bb0a5798c986118769ed3ecb3f45f9e96",
         "affectsGlobalScope": false
       },
       "../src/api/auth/apps/users/users.service.ts": {
@@ -4416,13 +4431,18 @@
         "signature": "a28b5c0c372fb375910b3fe3c3ce4331509bc18ccef7cc39c9ee9d8daf8225d1",
         "affectsGlobalScope": false
       },
+      "../src/api/brands/dto/update-brand.dto.ts": {
+        "version": "f9e5dd48480be370623c84448a8d6adb1c4d7ba6d8ee9604af1e7bec7e056559",
+        "signature": "32d7e570a602628f4c0d36a54cce54d34ccdd6bbdd2a155b1775d915e68ac211",
+        "affectsGlobalScope": false
+      },
       "../src/api/brands/brands.controller.ts": {
-        "version": "48077eed197ce579a9b104aabfd460284601265581de35afc6141630d17da9bc",
-        "signature": "177caab3098dfbb77c3fbe12a01a66f858aeee9e903c0951a25d779bf8cd50f3",
+        "version": "f2bf532ffd02cb3dac8f7079a454e02d864c3898bf6f02b2f8a7833fe0d0501c",
+        "signature": "a5724a1056e140c48ae4b99caf4f6a86f54c01e68e9fbd632e31673515c29232",
         "affectsGlobalScope": false
       },
       "../src/api/brands/brands.module.ts": {
-        "version": "db220ac430f29da48e4da71282e8d6e47be85272a114b4d51f5867a86ba48ecf",
+        "version": "43df741222751b0469c82ae9580e48e90f2933a42ef3c13ddb3a2dbca984abe9",
         "signature": "0140c874de69c2e5c6c6b5944ea49df8698850205ba9329cbe4208be601b8696",
         "affectsGlobalScope": false
       },
@@ -4447,7 +4467,7 @@
         "affectsGlobalScope": false
       },
       "../src/api/clients/dto/update-client.dto.ts": {
-        "version": "9d469293dd28f05e0a98a11097f8f49e0ef5526189fcc35c646d8791c6db4d6f",
+        "version": "d3d64bb5b24bdfc550b627daabd9049d6aa92fc1eda543c65d68d6b5a74496e0",
         "signature": "8b4164e03d7b37cc39f7572cdf5f299713b830d97f6572f8a9fc8b9268938d44",
         "affectsGlobalScope": false
       },
@@ -4457,12 +4477,12 @@
         "affectsGlobalScope": false
       },
       "../src/api/clients/dto/create-client.dto.ts": {
-        "version": "876e5df529dc207613d119c95b8a25d356170ab1824c3fc4f1bde82b4eda79a7",
-        "signature": "797c7f3b3e3e77c2161578b69062e9286e28dd6221443d1a598164c7cb2cf29e",
+        "version": "f32b87c61c5518e56ce05a4d03bb2327573a0934477c5455f68d1fbb1a052675",
+        "signature": "5ba0ff4327cb2e66cbd4af582b2ee934bba68e8f3b9462bd957703615f290185",
         "affectsGlobalScope": false
       },
       "../src/api/clients/clients.service.ts": {
-        "version": "e3e88eb04159c9c4e74a775b729cfc6976f9f42e53485ca5b70b92c14c0d88c2",
+        "version": "33a3e35d579337c6c6612b844c59a194545d48e0314c3c8794eaeb28f151aa9c",
         "signature": "8ae568135f413e6ab9ba81e40e7de1870bf9d3394a2ac78ede6df370a13c61fc",
         "affectsGlobalScope": false
       },
@@ -4477,7 +4497,7 @@
         "affectsGlobalScope": false
       },
       "../src/api/clientContacts/dto/update-clientContact.dto.ts": {
-        "version": "592568d17882182346a16c1adbf326da9696f5fc1a628ff84f04c7c795204ed5",
+        "version": "cb584f3ae52b4bf8410ee9c5c3832fe2faef6ba1c223bf23e44374c3f084aef0",
         "signature": "2a74344c886e8430120eaea809168939073a6efb402c4db1272337db8bb7db35",
         "affectsGlobalScope": false
       },
@@ -4487,7 +4507,7 @@
         "affectsGlobalScope": false
       },
       "../src/api/clientContacts/dto/create-clientContact.dto.ts": {
-        "version": "93707e9872c30bbc0afdf63c8907d428f4dfe7a21c4c09dedacbcf7b38dd19ba",
+        "version": "85d4d0f693ac6bd2b954efb0b99fe1ffc70da367d1c486051f6179ba6ffb71cc",
         "signature": "6164e3210b85c5da30795b6bf9ce007bd812722e53c999843d7dbdbb93320b51",
         "affectsGlobalScope": false
       },
@@ -4672,27 +4692,27 @@
         "affectsGlobalScope": false
       },
       "../src/api/invoices/dto/update-invoice.dto.ts": {
-        "version": "8b73bc0ce8a75d4fc41d45729b4a11f488480f966a6d18673b7c4e68673cea8c",
-        "signature": "61ba38642bef8c12d20e383320db0ca254843c741d25453d076f36d0702f65b1",
+        "version": "02ab1d5626ea588c6865dffc2bb2906c326aa79b05599fb8149ec7c157b636fb",
+        "signature": "e6b49c2be15b4a0afa29e1213c66d5f3a0af1b0385c6c962435a90612b9b1c2e",
         "affectsGlobalScope": false
       },
       "../src/api/invoices/dto/create-invoice.dto.ts": {
-        "version": "6714e6716986a29c60fb132b8b529314174a86ee32f7d43bc80edb8e56302bc9",
-        "signature": "94b66be1857eec8b8b017cfa812696853e77dec4ebc76a6e5bf2c1e368d4b3d9",
+        "version": "ff1bfb014878fadcf73b763fe9e1c369f8c84aff595d3d98230fa754cc74e595",
+        "signature": "cac832165e7042aa8bcbd893af71dcffc8d0d280e254ade6088029a256e72b0b",
         "affectsGlobalScope": false
       },
       "../src/api/invoices/dto/passCreate-invoice.dto.ts": {
-        "version": "c10b4f9c4c99313f2570bb6b1620058e0764517a3c7aa5b94b5c67530066ea9c",
-        "signature": "68e1ef87721e7d2959b677e55558c691661e7decfa9aac1ae1ee872c9b8f780c",
+        "version": "9bbdae2b81844b097fa121ac2ad3000161f190fda057d8f63bf20119f284c3cd",
+        "signature": "fd6873b3a8dae8be65d2c0d4387ec8caae4686eac5bd4a356672b1ceb5beb493",
         "affectsGlobalScope": false
       },
       "../src/api/invoices/invoices.service.ts": {
-        "version": "508ab97e65d63808a2a2303c7bbbe8d4fb115a44c58675bfde5050e541b2964d",
+        "version": "0fb7e24d552fd284dcd7f0b8b04087bb958b71b5bb439bc4aa02a2c77cfb29c8",
         "signature": "7f09c19f7c95d51041d534ad24ec40ed52723a31fafd1d8d92d51087907d9319",
         "affectsGlobalScope": false
       },
       "../src/api/invoices/invoices.controller.ts": {
-        "version": "292171b47fdc2eb693825ea66412f76ca3ea302023497b96614fa0b08efa5bcb",
+        "version": "8240e910b8094817a1e8aed0ed43a0df718edc693a2b3ede4463ca2cf9478cf5",
         "signature": "beda8101f53eb3ef261f2be87fe026b3de8eff16ba9d97ff37ecd049cacbcb1c",
         "affectsGlobalScope": false
       },
@@ -4702,37 +4722,27 @@
         "affectsGlobalScope": false
       },
       "../src/api/qoutes/dto/update-quote.dto.ts": {
-        "version": "bfb91e00a74198ba5ee89d3cc54eaf19ffccdef4f68e3ed7541924833237bb01",
-        "signature": "d0a84c86baf6c66ddf119ba9561f291fe2c14247d1bf5159e2249701277550bd",
-        "affectsGlobalScope": false
-      },
-      "../src/database/models/quoteItem.model.ts": {
-        "version": "ca665e7a806f945d7389e4b52443523acd56c575ae6b8cfe874779624ea24086",
-        "signature": "008e0c1df9b1f618fef354d528752658b52abe255d28f89e45fc4fa0a3d919ca",
-        "affectsGlobalScope": false
-      },
-      "../src/database/models/quote.model.ts": {
-        "version": "548a13e1d5fa948fd4f6db087d3632ebc8cb667794eb7362651ca65bd24d2c80",
-        "signature": "ce338a9e14f3c3d0d166bd7d042cd3866c1e3c87121d04c941cbcac39bb95632",
+        "version": "d4648954152365806087ac1e259118c318ed6368d3c69954a55ec39db67b460f",
+        "signature": "581f5ba44f70f50becaed44a3cf36271473e1fbfb4fe1524d705c2a441ce6dc5",
         "affectsGlobalScope": false
       },
       "../src/api/qoutes/dto/create-quote.dto.ts": {
-        "version": "a24b314f21bf4a937b6d645ada8a08e7dfaad7df4aff4280adbb74881013ab8b",
-        "signature": "e467a850ee30ebc39931e237f157c13359bb7217c318fcf874a44e8c753cec75",
+        "version": "224ab4f7c189b15b53d94eeb3a83c356807e622696e44233ca2bd267024c99e5",
+        "signature": "23b5bafd00f3bce1a1203f1914c972ddf0dde1449a599bbb29052b6aaded8daa",
         "affectsGlobalScope": false
       },
       "../src/api/qoutes/dto/passCreate-quote.dto.ts": {
-        "version": "b6d4859b625255a5bcc43537fadb3324a1ccd89297062fc2a759383ad525b28f",
-        "signature": "abc9e45312225a777387bc5ab479bd2a059f4ddf6db6fde46425766ad3be67e4",
+        "version": "ce53da65a7162756755a9f1139da2199d7154a13a707551b7acdd2c6e7b7c1d8",
+        "signature": "1c2ab24be50411c954654c7dd5517d5e230602fbe38fd1f1071a2bafe9beb52a",
         "affectsGlobalScope": false
       },
       "../src/api/qoutes/quotes.service.ts": {
-        "version": "bb3ab6f288dc1c046c3f2f71c2b11e9948cb157643eb4939ae83b6d388031a54",
+        "version": "e5cd775bc7b6e9f2893b0104c899ce47251c0eb915271ca2e45eb8402e0c3ee4",
         "signature": "eb96a463bd76cb12e25826e274567381587a5e4636afe32709c2cfcfe2ab7c42",
         "affectsGlobalScope": false
       },
       "../src/api/qoutes/quotes.controller.ts": {
-        "version": "339486ee69e5e37322535e617af85b1e58797fb1da861553de399e34f99b39d2",
+        "version": "20090edac71e534d57487d34049fcc984ab75c0753484974b3e2c19d64e3ba3f",
         "signature": "d78ff2134f334440c249b94d5d82313d5b3c95ee02263577dfee07534d5438e4",
         "affectsGlobalScope": false
       },
@@ -4762,8 +4772,8 @@
         "affectsGlobalScope": false
       },
       "../src/api/projects/projects.service.ts": {
-        "version": "47f86ab65e08dc742e04c3754f2c04bed88d136a7d087ab37d29c79f3a9a7b0e",
-        "signature": "bfb9809198b9bfdccb1265a9825f7d47ee1fb1504139ae6094c98de4c20f0b39",
+        "version": "45bb5d06d91edb7bccfc5f89c7c11e80ebd684cbf82db0eeafb34a5b90a7853f",
+        "signature": "1cc8de86a83ea3f6a2629a652bb68eddf856c97190f82b2e16fdb3432d46885e",
         "affectsGlobalScope": false
       },
       "../src/api/projects/projects.controller.ts": {
@@ -4792,7 +4802,7 @@
         "affectsGlobalScope": false
       },
       "../src/api/boards/boards.service.ts": {
-        "version": "3aa72611ae1a769b6f1ebc79a016efa36859ca7b188bbb18f0e8b1f220bf812d",
+        "version": "4412458019ca268226bfe0f96e8ec436452448fe61ec162a8b8e1eaad740aa45",
         "signature": "7c0bd84662536aa6d7c63db67b45a811e174fdcd165af2ce8de78caf57777244",
         "affectsGlobalScope": false
       },
@@ -4821,18 +4831,23 @@
         "signature": "2b6a6c286af945a915aca5e0906032877979727e64b9aee6ae79e3b1ce65a6f9",
         "affectsGlobalScope": false
       },
+      "../src/database/models/taskAttachment.model.ts": {
+        "version": "3622b77370926fdcb844cb6ba4ef6d84562a84c5ff56b3d861dd1f6ad5b54037",
+        "signature": "50fb0a67496d2dce50578e994f327c4757c10f4b685695080a2374a3c98f2cf0",
+        "affectsGlobalScope": false
+      },
       "../src/api/tasks/tasks.service.ts": {
-        "version": "aef6bade0ff360efb7dc16c9e63b8ac1420fdf6905013cb300b08cfd7065e465",
-        "signature": "4dd38b18a3df244f2facff6a396d985ee5a1fedab78a10e0ee2b93e63062e274",
+        "version": "a03d693d03f75ee9b7ed6d508d2dfcf2f1493ebf0898d3cb7b21f5c8382710b8",
+        "signature": "e88cc6a7ff7b4bb2c3068598ed702337582f0ccb8b86ee765d93645359098309",
         "affectsGlobalScope": false
       },
       "../src/api/tasks/tasks.controller.ts": {
-        "version": "49d8fee9ba12625a6a041fc12a472e181631d52cc965fda4b4f4a1f166ee9fc7",
-        "signature": "b675aa264cdf0cc1f416e60bc2ab5286097cd44cee89dd05dfe9f0804d5e66fa",
+        "version": "0647c056ef3b629e075a0e24f36473066269c4643383793c0fb9c7cd081e9a55",
+        "signature": "f5a352d44ac2e670266b92dbc891ee169596974c85e8877886e4a8dedab283c6",
         "affectsGlobalScope": false
       },
       "../src/api/tasks/tasks.module.ts": {
-        "version": "c0fecde26f515397c60154a19acf4e7b705aebc3769ab578f570fd97a13447d8",
+        "version": "85159646f4ff3857ac4cd941bc80d835f1ac01c7bc52e3139eecb261203a8b84",
         "signature": "957753c3d8b7f5d76f3b7dcceab5c1f0b308580c6b4e2819f77518edb37b6c5f",
         "affectsGlobalScope": false
       },
@@ -4841,9 +4856,14 @@
         "signature": "dd9617bc4878d5c928f65e85bad074944e265bdcfe77149bc3832bb2fadf2961",
         "affectsGlobalScope": false
       },
+      "../src/database/models/expenseChildSubCategory.model.ts": {
+        "version": "9a4dcea3d69f81b52396678e528c89bee6ef10a59f7631733cc87b75bcdff117",
+        "signature": "e5947f7caa596421ae408129a2dc12aaad4895b3a777207425353aa780dff46e",
+        "affectsGlobalScope": false
+      },
       "../src/database/models/expenseSubCategory.model.ts": {
-        "version": "34bf21f2515e9e339c8d1f00ce4570af21ca36192048f6f8e540edba24cecb54",
-        "signature": "f3c09843d44cf312f64f6b9c41803fd043e70545337fcaa337ab33c5198f7a0e",
+        "version": "10912185be143b44a1295dfd22215ed1987c8e85782583e2f6cb2315f7308a90",
+        "signature": "788b4503e8423b3f8527e9145828aa3b6221b516248212b2d1865b97c36b0ba0",
         "affectsGlobalScope": false
       },
       "../src/database/models/expenseCategory.model.ts": {
@@ -4857,7 +4877,7 @@
         "affectsGlobalScope": false
       },
       "../src/api/expenseCategories/expenseCategories.service.ts": {
-        "version": "710d58571882cff90f15f2562560cf8f6cf4d9c68f1e1bdb13556047b036a531",
+        "version": "d9b1520c1fd26c88c72bb3d9be0750f4946750630f79676a1f2add24bea8759f",
         "signature": "f62e805b94c4333e2a55553c49dc3bc736bf77f165b907f416890399bed5dbe7",
         "affectsGlobalScope": false
       },
@@ -4922,8 +4942,8 @@
         "affectsGlobalScope": false
       },
       "../src/database/models/expense.model.ts": {
-        "version": "d45dadeeafdd451bcef666503ed9756c1d5c119a73a1186acfb857c6c44aa90c",
-        "signature": "f25154024fb44d36762eaf53b1b66346f2a75299700531629a44144da8793320",
+        "version": "de33367e6745dfa7509bf042f10d4adbfb90c757a9f160612c515425761fd938",
+        "signature": "d107c052df3e420273df622826ed7c8c81e370704d9865639e2a713db413d748",
         "affectsGlobalScope": false
       },
       "../src/database/models/tax.model.ts": {
@@ -5002,17 +5022,17 @@
         "affectsGlobalScope": false
       },
       "../src/api/expenses/dto/create-expense.dto.ts": {
-        "version": "f745b62cffc79bf3703633f2e77a0e2c03c5deeade56d918e2201829bc260972",
-        "signature": "e6f7a08258c46d9bb41ffb59007e6ae9e30a2d2c9e26e33da5802d9a8189c299",
+        "version": "6df22616a031ae1311ede63f0b160fc4e0db2f6cd0984eafdb6f6bb0af480c6e",
+        "signature": "d107dec1c25d34ddfb1f32cb21d566afdfd8d37f58e06345e68086f328ae3307",
         "affectsGlobalScope": false
       },
       "../src/api/expenses/dto/update-expense.dto.ts": {
-        "version": "c0a97d85893e9fab53463b0cfd97243f5e19b359970a324172ca99b9e55bff72",
-        "signature": "2ac33d4585060e6f4f7fa3af053e253bee5a229ba09e3ee7baaa040f58b967f9",
+        "version": "3a2e52d47581620d4fc98f2c4fa7568c0381121af5f0041605ab2639c658fba7",
+        "signature": "eb34d80897e6631b707935ee2b803ea8d1db31e6882fcff26e69c71f7d69c156",
         "affectsGlobalScope": false
       },
       "../src/api/expenses/expenses.service.ts": {
-        "version": "a35360ecfcbcb0ecc1fbd14c269e45006883f1592f2f7f6edb77c89832038c61",
+        "version": "f31bb916f5b1f73407db9450cc8719d05b78524da00085ddbb41d83f507fe998",
         "signature": "933bd6e362b81b647244275cf3dd48e7a184997b1d9335ba6ceabf8ecec62f9e",
         "affectsGlobalScope": false
       },
@@ -5026,13 +5046,33 @@
         "signature": "a42c03767cbbc69d0446a966f908129574072257eab389cc5dcaa6c29a56dc75",
         "affectsGlobalScope": false
       },
+      "../src/api/expenseChildSubCategories/dto/update-expenseChildSubCategory.dto.ts": {
+        "version": "9ee13d30238187c82a1f3a4ddeb62c389b6880fb0ad7d47a12c0b9e6d13b128b",
+        "signature": "88f187c197059c45e60c60cd26e49f8b2cd3384847f8e40ba9e268f3073edb14",
+        "affectsGlobalScope": false
+      },
+      "../src/api/expenseChildSubCategories/dto/create-expenseChildSubCategory.dto.ts": {
+        "version": "8440607c41775d7b72209852930b4c05ccf695f3f26e9734656069a981309518",
+        "signature": "f63945215ec4b10ab50d3d83f7ab0b97b1c4c0320e8bb81eea677815298a1bfd",
+        "affectsGlobalScope": false
+      },
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.service.ts": {
+        "version": "d6868ce40d428ba8885289ffaf38d54e8ed189836cf50919c723f8372fb0ef1a",
+        "signature": "3cedbb324744cf550fa39fa53cc29d4f3767bb99c6d762bbcb71063bca4cb0cc",
+        "affectsGlobalScope": false
+      },
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.controller.ts": {
+        "version": "d7cb92089cb527d486bfef4a9b795e7d7dfc8f3bdc54b2f6ab3777735b1f11da",
+        "signature": "c323d6f76806c83806361c26313d6971a6e26e721e863d0a60fc94a99b1a2217",
+        "affectsGlobalScope": false
+      },
       "../src/api/joinedItems/joinedItems.service.ts": {
-        "version": "bb35f860547b69131cd1b7f5c11fb22fbcd3fa910b7ba636dbe845c2ba0bcfbb",
+        "version": "482fa94a1412447504540339bd30e5ebccdb80aa3fc0ab80e9ef05604d9464a3",
         "signature": "e82c493771edce08f1d2563f500478ef741bc4b8508f59ef5be9e61f3be030fd",
         "affectsGlobalScope": false
       },
       "../src/api/joinedItems/joinedItems.controller.ts": {
-        "version": "9160fb0e90703933f7fdba40f2558e9dcdaddff890e53c3ce5baae0a43814130",
+        "version": "e1b006f99232cecf481f6b216dcb8a3d971980c6f8d2cb745c82bee408a1ee58",
         "signature": "a59915a34c2c794181a06b878116723398beb28b000239f27b6fc5050ff95ed6",
         "affectsGlobalScope": false
       },
@@ -5082,7 +5122,7 @@
         "affectsGlobalScope": false
       },
       "../src/api/socialMediaStudios/dto/add-socialMediaUsers.dto.ts": {
-        "version": "abd36aee91c43984cc966225209a11ff44143485351959c0cae27a3b2c59d832",
+        "version": "f54b8b2bf9a6b82d014253a03e28e8431ec0172d2fe6f40937c51251010de633",
         "signature": "0b48ec7720c5d61d83681e672e0c68032fadbcc1e4cb50ccc31f275892ee3a05",
         "affectsGlobalScope": false
       },
@@ -5142,13 +5182,13 @@
         "affectsGlobalScope": false
       },
       "../src/api/socialMediaStudios/socialMediaStudios.service.ts": {
-        "version": "0e04401859ae366b675da71dd3886ef3726d04585cecdceeaf71d52513154baf",
+        "version": "b55eb48c6c67ca24e0b5f592f7304ba336e6df31bb109007290be9896201261f",
         "signature": "64e80ac14ec77d75ca3f7bf7e75ed454992e560b11691aaec164ca684dcac5b6",
         "affectsGlobalScope": false
       },
       "../src/api/socialMediaStudios/socialMediaStudios.controller.ts": {
-        "version": "0f16a79b0d06418600d4eb769e82a343d1a00b5ab24f138c1ad8a1bc541f0e05",
-        "signature": "66f27bab53851fea2abc43b02211c9939358c6c962b73ced359224142e1e94c9",
+        "version": "0a4d9010855596fa542be59d7c326b7af2f55e8d4446d23b53eb828a3e4732ea",
+        "signature": "6ef73cb751879ff9592494cbe4a48a2562131de4afe5f43b7ea99c8b8744fbc3",
         "affectsGlobalScope": false
       },
       "../src/api/socialMediaStudios/socialMediaStudios.module.ts": {
@@ -5156,8 +5196,13 @@
         "signature": "9747f7b6ff8350ed2fe8759a543acb38d68bee7a82dffa2857927dbb7cab590f",
         "affectsGlobalScope": false
       },
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.module.ts": {
+        "version": "5058de72699d2272228829840fbdd3e248a102a74ff5721a82f5eea2c534b28d",
+        "signature": "2f9b68209146bddc73de2614b2fea86f40042643a59bec5325eabe97613c3deb",
+        "affectsGlobalScope": false
+      },
       "../src/api/api.module.ts": {
-        "version": "5d7a3734d2d9c0b6f45d5b051e86f0dc0e11fc99f6bd9704608bbf8390c792c5",
+        "version": "36f7f0edf7ca4960b6fec1abe6bca7a9992ae791ddf802565eec8e5b1d7c15fb",
         "signature": "f31e2438efeae62abb8b2b946f674b164b0b4c1804a5ff9209894b120de2911d",
         "affectsGlobalScope": false
       },
@@ -5362,7 +5407,7 @@
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20200405220908_createUserRolesTable.ts": {
-        "version": "70afcb3e1ae1b45d91aa19e1907f840a527a2fd62d9aa2ce17ade2b3bd3290ed",
+        "version": "5e46c4c6b9c9b07bdd0e8973ad1129b5964a1ecd472a9ecbd7f06faf2899c745",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
@@ -5377,7 +5422,7 @@
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211012200713_createClientContactsTable.ts": {
-        "version": "ccc6b63df2ec2895bb6b6ec2502a48150d5e7de76d8faa05aee7ff0736dab9f7",
+        "version": "1a6acd29c8d130a314870b8b609681e749a617ae8e87add8fe224d713476c1a7",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
@@ -5387,47 +5432,57 @@
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211014184441_createSocialMediasTable.ts": {
-        "version": "031df0f7b173b511090ff5ed5d77c60612ff93997615513ac8bc9c4ec0475d84",
+        "version": "ebbc3189549f4f82e7ec10cf546e1b6b3c24f2d57b536c6729bc105438c214f3",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211027113403_createInventoryItemsTable.ts": {
-        "version": "07f842a4622e3477dfbd3494b227c5e3ec7d9a8bb174ae6bd9b6b98e2c170e9a",
+        "version": "c7cfa706d007fccf74ff4a358187765d75e971f4dc5c2ba87ea904627d2fdbfd",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211027113929_createNonInventoryItemsTable.ts": {
-        "version": "a083219ab457ac647a2f32fc8126e1dac0390ad0a80cf338e367bdf2145c5d7c",
+        "version": "95e9c16a0746b67750f18c9f59442ccddb628568a7339c02ca9febfc15dfb240",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211027120013_createServiceItemsTable.ts": {
-        "version": "f2056403c4d500b7b075b3e809bc38034cae82048c0a514bb208213535b975ef",
+        "version": "1fed155c17bf9cdcfdaaccd3152597513ec07601a2e6bcb5ff7c3ff05d7d6f61",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211030060620_CreateSubServicesTable.ts": {
-        "version": "a880fe8a257ec477f82955caca3f22f58316689fdc3f54193344c2bc0dcba526",
+        "version": "b0bec47e3be5d297a7cfab6a234a099fa7f1a338eec2a1814af7187b1ed39fe4",
+        "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
+        "affectsGlobalScope": false
+      },
+      "../src/database/migrations/20211030162002_createPaymentMethodsTable.ts": {
+        "version": "8f919495ead549db9d93ddf3d881e88c10ef99a7811cae24760ab92a80fd938c",
+        "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
+        "affectsGlobalScope": false
+      },
+      "../src/database/migrations/20211030162003_createTaxesTable.ts": {
+        "version": "6d869731b9ae762aef1f7efb94649d79898e589fcbada55c296803bb9b2e0e10",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211030162138_createInvoicesTable.ts": {
-        "version": "be910a1e8f7bf23ca293ea1133657f88192e76d557bb2b542d44ee9ac9d41c80",
+        "version": "e11e9ff42f2d95020fc0356c478325eef9511ef8c96ea533b561e872631d0aab",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211030162207_createInvoiceItemsTable.ts": {
-        "version": "d4069d233cb6e6b907770af02eb4f8a202f5d815520acf1b76b089a86379d163",
+        "version": "1ef6410fc2f9c8149c619af6e24abf67a78ab5e8c23045f32a336b6184470cb5",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211030162237_createQuotesTable.ts": {
-        "version": "90786312b37a31eec496780abcfecae5b7a4ef6b701bc7087c9e1b2dbd1c8d8f",
+        "version": "8ee9575dbb8ab830faa739016037c19a23369527c5d4887562730ae9ec32245d",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211030162239_createQuoteItemsTable.ts": {
-        "version": "ec086ca6d60ce3258a8da52fe761834bed4bbaeb77ff1febe4205e6c886c66b6",
+        "version": "ccaf714dfa95e1ef343febfa18b1ab3bd398e4b93054b61d10c40ffc062414ee",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
@@ -5442,67 +5497,57 @@
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211101215436_addProjectBoardsTable.ts": {
-        "version": "890fe4f82c39780ac430993fe672dec32ae35c043eb62d20acaedfa9e2217aa6",
+        "version": "8466ceeb1d4e1348aae9d373bbf2e4b13c09c4fc72a7e7be58a3c5e273a2800c",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211101215522_addTasksTable.ts": {
-        "version": "ec5bbae9178b83a1e4076d35726aa7ec2e35411898fbe9c93db55c47146aabbc",
+        "version": "ad7652dca99cd2e19e89e212ceb96630641a6a64e564b9665fc7997f0988d43b",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211101222851_addProjectMemberUsersTable.ts": {
-        "version": "c1bcd79d78f792783c1879915ad591567764b4d076015bb2066b89037969970b",
+        "version": "0363c6b7fdd50c023d0e1a67ddb1cd0d97318ea0acd91130aa4be5475e348369",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211101222906_addProjectLeaderUsersTable.ts": {
-        "version": "4d93e5b3f1532f424d199d2364c4ed80958f357b9b77e8031357dc529e9c7d83",
+        "version": "45ab768d9511e4aee45611dbdd49479ddf7c4671320c61d9f033cada81c8b00c",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211101230930_addTaskMemberUsersTable.ts": {
-        "version": "0ebdb1e089df5bc73fa48030b6533dee7d9e9ab52b6fa533c2bcefb1d35ba4c3",
+        "version": "3b55813bdcac33e96e11f5e070ed39c38340b9e13d24d12528fc9405969fbf15",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211107005055_CreateBoardAttributesTable.ts": {
-        "version": "9ac19ad4f6ba544c2b4dcffaa02bd75def23dd98777068737f0c43d9c5e51eb2",
+        "version": "79999b0550d8a2bd483d8c9ec2547add1b00b28de4cc397dc74d147b7c9e127e",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211115162623_createExpenseCategoryTable.ts": {
-        "version": "8bcbed37b1e7d4ba1a12b7a49ca1e442f1f3ba85205f15b5c203a0ba6c4cd545",
+        "version": "dccf7d4c2b9464c0d74c4a13467ad7e1d68b1735fcfdb3d71a3fe1a7a570336e",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211115163953_createExpenseSubCategoryTable.ts": {
-        "version": "3a807528e0e175269ddc68bae840825dd5f2e59b5e64600013c1e986b6bd8e2a",
+        "version": "e98070bba277c8e7655d159c930bbbd092a6c2f0bd8234c00968428573443835",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211115164000_createSuppliersTable.ts": {
-        "version": "c3531bf8f3330edb11878442a70cc5b06461f64088157e829f9e079551bcd561",
-        "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
-        "affectsGlobalScope": false
-      },
-      "../src/database/migrations/20211115164001_createTaxesTable.ts": {
-        "version": "6d869731b9ae762aef1f7efb94649d79898e589fcbada55c296803bb9b2e0e10",
-        "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
-        "affectsGlobalScope": false
-      },
-      "../src/database/migrations/20211115164002_createPaymentMethodsTable.ts": {
-        "version": "97f0cb132160de288c6bb14c0efe6498ace3be21677dd8a6e348454d51dcdb6c",
+        "version": "4eb9a4039e79f32aee941479771d8b887e2cdca2b0bc4fbfc19b23cd11b57558",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211115164014_createExpensesTable.ts": {
-        "version": "8913e5c477eba0f2fcaef900f6f062674ecd30cbad97f12a8efdb79888177dce",
+        "version": "1723252ad0426888ead805368132857d46688f9ab544b3f40ed21321a4348241",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211115164046_createExpensesItemsTable.ts": {
-        "version": "0a2d148cd87bf4dd919535d4180d915ed470edda2c9ecaab777f23da980b151a",
+        "version": "e800eac1fe95c22f5f2f6caa4567fec798137edbe00261847a4b78608818cb20",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
@@ -5517,17 +5562,17 @@
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211128113310_createExpenseAttachmentsTable.ts": {
-        "version": "dab9a2d3aca6d6115637a6f1d0fd19b0cca9416b304c77285556e5d548613a40",
+        "version": "67d0f46d76c6afacd3d6b3aa7b52e0a2771e32cd3e09ba0242f05879c9cb234b",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211128222516_createProjectAttachmentsTable.ts": {
-        "version": "8e7cfb243476a4f833762c8aed56be4dc96cb93a0753059215740da7ac00095f",
+        "version": "18d6f5f1bcf6172ab2b25a30694c5dfe0e3cda29a5da8508b489551cbb2d6d6d",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211130195214_createConnectedUserTable.ts": {
-        "version": "f3c5ffb63e4c55bd96fe05f4b9bca07c98ab0d2771b9b2e6fbe6e3630f5b73e3",
+        "version": "ee65d36c758a6ed3caeb96a9f2b125aa6ada28ead83d508be9f4a3c1231710a3",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
@@ -5537,7 +5582,7 @@
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211130201026_createJoinedRoomTable.ts": {
-        "version": "6e75c9306583bb01be61055d3e66d7c4e86fe68f35bc3d2bed6b4960a9ca4167",
+        "version": "64e8036226a0d5f5adcd120bb16e5d16b34d19cc0ffecb1db42f7045bd1a43cb",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
@@ -5547,32 +5592,32 @@
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211130221617_createRoomUsersTable.ts": {
-        "version": "f1523e8a1b5d0e5238c5bf9bd42ffacfd044d4332a29c7f22e450a18f4b8f5be",
+        "version": "15b1670a1b54582783db1ceaeb3a0c6e0e16a5b5dbfebed1797bf098fd329ed5",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211208113320_createMessageAttachmentsTable.ts": {
-        "version": "60c4c0fe32f8583c552154e0a42421a872524ab3e083e1d845d49830f0a24794",
+        "version": "ad81bc701c8ca8abd5b3fa3b8dbb00d2865f53d0fe7aefbb1c7947404bf00213",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211209155046_createMessageRecepientsTable.ts": {
-        "version": "8cdb92d090a1a888e21f8e28269d76f8d855f8b6455709278aba5805f98422a8",
+        "version": "eb8a0cc77eb56814bcd42669645d6628be8de00139481f6f73abef33183446b7",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211222142739_createPendingAddingUsersToRoomTable.ts": {
-        "version": "29fd8ca9ad9e342973e484d488b070ce8d6e68782d6cf2a5440590986dde75f9",
+        "version": "81a3ee857c0617748a7615a1e85615a88e7ecaa46ca20ad13c951ef67268005f",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20211228194712_createDeletedRoomUsersTable.ts": {
-        "version": "086188fffcda5dc2375b239055a64ccb5d0eec85aee7f32939a9c1ae80bcb5ef",
+        "version": "661d9fd63ea1c5f1176ccc2749fdc7e22e0efae889ff05a5793c6efb4f6964c4",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20220102160000_createSocialMediaStudiosTable.ts": {
-        "version": "dc8df0e3a692c24f254a57b34af06f23bd966976c3c3a1ec2184e10ea5590672",
+        "version": "e296d891d3dcb95d1327f7c1332d59fa9bcb5750f532971b3cc4a4d0745fbcea",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
@@ -5582,17 +5627,32 @@
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20220104175054_createSocialMediaStudioUsersTable.ts": {
-        "version": "ce5bb4e916ff7d5669790bb28435db13e137048bb1097612d31196f29ee7a38c",
+        "version": "cf3363e3ed67b735cb58c2b26a76fe0cbc51f92d710f704cc55e2270812665a0",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20220104175137_createMediaAttachmentsTable.ts": {
-        "version": "a568e6dd5bb981256c1534a1ab306c7d871ecae67e519f83225615a70e8c059a",
+        "version": "0325c3372795ab89bff499afe30280b49a60d9cbc40acbaac810118776158bed",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
       "../src/database/migrations/20220118114135_addBrandCodeToSocialMediaUsersTable.ts": {
-        "version": "a7cbdb14498db7969de17a9bf62c5f8b192e2b1cc20312fa94d97e8367031687",
+        "version": "d243283f7e06ef526f29d7f14cc0b0170d072d0c5cb4528530e44eb1ce3d6fb9",
+        "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
+        "affectsGlobalScope": false
+      },
+      "../src/database/migrations/20220127154933_createSupplierItemsTable.ts": {
+        "version": "9e76c219f20db31d23f86ad73d4e10d06cb65a6500bace2b5af24e73e7c76a4f",
+        "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
+        "affectsGlobalScope": false
+      },
+      "../src/database/migrations/20220131030338_createExpenseSubCategoryChildTable.ts": {
+        "version": "081b3174e170098e35e6b4f3099720369b6eda22f9f86bcafa39ae168e90d180",
+        "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
+        "affectsGlobalScope": false
+      },
+      "../src/database/migrations/20220206102706_createTaskAttachmentsTable.ts": {
+        "version": "c62dd996afd417d2153f07909c40d1ed939986fbe48c42096d3c51413fcc6ed5",
         "signature": "db7de7d646ce9bed4219b967a52e74c498f69b151159067f793e8bfa67b715bf",
         "affectsGlobalScope": false
       },
@@ -5604,16 +5664,6 @@
       "../src/database/seeds/00-schema.create.ts": {
         "version": "3231c6efcc245c92e5e458c007591c1163c6598aaa17071be9f7ce6ed6d7a82c",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
-        "affectsGlobalScope": false
-      },
-      "../src/shared/adapters/ws-adaprs.ts": {
-        "version": "8b263dbfcfcb3737d5e0a639c49ae493c553c26c867ba10d56b59a5680de2ef8",
-        "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "affectsGlobalScope": false
-      },
-      "../src/shared/gateway/chat.gateway.ts": {
-        "version": "d35d2f155e948dd1140a959ed3d3d4d199d7cc0bdcb5480ad400f4de95a187e4",
-        "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "affectsGlobalScope": false
       },
       "../src/shared/interceptors/exclude-columns.interceptor.ts": {
@@ -5940,6 +5990,11 @@
         "version": "2b8264b2fefd7367e0f20e2c04eed5d3038831fe00f5efbc110ff0131aab899b",
         "signature": "2b8264b2fefd7367e0f20e2c04eed5d3038831fe00f5efbc110ff0131aab899b",
         "affectsGlobalScope": false
+      },
+      "../node_modules/@types/pdfkit/index.d.ts": {
+        "version": "71fbfc4b8bc81d2e125e7670e8b16372ed21b2c555ba75e5fecbe05d4d518c0f",
+        "signature": "71fbfc4b8bc81d2e125e7670e8b16372ed21b2c555ba75e5fecbe05d4d518c0f",
+        "affectsGlobalScope": true
       },
       "../node_modules/@types/pug/index.d.ts": {
         "version": "711596a8f7e8a84ea3985bb2d03f1a6681ac7ecd132d48141d6d6a1287513d27",
@@ -7021,6 +7076,9 @@
       ],
       "../node_modules/@types/node/zlib.d.ts": [
         "../node_modules/@types/node/stream.d.ts"
+      ],
+      "../node_modules/@types/pdfkit/index.d.ts": [
+        "../node_modules/@types/node/index.d.ts"
       ],
       "../node_modules/@types/serve-static/index.d.ts": [
         "../node_modules/@types/mime/index.d.ts",
@@ -10619,6 +10677,7 @@
         "../src/api/clientContacts/clientContacts.module.ts",
         "../src/api/clients/clients.module.ts",
         "../src/api/expenseCategories/expenseCategories.module.ts",
+        "../src/api/expenseChildSubCategories/expenseChildSubCategories.module.ts",
         "../src/api/expenseSubCategories/expenseSubCategories.module.ts",
         "../src/api/expenses/expenses.module.ts",
         "../src/api/inventoryItems/inventoryItems.module.ts",
@@ -10635,8 +10694,7 @@
         "../src/api/subServiceItems/subServiceItems.module.ts",
         "../src/api/suppliers/suppliers.module.ts",
         "../src/api/tasks/tasks.module.ts",
-        "../src/api/taxes/taxes.module.ts",
-        "../src/app/app.service.ts"
+        "../src/api/taxes/taxes.module.ts"
       ],
       "../src/api/auth/apps/permissions/dto/create-permission.dto.ts": [
         "../node_modules/class-validator/index.d.ts"
@@ -10830,22 +10888,31 @@
       ],
       "../src/api/brands/brands.controller.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/platform-express/index.d.ts",
         "../src/api/auth/guards/jwt-auth.guard.ts",
         "../src/api/brands/brands.service.ts",
-        "../src/api/brands/dto/create-brand.dto.ts"
+        "../src/api/brands/dto/create-brand.dto.ts",
+        "../src/api/brands/dto/update-brand.dto.ts",
+        "../src/app/app.service.ts"
       ],
       "../src/api/brands/brands.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../src/api/brands/brands.controller.ts",
-        "../src/api/brands/brands.service.ts"
+        "../src/api/brands/brands.service.ts",
+        "../src/app/app.service.ts"
       ],
       "../src/api/brands/brands.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/objection/typings/objection/index.d.ts",
         "../src/api/auth/guards/jwt-auth.guard.ts",
+        "../src/app/app.service.ts",
         "../src/database/models/brand.model.ts"
       ],
       "../src/api/brands/dto/create-brand.dto.ts": [
+        "../node_modules/class-validator/index.d.ts",
+        "../src/app/app.service.ts"
+      ],
+      "../src/api/brands/dto/update-brand.dto.ts": [
         "../node_modules/class-validator/index.d.ts",
         "../src/app/app.service.ts"
       ],
@@ -10992,6 +11059,35 @@
         "../src/api/expenseCategories/dto/update-expenseCategory.dto.ts",
         "../src/database/models/expenseCategory.model.ts"
       ],
+      "../src/api/expenseChildSubCategories/dto/create-expenseChildSubCategory.dto.ts": [
+        "../node_modules/class-validator/index.d.ts"
+      ],
+      "../src/api/expenseChildSubCategories/dto/update-expenseChildSubCategory.dto.ts": [
+        "../node_modules/class-validator/index.d.ts"
+      ],
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.controller.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/api/auth/guards/jwt-auth.guard.ts",
+        "../src/api/expenseChildSubCategories/dto/create-expenseChildSubCategory.dto.ts",
+        "../src/api/expenseChildSubCategories/dto/update-expenseChildSubCategory.dto.ts",
+        "../src/api/expenseChildSubCategories/expenseChildSubCategories.service.ts"
+      ],
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.module.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/api/expenseCategories/expenseCategories.service.ts",
+        "../src/api/expenseChildSubCategories/expenseChildSubCategories.controller.ts",
+        "../src/api/expenseChildSubCategories/expenseChildSubCategories.service.ts",
+        "../src/api/expenseSubCategories/expenseSubCategories.module.ts",
+        "../src/api/expenseSubCategories/expenseSubCategories.service.ts"
+      ],
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.service.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/api/expenseChildSubCategories/dto/create-expenseChildSubCategory.dto.ts",
+        "../src/api/expenseChildSubCategories/dto/update-expenseChildSubCategory.dto.ts",
+        "../src/api/expenseSubCategories/expenseSubCategories.service.ts",
+        "../src/database/models/expenseChildSubCategory.model.ts"
+      ],
       "../src/api/expenseSubCategories/dto/create-expenseSubCategory.dto.ts": [
         "../node_modules/class-validator/index.d.ts"
       ],
@@ -11021,7 +11117,9 @@
       ],
       "../src/api/expenses/dto/create-expense.dto.ts": [
         "../node_modules/class-validator/index.d.ts",
-        "../node_modules/moment/ts3.1-typings/moment.d.ts"
+        "../node_modules/moment/ts3.1-typings/moment.d.ts",
+        "../src/app/app.service.ts",
+        "../src/lib/defaults.ts"
       ],
       "../src/api/expenses/dto/passCreate-expense.dto.ts": [
         "../node_modules/class-validator/index.d.ts",
@@ -11096,7 +11194,8 @@
       ],
       "../src/api/invoices/dto/create-invoice.dto.ts": [
         "../node_modules/class-validator/index.d.ts",
-        "../node_modules/moment/ts3.1-typings/moment.d.ts"
+        "../src/app/app.service.ts",
+        "../src/lib/defaults.ts"
       ],
       "../src/api/invoices/dto/passCreate-invoice.dto.ts": [
         "../node_modules/class-validator/index.d.ts",
@@ -11154,6 +11253,7 @@
       "../src/api/joinedItems/joinedItems.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/api/expenseChildSubCategories/expenseChildSubCategories.controller.ts",
         "../src/database/models/expenseCategory.model.ts",
         "../src/database/models/expenseSubCategory.model.ts",
         "../src/database/models/inventoryItem.model.ts",
@@ -11290,11 +11390,14 @@
         "../src/database/models/projectAttachment.model.ts",
         "../src/database/models/projectLeader.model.ts",
         "../src/database/models/projectMember.model.ts",
+        "../src/database/models/task.model.ts",
+        "../src/database/models/taskMember.model.ts",
         "../src/database/models/user.model.ts"
       ],
       "../src/api/qoutes/dto/create-quote.dto.ts": [
         "../node_modules/class-validator/index.d.ts",
-        "../node_modules/moment/ts3.1-typings/moment.d.ts"
+        "../src/app/app.service.ts",
+        "../src/lib/defaults.ts"
       ],
       "../src/api/qoutes/dto/passCreate-quote.dto.ts": [
         "../node_modules/class-validator/index.d.ts",
@@ -11537,11 +11640,13 @@
       ],
       "../src/api/tasks/tasks.controller.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/platform-express/index.d.ts",
         "../src/api/auth/guards/jwt-auth.guard.ts",
         "../src/api/tasks/dto/add-membersToTask.dto.ts",
         "../src/api/tasks/dto/create-task.dto.ts",
         "../src/api/tasks/dto/update-task.dto.ts",
-        "../src/api/tasks/tasks.service.ts"
+        "../src/api/tasks/tasks.service.ts",
+        "../src/app/app.service.ts"
       ],
       "../src/api/tasks/tasks.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11550,7 +11655,8 @@
         "../src/api/projects/projects.module.ts",
         "../src/api/projects/projects.service.ts",
         "../src/api/tasks/tasks.controller.ts",
-        "../src/api/tasks/tasks.service.ts"
+        "../src/api/tasks/tasks.service.ts",
+        "../src/app/app.service.ts"
       ],
       "../src/api/tasks/tasks.service.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11561,8 +11667,10 @@
         "../src/api/tasks/dto/add-membersToTask.dto.ts",
         "../src/api/tasks/dto/create-task.dto.ts",
         "../src/api/tasks/dto/update-task.dto.ts",
+        "../src/app/app.service.ts",
         "../src/database/models/board.model.ts",
         "../src/database/models/task.model.ts",
+        "../src/database/models/taskAttachment.model.ts",
         "../src/database/models/taskMember.model.ts",
         "../src/database/models/user.model.ts"
       ],
@@ -11596,7 +11704,8 @@
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/platform-express/index.d.ts",
         "../src/api/auth/guards/jwt-auth.guard.ts",
-        "../src/app/app.service.ts"
+        "../src/app/app.service.ts",
+        "../src/lib/defaults.ts"
       ],
       "../src/app/app.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -11688,6 +11797,14 @@
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/knex/types/index.d.ts"
       ],
+      "../src/database/migrations/20211030162002_createPaymentMethodsTable.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/knex/types/index.d.ts"
+      ],
+      "../src/database/migrations/20211030162003_createTaxesTable.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/knex/types/index.d.ts"
+      ],
       "../src/database/migrations/20211030162138_createInvoicesTable.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/knex/types/index.d.ts"
@@ -11745,14 +11862,6 @@
         "../node_modules/knex/types/index.d.ts"
       ],
       "../src/database/migrations/20211115164000_createSuppliersTable.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/knex/types/index.d.ts"
-      ],
-      "../src/database/migrations/20211115164001_createTaxesTable.ts": [
-        "../node_modules/@nestjs/common/index.d.ts",
-        "../node_modules/knex/types/index.d.ts"
-      ],
-      "../src/database/migrations/20211115164002_createPaymentMethodsTable.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/knex/types/index.d.ts"
       ],
@@ -11836,6 +11945,18 @@
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/knex/types/index.d.ts"
       ],
+      "../src/database/migrations/20220127154933_createSupplierItemsTable.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/knex/types/index.d.ts"
+      ],
+      "../src/database/migrations/20220131030338_createExpenseSubCategoryChildTable.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/knex/types/index.d.ts"
+      ],
+      "../src/database/migrations/20220206102706_createTaskAttachmentsTable.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/knex/types/index.d.ts"
+      ],
       "../src/database/models/attachment.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
         "../src/database/models/base.model.ts"
@@ -11869,6 +11990,8 @@
         "../src/database/models/clientContact.model.ts",
         "../src/database/models/invoiceItem.model.ts",
         "../src/database/models/meeting.model.ts",
+        "../src/database/models/project.model.ts",
+        "../src/database/models/quote.model.ts",
         "../src/database/models/socialMedia.model.ts",
         "../src/database/models/user.model.ts"
       ],
@@ -11906,6 +12029,11 @@
         "../src/database/models/base.model.ts",
         "../src/database/models/expenseSubCategory.model.ts"
       ],
+      "../src/database/models/expenseChildSubCategory.model.ts": [
+        "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/database/models/base.model.ts",
+        "../src/database/models/expenseSubCategory.model.ts"
+      ],
       "../src/database/models/expenseItem.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
         "../src/database/models/base.model.ts",
@@ -11914,7 +12042,8 @@
       "../src/database/models/expenseSubCategory.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
         "../src/database/models/base.model.ts",
-        "../src/database/models/expenseCategory.model.ts"
+        "../src/database/models/expenseCategory.model.ts",
+        "../src/database/models/expenseChildSubCategory.model.ts"
       ],
       "../src/database/models/inventoryItem.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
@@ -12069,9 +12198,16 @@
       ],
       "../src/database/models/task.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/database/models/attachment.model.ts",
         "../src/database/models/base.model.ts",
         "../src/database/models/board.model.ts",
         "../src/database/models/project.model.ts"
+      ],
+      "../src/database/models/taskAttachment.model.ts": [
+        "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/database/models/attachment.model.ts",
+        "../src/database/models/base.model.ts",
+        "../src/database/models/task.model.ts"
       ],
       "../src/database/models/taskMember.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
@@ -13186,6 +13322,9 @@
       ],
       "../node_modules/@types/node/zlib.d.ts": [
         "../node_modules/@types/node/stream.d.ts"
+      ],
+      "../node_modules/@types/pdfkit/index.d.ts": [
+        "../node_modules/@types/node/index.d.ts"
       ],
       "../node_modules/@types/serve-static/index.d.ts": [
         "../node_modules/@types/mime/index.d.ts",
@@ -16864,11 +17003,16 @@
       ],
       "../src/api/brands/brands.controller.ts": [
         "../src/api/brands/brands.service.ts",
-        "../src/api/brands/dto/create-brand.dto.ts"
+        "../src/api/brands/dto/create-brand.dto.ts",
+        "../src/api/brands/dto/update-brand.dto.ts"
       ],
       "../src/api/brands/brands.service.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/app/app.service.ts",
         "../src/database/models/brand.model.ts"
+      ],
+      "../src/api/brands/dto/update-brand.dto.ts": [
+        "../src/app/app.service.ts"
       ],
       "../src/api/chat/chats.controller.ts": [
         "../src/api/chat/chats.service.ts",
@@ -16931,6 +17075,18 @@
         "../src/api/expenseCategories/dto/create-expenseCategory.dto.ts",
         "../src/api/expenseCategories/dto/update-expenseCategory.dto.ts",
         "../src/database/models/expenseCategory.model.ts"
+      ],
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.controller.ts": [
+        "../src/api/expenseChildSubCategories/dto/create-expenseChildSubCategory.dto.ts",
+        "../src/api/expenseChildSubCategories/dto/update-expenseChildSubCategory.dto.ts",
+        "../src/api/expenseChildSubCategories/expenseChildSubCategories.service.ts"
+      ],
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.service.ts": [
+        "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/api/expenseChildSubCategories/dto/create-expenseChildSubCategory.dto.ts",
+        "../src/api/expenseChildSubCategories/dto/update-expenseChildSubCategory.dto.ts",
+        "../src/api/expenseSubCategories/expenseSubCategories.service.ts",
+        "../src/database/models/expenseChildSubCategory.model.ts"
       ],
       "../src/api/expenseSubCategories/expenseSubCategories.controller.ts": [
         "../src/api/expenseSubCategories/dto/create-expenseSubCategory.dto.ts",
@@ -17051,6 +17207,8 @@
         "../src/database/models/projectAttachment.model.ts",
         "../src/database/models/projectLeader.model.ts",
         "../src/database/models/projectMember.model.ts",
+        "../src/database/models/task.model.ts",
+        "../src/database/models/taskMember.model.ts",
         "../src/database/models/user.model.ts"
       ],
       "../src/api/qoutes/dto/passCreate-quote.dto.ts": [
@@ -17097,7 +17255,6 @@
         "../src/api/socialMediaStudios/dto/socialMediaStudioUser.dto.ts"
       ],
       "../src/api/socialMediaStudios/socialMediaStudios.controller.ts": [
-        "../src/api/socialMediaStudios/dto/add-socialMediaUsers.dto.ts",
         "../src/api/socialMediaStudios/dto/create-media.dto.ts",
         "../src/api/socialMediaStudios/dto/create-socialMediaStudio.dto.ts",
         "../src/api/socialMediaStudios/dto/remove-mediaAttachment.dto.ts",
@@ -17165,8 +17322,10 @@
         "../src/api/tasks/dto/add-membersToTask.dto.ts",
         "../src/api/tasks/dto/create-task.dto.ts",
         "../src/api/tasks/dto/update-task.dto.ts",
+        "../src/app/app.service.ts",
         "../src/database/models/board.model.ts",
         "../src/database/models/task.model.ts",
+        "../src/database/models/taskAttachment.model.ts",
         "../src/database/models/taskMember.model.ts",
         "../src/database/models/user.model.ts"
       ],
@@ -17227,6 +17386,12 @@
       "../src/database/migrations/20211030060620_CreateSubServicesTable.ts": [
         "../node_modules/knex/types/index.d.ts"
       ],
+      "../src/database/migrations/20211030162002_createPaymentMethodsTable.ts": [
+        "../node_modules/knex/types/index.d.ts"
+      ],
+      "../src/database/migrations/20211030162003_createTaxesTable.ts": [
+        "../node_modules/knex/types/index.d.ts"
+      ],
       "../src/database/migrations/20211030162138_createInvoicesTable.ts": [
         "../node_modules/knex/types/index.d.ts"
       ],
@@ -17270,12 +17435,6 @@
         "../node_modules/knex/types/index.d.ts"
       ],
       "../src/database/migrations/20211115164000_createSuppliersTable.ts": [
-        "../node_modules/knex/types/index.d.ts"
-      ],
-      "../src/database/migrations/20211115164001_createTaxesTable.ts": [
-        "../node_modules/knex/types/index.d.ts"
-      ],
-      "../src/database/migrations/20211115164002_createPaymentMethodsTable.ts": [
         "../node_modules/knex/types/index.d.ts"
       ],
       "../src/database/migrations/20211115164014_createExpensesTable.ts": [
@@ -17338,6 +17497,15 @@
       "../src/database/migrations/20220118114135_addBrandCodeToSocialMediaUsersTable.ts": [
         "../node_modules/knex/types/index.d.ts"
       ],
+      "../src/database/migrations/20220127154933_createSupplierItemsTable.ts": [
+        "../node_modules/knex/types/index.d.ts"
+      ],
+      "../src/database/migrations/20220131030338_createExpenseSubCategoryChildTable.ts": [
+        "../node_modules/knex/types/index.d.ts"
+      ],
+      "../src/database/migrations/20220206102706_createTaskAttachmentsTable.ts": [
+        "../node_modules/knex/types/index.d.ts"
+      ],
       "../src/database/models/attachment.model.ts": [
         "../src/database/models/base.model.ts"
       ],
@@ -17368,6 +17536,8 @@
         "../src/database/models/clientContact.model.ts",
         "../src/database/models/invoiceItem.model.ts",
         "../src/database/models/meeting.model.ts",
+        "../src/database/models/project.model.ts",
+        "../src/database/models/quote.model.ts",
         "../src/database/models/socialMedia.model.ts",
         "../src/database/models/user.model.ts"
       ],
@@ -17405,6 +17575,11 @@
         "../src/database/models/base.model.ts",
         "../src/database/models/expenseSubCategory.model.ts"
       ],
+      "../src/database/models/expenseChildSubCategory.model.ts": [
+        "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/database/models/base.model.ts",
+        "../src/database/models/expenseSubCategory.model.ts"
+      ],
       "../src/database/models/expenseItem.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
         "../src/database/models/base.model.ts",
@@ -17413,7 +17588,8 @@
       "../src/database/models/expenseSubCategory.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
         "../src/database/models/base.model.ts",
-        "../src/database/models/expenseCategory.model.ts"
+        "../src/database/models/expenseCategory.model.ts",
+        "../src/database/models/expenseChildSubCategory.model.ts"
       ],
       "../src/database/models/inventoryItem.model.ts": [
         "../src/database/models/base.model.ts"
@@ -17566,9 +17742,16 @@
       ],
       "../src/database/models/task.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/database/models/attachment.model.ts",
         "../src/database/models/base.model.ts",
         "../src/database/models/board.model.ts",
         "../src/database/models/project.model.ts"
+      ],
+      "../src/database/models/taskAttachment.model.ts": [
+        "../node_modules/objection/typings/objection/index.d.ts",
+        "../src/database/models/attachment.model.ts",
+        "../src/database/models/base.model.ts",
+        "../src/database/models/task.model.ts"
       ],
       "../src/database/models/taskMember.model.ts": [
         "../node_modules/objection/typings/objection/index.d.ts",
@@ -17942,6 +18125,7 @@
       "../node_modules/@types/node/worker_threads.d.ts",
       "../node_modules/@types/node/zlib.d.ts",
       "../node_modules/@types/parse-json/index.d.ts",
+      "../node_modules/@types/pdfkit/index.d.ts",
       "../node_modules/@types/pug/index.d.ts",
       "../node_modules/@types/qs/index.d.ts",
       "../node_modules/@types/range-parser/index.d.ts",
@@ -18596,6 +18780,7 @@
       "../src/api/brands/brands.module.ts",
       "../src/api/brands/brands.service.ts",
       "../src/api/brands/dto/create-brand.dto.ts",
+      "../src/api/brands/dto/update-brand.dto.ts",
       "../src/api/chat/chats.controller.ts",
       "../src/api/chat/chats.module.ts",
       "../src/api/chat/chats.service.ts",
@@ -18619,6 +18804,11 @@
       "../src/api/expenseCategories/expenseCategories.controller.ts",
       "../src/api/expenseCategories/expenseCategories.module.ts",
       "../src/api/expenseCategories/expenseCategories.service.ts",
+      "../src/api/expenseChildSubCategories/dto/create-expenseChildSubCategory.dto.ts",
+      "../src/api/expenseChildSubCategories/dto/update-expenseChildSubCategory.dto.ts",
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.controller.ts",
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.module.ts",
+      "../src/api/expenseChildSubCategories/expenseChildSubCategories.service.ts",
       "../src/api/expenseSubCategories/dto/create-expenseSubCategory.dto.ts",
       "../src/api/expenseSubCategories/dto/update-expenseSubCategory.dto.ts",
       "../src/api/expenseSubCategories/expenseSubCategories.controller.ts",
@@ -18733,6 +18923,8 @@
       "../src/database/migrations/20211027113929_createNonInventoryItemsTable.ts",
       "../src/database/migrations/20211027120013_createServiceItemsTable.ts",
       "../src/database/migrations/20211030060620_CreateSubServicesTable.ts",
+      "../src/database/migrations/20211030162002_createPaymentMethodsTable.ts",
+      "../src/database/migrations/20211030162003_createTaxesTable.ts",
       "../src/database/migrations/20211030162138_createInvoicesTable.ts",
       "../src/database/migrations/20211030162207_createInvoiceItemsTable.ts",
       "../src/database/migrations/20211030162237_createQuotesTable.ts",
@@ -18748,8 +18940,6 @@
       "../src/database/migrations/20211115162623_createExpenseCategoryTable.ts",
       "../src/database/migrations/20211115163953_createExpenseSubCategoryTable.ts",
       "../src/database/migrations/20211115164000_createSuppliersTable.ts",
-      "../src/database/migrations/20211115164001_createTaxesTable.ts",
-      "../src/database/migrations/20211115164002_createPaymentMethodsTable.ts",
       "../src/database/migrations/20211115164014_createExpensesTable.ts",
       "../src/database/migrations/20211115164046_createExpensesItemsTable.ts",
       "../src/database/migrations/20211120201035_createAttachmentsTable.ts",
@@ -18770,6 +18960,9 @@
       "../src/database/migrations/20220104175054_createSocialMediaStudioUsersTable.ts",
       "../src/database/migrations/20220104175137_createMediaAttachmentsTable.ts",
       "../src/database/migrations/20220118114135_addBrandCodeToSocialMediaUsersTable.ts",
+      "../src/database/migrations/20220127154933_createSupplierItemsTable.ts",
+      "../src/database/migrations/20220131030338_createExpenseSubCategoryChildTable.ts",
+      "../src/database/migrations/20220206102706_createTaskAttachmentsTable.ts",
       "../src/database/models/attachment.model.ts",
       "../src/database/models/base.model.ts",
       "../src/database/models/board.model.ts",
@@ -18781,6 +18974,7 @@
       "../src/database/models/expense.model.ts",
       "../src/database/models/expenseAttachment.model.ts",
       "../src/database/models/expenseCategory.model.ts",
+      "../src/database/models/expenseChildSubCategory.model.ts",
       "../src/database/models/expenseItem.model.ts",
       "../src/database/models/expenseSubCategory.model.ts",
       "../src/database/models/inventoryItem.model.ts",
@@ -18809,17 +19003,17 @@
       "../src/database/models/subServiceItem.model.ts",
       "../src/database/models/supplier.model.ts",
       "../src/database/models/task.model.ts",
+      "../src/database/models/taskAttachment.model.ts",
       "../src/database/models/taskMember.model.ts",
       "../src/database/models/tax.model.ts",
       "../src/database/models/user.model.ts",
       "../src/database/models/userRole.model.ts",
       "../src/database/seeds/00-schema.create.ts",
+      "../src/lib/defaults.ts",
       "../src/main.ts",
       "../src/shared/Handlers/http-error.handler.ts",
       "../src/shared/Interceptors/logging.interceptor.ts",
       "../src/shared/Interceptors/timeout.interceptor.ts",
-      "../src/shared/adapters/ws-adaprs.ts",
-      "../src/shared/gateway/chat.gateway.ts",
       "../src/shared/interceptors/exclude-columns.interceptor.ts",
       "../src/shared/pipes/validation.pipes.ts",
       "../src/shared/swagger/swagger.config.ts",

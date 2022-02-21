@@ -18,30 +18,44 @@ const rxjs_1 = require("rxjs");
 const clients_service_1 = require("../clients/clients.service");
 const app_service_1 = require("../../app/app.service");
 let ProjectsService = class ProjectsService {
-    constructor(modelClass, leaderModelClass, memberModelClass, userModel, projectAttachmentModel, attachmentModel, clientsSerive, fileUploadService) {
+    constructor(modelClass, leaderModelClass, memberModelClass, userModel, projectAttachmentModel, attachmentModel, taskMemberModelClass, taskModelClass, clientsSerive, fileUploadService) {
         this.modelClass = modelClass;
         this.leaderModelClass = leaderModelClass;
         this.memberModelClass = memberModelClass;
         this.userModel = userModel;
         this.projectAttachmentModel = projectAttachmentModel;
         this.attachmentModel = attachmentModel;
+        this.taskMemberModelClass = taskMemberModelClass;
+        this.taskModelClass = taskModelClass;
         this.clientsSerive = clientsSerive;
         this.fileUploadService = fileUploadService;
     }
     async findAll(currentUser) {
+        const assignedLeaders = await this.leaderModelClass.query().where({ leaderId: currentUser.id });
+        const assignedMembers = await this.memberModelClass.query().where({ memberId: currentUser.id });
+        const assignedTaskMembers = await this.taskMemberModelClass.query().where('memberId', currentUser.id);
+        const assignedTasks = await this.taskModelClass.query().findByIds(assignedTaskMembers.map(e => e.taskId));
+        const proIds = await this.modelClass.query().select('id')
+            .whereIn('id', assignedLeaders.map(e => e.projectId))
+            .orWhereIn('id', assignedMembers.map(e => e.projectId))
+            .orWhereIn('id', assignedTasks.map(e => e.projectId));
         const projects = await this.modelClass.query()
             .where({ brandCode: currentUser.brandCode })
+            .whereIn('id', proIds.map(e => e.id))
             .modifiers({
             selectMemberNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
             },
             selectLeaderNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
             },
             selectTaskMemberNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
             },
             selectAttachUrl(builder) {
@@ -54,8 +68,8 @@ let ProjectsService = class ProjectsService {
           client,
           memberUsers(selectMemberNameAndId),
           leaderUsers(selectLeaderNameAndId),
-          tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
-          attachments
+          tasks.[attachments(selectAttachUrl), memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
+          attachments(selectAttachUrl)
         ]
       `);
         return {
@@ -65,6 +79,18 @@ let ProjectsService = class ProjectsService {
         };
     }
     async findById(id, currentUser) {
+        const assignedLeaders = await this.leaderModelClass.query().where({ leaderId: currentUser.id, projectId: id });
+        const assignedMembers = await this.memberModelClass.query().where({ memberId: currentUser.id, projectId: id });
+        const assignedTasks = await this.taskModelClass.query().where({ projectId: id });
+        const assignedTaskMembers = await this.taskMemberModelClass.query().where('memberId', currentUser.id).whereIn('taskId', assignedTasks.map(e => e.id));
+        let fillTaskIds = [];
+        if (assignedTaskMembers.length > 0) {
+            fillTaskIds = await this.taskModelClass.query().where({ projectId: id }).findByIds(assignedTaskMembers.map(e => e.taskId));
+        }
+        let passNext = false;
+        if (assignedLeaders.length > 0 || assignedMembers.length > 0 || fillTaskIds.length > 0) {
+            passNext = true;
+        }
         const project = await this.modelClass
             .query()
             .where({ brandCode: currentUser.brandCode })
@@ -72,14 +98,17 @@ let ProjectsService = class ProjectsService {
             .modifiers({
             selectMemberNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
             },
             selectLeaderNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
             },
             selectTaskMemberNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
             },
             selectAttachUrl(builder) {
@@ -92,11 +121,11 @@ let ProjectsService = class ProjectsService {
             client,
             memberUsers(selectMemberNameAndId),
             leaderUsers(selectLeaderNameAndId),
-            tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
-            attachments
+            tasks.[attachments(selectAttachUrl), memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
+            attachments(selectAttachUrl)
           ]
         `);
-        if (project) {
+        if (project && passNext) {
             return {
                 success: true,
                 message: 'Project details fetch successfully.',
@@ -141,9 +170,6 @@ let ProjectsService = class ProjectsService {
         projectPayload['brandCode'] = currentUser.brandCode;
         projectPayload['createdBy'] = currentUser.username;
         const { leaders, members, ...projectParams } = projectPayload;
-        console.log(leaders);
-        console.log(members);
-        console.log(projectParams);
         var result;
         const trx = await this.modelClass.startTransaction();
         try {
@@ -642,7 +668,9 @@ ProjectsService = __decorate([
     __param(3, common_1.Inject('UserModel')),
     __param(4, common_1.Inject('ProjectAttachmentModel')),
     __param(5, common_1.Inject('AttachmentModel')),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, clients_service_1.ClientsService,
+    __param(6, common_1.Inject('TaskMemberModel')),
+    __param(7, common_1.Inject('TaskModel')),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object, Object, clients_service_1.ClientsService,
         app_service_1.FileUploadService])
 ], ProjectsService);
 exports.ProjectsService = ProjectsService;

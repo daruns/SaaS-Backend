@@ -33,6 +33,18 @@ TaskModel.relationMappings = {
             to: 'taskMemberUsers.taskId'
         },
     },
+    attachments: {
+        modelClass: `${__dirname}/attachment.model`,
+        relation: objection_1.Model.ManyToManyRelation,
+        join: {
+            from: `${tableName}.id`,
+            through: {
+                from: 'taskAttachments.taskId',
+                to: 'taskAttachments.attachmentId'
+            },
+            to: 'attachments.id',
+        },
+    },
     memberUsers: {
         modelClass: `${__dirname}/user.model`,
         relation: objection_1.Model.ManyToManyRelation,

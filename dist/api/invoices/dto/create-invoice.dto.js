@@ -12,16 +12,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateInvoiceItemDto = exports.CreateInvoiceDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const app_service_1 = require("../../../app/app.service");
+const defaults_1 = require("../../../lib/defaults");
 class CreateInvoiceDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { date: { required: true, type: () => Date }, dueDate: { required: true, type: () => Date }, billingAddress: { required: true, type: () => String }, description: { required: true, type: () => String }, paymentMethod: { required: true, type: () => String }, discount: { required: true, type: () => Number }, taxRate: { required: true, type: () => Number }, exchangeRate: { required: true, type: () => Number }, currencyCode: { required: true, type: () => String }, clientContactId: { required: true, type: () => Number }, clientId: { required: true, type: () => Number }, status: { required: true, type: () => String } };
+        return { date: { required: true, type: () => Date }, dueDate: { required: true, type: () => Date }, billingAddress: { required: true, type: () => String }, description: { required: true, type: () => String }, paymentMethodId: { required: true, type: () => Number }, taxId: { required: true, type: () => Number }, discount: { required: true, type: () => Number }, taxRate: { required: true, type: () => Number }, bankFee: { required: true, type: () => Number }, exchangeRate: { required: true, type: () => Number }, currencyCode: { required: true, type: () => String }, clientContactId: { required: true, type: () => Number }, clientId: { required: true, type: () => Number }, status: { required: true, type: () => String } };
     }
 }
 __decorate([
+    app_service_1.DefaultToNow,
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", Date)
 ], CreateInvoiceDto.prototype, "date", void 0);
 __decorate([
+    app_service_1.DefaultToNow,
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", Date)
 ], CreateInvoiceDto.prototype, "dueDate", void 0);
@@ -39,6 +43,7 @@ __decorate([
 ], CreateInvoiceDto.prototype, "exchangeRate", void 0);
 __decorate([
     class_validator_1.IsNotEmpty(),
+    class_validator_1.IsIn(defaults_1.CURRENCY_CODES),
     __metadata("design:type", String)
 ], CreateInvoiceDto.prototype, "currencyCode", void 0);
 __decorate([
@@ -64,10 +69,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateInvoiceItemDto.prototype, "category", void 0);
 __decorate([
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", Number)
-], CreateInvoiceItemDto.prototype, "itemId", void 0);
-__decorate([
+    app_service_1.DefaultTo(0),
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", Number)
 ], CreateInvoiceItemDto.prototype, "unitPrice", void 0);
@@ -77,11 +79,11 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateInvoiceItemDto.prototype, "qty", void 0);
 __decorate([
-    class_validator_1.IsDate(),
+    app_service_1.DefaultToEmpty,
     __metadata("design:type", Date)
 ], CreateInvoiceItemDto.prototype, "purchasedAt", void 0);
 __decorate([
-    class_validator_1.IsDate(),
+    app_service_1.DefaultToEmpty,
     __metadata("design:type", Date)
 ], CreateInvoiceItemDto.prototype, "expireDate", void 0);
 exports.CreateInvoiceItemDto = CreateInvoiceItemDto;

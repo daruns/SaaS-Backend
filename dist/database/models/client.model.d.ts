@@ -4,6 +4,8 @@ import { ClientContactModel } from "./clientContact.model";
 import { MeetingModel } from './meeting.model';
 import { SocialMediaModel } from './socialMedia.model';
 import { InvoiceItemModel } from './invoiceItem.model';
+import ProjectModel from './project.model';
+import QuoteModel from './quote.model';
 export declare class ClientModel extends BaseModel {
     static tableName: string;
     name: string;
@@ -23,6 +25,8 @@ export declare class ClientModel extends BaseModel {
     meetings: MeetingModel[];
     socialMedias: SocialMediaModel[];
     invoices: InvoiceItemModel[];
+    quotes: QuoteModel[];
+    projects: ProjectModel[];
     static relationMappings: {
         user: {
             modelClass: string;
@@ -57,6 +61,22 @@ export declare class ClientModel extends BaseModel {
             };
         };
         invoices: {
+            modelClass: string;
+            relation: import("objection").RelationType;
+            join: {
+                from: string;
+                to: string;
+            };
+        };
+        quotes: {
+            modelClass: string;
+            relation: import("objection").RelationType;
+            join: {
+                from: string;
+                to: string;
+            };
+        };
+        projects: {
             modelClass: string;
             relation: import("objection").RelationType;
             join: {

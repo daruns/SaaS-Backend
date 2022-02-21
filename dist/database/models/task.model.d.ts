@@ -1,6 +1,7 @@
 import { BaseModel } from './base.model';
 import { ProjectModel } from './project.model';
 import { BoardModel } from './board.model';
+import AttachmentModel from './attachment.model';
 export declare class TaskModel extends BaseModel {
     static tableName: string;
     name: string;
@@ -15,6 +16,7 @@ export declare class TaskModel extends BaseModel {
     projectId: number;
     board: BoardModel;
     project: ProjectModel;
+    attachments: AttachmentModel[];
     static relationMappings: {
         board: {
             modelClass: string;
@@ -37,6 +39,18 @@ export declare class TaskModel extends BaseModel {
             relation: import("objection").RelationType;
             join: {
                 from: string;
+                to: string;
+            };
+        };
+        attachments: {
+            modelClass: string;
+            relation: import("objection").RelationType;
+            join: {
+                from: string;
+                through: {
+                    from: string;
+                    to: string;
+                };
                 to: string;
             };
         };

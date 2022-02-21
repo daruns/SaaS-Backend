@@ -12,12 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AddSocialMediaUsersDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const app_service_1 = require("../../../app/app.service");
 class AddSocialMediaUsersDto {
     static _OPENAPI_METADATA_FACTORY() {
         return { id: { required: true, type: () => Number }, users: { required: true, type: () => [require("./socialMediaStudioUser.dto").SocialMediaStudioUserDto] } };
     }
 }
 __decorate([
+    app_service_1.ToInteger,
     class_validator_1.IsInt(),
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", Number)

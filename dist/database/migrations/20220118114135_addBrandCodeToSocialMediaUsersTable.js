@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.down = exports.up = void 0;
 const common_1 = require("@nestjs/common");
+function camelToUnderscore(key) {
+    return key.replace(/([A-Z])/g, "_$1").toLowerCase();
+}
 const tableName = 'socialMediaStudioUsers';
 async function up(knex) {
     if (await knex.schema.hasColumn(tableName, "brandCode")) {

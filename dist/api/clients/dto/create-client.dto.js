@@ -15,7 +15,7 @@ const class_validator_1 = require("class-validator");
 const app_service_1 = require("../../../app/app.service");
 class CreateClientDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { name: { required: true, type: () => String }, logo: { required: true, type: () => Object }, phoneNumbers: { required: true, type: () => String }, clientType: { required: true, type: () => String }, businessType: { required: true, type: () => String }, email: { required: true, type: () => String }, website: { required: true, type: () => String }, address: { required: true, type: () => String }, rate: { required: true, type: () => Number, minimum: 0, maximum: 10 }, zipCode: { required: true, type: () => String }, status: { required: true, type: () => String } };
+        return { name: { required: true, type: () => String }, logo: { required: true, type: () => Object }, phoneNumbers: { required: true, type: () => String }, clientType: { required: true, type: () => String }, businessType: { required: true, type: () => String }, email: { required: true, type: () => String }, website: { required: true, type: () => String }, address: { required: true, type: () => String }, rate: { required: true, type: () => Number, minimum: 0, maximum: 10 }, zipCode: { required: true, type: () => String } };
     }
 }
 __decorate([
@@ -23,52 +23,46 @@ __decorate([
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "name", void 0);
 __decorate([
-    class_validator_1.IsNotEmpty(),
     app_service_1.ToPhone,
-    class_validator_1.IsString(),
+    class_validator_1.IsOptional(),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "phoneNumbers", void 0);
 __decorate([
-    class_validator_1.IsOptional(),
     class_validator_1.IsString(),
+    app_service_1.DefaultTo('lead'),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "clientType", void 0);
 __decorate([
-    class_validator_1.IsOptional(),
     class_validator_1.IsString(),
+    class_validator_1.IsOptional(),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "businessType", void 0);
 __decorate([
-    class_validator_1.IsOptional(),
     class_validator_1.IsString(),
     class_validator_1.IsEmail({}),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "email", void 0);
 __decorate([
-    class_validator_1.IsOptional(),
     class_validator_1.IsString(),
+    class_validator_1.IsOptional(),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "website", void 0);
 __decorate([
-    class_validator_1.IsOptional(),
     class_validator_1.IsString(),
+    class_validator_1.IsOptional(),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "address", void 0);
 __decorate([
     app_service_1.ToRate,
     class_validator_1.Min(0),
     class_validator_1.Max(10),
+    class_validator_1.IsOptional(),
     __metadata("design:type", Number)
 ], CreateClientDto.prototype, "rate", void 0);
 __decorate([
-    class_validator_1.IsOptional(),
     class_validator_1.IsString(),
+    class_validator_1.IsOptional(),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "zipCode", void 0);
-__decorate([
-    class_validator_1.IsOptional(),
-    class_validator_1.IsString(),
-    __metadata("design:type", String)
-], CreateClientDto.prototype, "status", void 0);
 exports.CreateClientDto = CreateClientDto;
 //# sourceMappingURL=create-client.dto.js.map

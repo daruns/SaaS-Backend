@@ -18,11 +18,16 @@ let HttpErrorHandler = class HttpErrorHandler {
         common_1.Logger.error(exception);
         const message = `[HttpErrorHandler] ${request.method} ${request.url}`;
         common_1.Logger.error(message);
-        response.status(404).json({
-            success: false,
-            message: lodash_1.get(exception, 'message.message', lodash_1.get(exception, 'message.error', 'Invalid url!')),
-            data: { exception: exception },
-        });
+        if (exception && exception.message && exception.message.error === 'Unauthorized') {
+            response.status(401).json(exception.message);
+        }
+        else {
+            response.status(400).json({
+                success: false,
+                message: lodash_1.get(exception, 'message.message', lodash_1.get(exception, 'message.error', 'Invalid url!')),
+                data: { exception: exception },
+            });
+        }
     }
 };
 HttpErrorHandler = __decorate([

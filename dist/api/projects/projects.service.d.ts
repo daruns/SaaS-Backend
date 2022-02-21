@@ -11,6 +11,8 @@ import { AddMembersToProjectDto } from './dto/add-membersToProject.dto';
 import { ProjectAttachmentModel } from 'src/database/models/projectAttachment.model';
 import { AddFileDto, FileUploadService } from 'src/app/app.service';
 import { AttachmentModel } from 'src/database/models/attachment.model';
+import TaskMemberModel from 'src/database/models/taskMember.model';
+import TaskModel from 'src/database/models/task.model';
 export interface ResponseData {
     readonly success: boolean;
     readonly message: string;
@@ -23,9 +25,11 @@ export declare class ProjectsService {
     private userModel;
     private projectAttachmentModel;
     private attachmentModel;
+    private taskMemberModelClass;
+    private taskModelClass;
     private readonly clientsSerive;
     private readonly fileUploadService;
-    constructor(modelClass: ModelClass<ProjectModel>, leaderModelClass: ModelClass<ProjectLeaderModel>, memberModelClass: ModelClass<ProjectMemberModel>, userModel: ModelClass<UserModel>, projectAttachmentModel: ModelClass<ProjectAttachmentModel>, attachmentModel: ModelClass<AttachmentModel>, clientsSerive: ClientsService, fileUploadService: FileUploadService);
+    constructor(modelClass: ModelClass<ProjectModel>, leaderModelClass: ModelClass<ProjectLeaderModel>, memberModelClass: ModelClass<ProjectMemberModel>, userModel: ModelClass<UserModel>, projectAttachmentModel: ModelClass<ProjectAttachmentModel>, attachmentModel: ModelClass<AttachmentModel>, taskMemberModelClass: ModelClass<TaskMemberModel>, taskModelClass: ModelClass<TaskModel>, clientsSerive: ClientsService, fileUploadService: FileUploadService);
     findAll(currentUser: any): Promise<ResponseData>;
     findById(id: number, currentUser: any): Promise<ResponseData>;
     create(payload: CreateProjectDto, currentUser: any): Promise<ResponseData>;

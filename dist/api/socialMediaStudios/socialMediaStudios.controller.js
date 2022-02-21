@@ -17,7 +17,6 @@ const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
-const add_socialMediaUsers_dto_1 = require("./dto/add-socialMediaUsers.dto");
 const create_media_dto_1 = require("./dto/create-media.dto");
 const create_socialMediaStudio_dto_1 = require("./dto/create-socialMediaStudio.dto");
 const remove_mediaAttachment_dto_1 = require("./dto/remove-mediaAttachment.dto");
@@ -63,8 +62,8 @@ let SocialMediaStudiosController = class SocialMediaStudiosController {
         return createdSocialMedia;
     }
     async addUsers(payload, req) {
-        const createdSocialMedia = await this.socialMediaStudiosService.addUsers(payload, req.user);
-        return createdSocialMedia;
+        console.log("payload addusers: ", payload);
+        return payload;
     }
     async removeUsers(payload, req) {
         const createdSocialMedia = await this.socialMediaStudiosService.removeUsers(payload, req.user);
@@ -160,7 +159,7 @@ __decorate([
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [add_socialMediaUsers_dto_1.AddSocialMediaUsersDto, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SocialMediaStudiosController.prototype, "addUsers", null);
 __decorate([

@@ -2,9 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.down = exports.up = void 0;
 const common_1 = require("@nestjs/common");
+function camelToUnderscore(key) {
+    return key.replace(/([A-Z])/g, "_$1").toLowerCase();
+}
 const tableName = 'expenses';
 async function up(knex) {
-    if (await knex.schema.hasTable(tableName)) {
+    if (await knex.schema.hasTable(camelToUnderscore(tableName))) {
         return;
     }
     common_1.Logger.log('Creating ' + tableName + ' table');
@@ -39,6 +42,17 @@ async function up(knex) {
         table.string('createdBy');
         table.string('updatedBy');
         table.timestamps(true, true);
+        table.string('supplierName');
+        table.string('supplierLogo');
+        table.string('supplierPhoneNumbers');
+        table.string('supplierSupplierType');
+        table.string('supplierBusinessType');
+        table.string('supplierEmail');
+        table.string('supplierWebsite');
+        table.string('supplierAddress');
+        table.string('paymentMethodName');
+        table.string('taxName');
+        table.decimal(('bankFee'), 65, 2).defaultTo(0);
     });
 }
 exports.up = up;

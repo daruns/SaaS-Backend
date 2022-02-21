@@ -14,7 +14,6 @@ async function up(knex) {
         table.string('brandCode');
         table.string('description');
         table.string('billingAddress');
-        table.string('paymentMethod');
         table.dateTime('date');
         table.dateTime('dueDate');
         table.string('currencyCode');
@@ -23,6 +22,31 @@ async function up(knex) {
         table.decimal('discount').defaultTo(1).notNullable();
         table.decimal('subTotalAmount', 65, 2).defaultTo(0).notNullable();
         table.decimal('totalAmount', 65, 2).defaultTo(0).notNullable();
+        table.decimal('bankFee', 65, 2).defaultTo(0);
+        table.string('clientName');
+        table.string('clientEmail');
+        table.string('clientLogo');
+        table.string('clientClientType');
+        table.string('clientBusinessType');
+        table.string('clientAddress');
+        table.string('clientPhoneNumbers');
+        table.string('clientWebsite');
+        table.string("clientContactName");
+        table.string("clientContactPosition");
+        table.string("clientContactEmail");
+        table.string('clientContactBusinessPhoneNumber1');
+        table.string('clientContactBusinessPhoneNumber2');
+        table.string("clientContactDescription");
+        table.string("clientContactDepartment");
+        table.string('taxName');
+        table.integer('paymentMethodId')
+            .unsigned()
+            .references('id')
+            .inTable('paymentMethods');
+        table.integer('taxId')
+            .unsigned()
+            .references('id')
+            .inTable('taxes');
         table.integer('clientId')
             .unsigned()
             .notNullable()

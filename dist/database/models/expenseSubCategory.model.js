@@ -9,6 +9,14 @@ class ExpenseSubCategoryModel extends base_model_1.BaseModel {
 exports.ExpenseSubCategoryModel = ExpenseSubCategoryModel;
 ExpenseSubCategoryModel.tableName = tbName;
 ExpenseSubCategoryModel.relationMappings = {
+    expenseChildSubCategories: {
+        modelClass: `${__dirname}/expenseChildSubCategory.model`,
+        relation: objection_1.Model.HasManyRelation,
+        join: {
+            from: `${tbName}.id`,
+            to: 'expenseChildSubCategories.expenseSubCategoryId',
+        },
+    },
     expenseCategory: {
         modelClass: `${__dirname}/expenseCategory.model`,
         relation: objection_1.Model.BelongsToOneRelation,

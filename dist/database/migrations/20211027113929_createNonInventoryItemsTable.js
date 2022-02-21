@@ -2,9 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.down = exports.up = void 0;
 const common_1 = require("@nestjs/common");
+function camelToUnderscore(key) {
+    return key.replace(/([A-Z])/g, "_$1").toLowerCase();
+}
 const tableName = 'nonInventoryItems';
 async function up(knex) {
-    if (await knex.schema.hasTable(tableName)) {
+    if (await knex.schema.hasTable(camelToUnderscore(tableName))) {
         return;
     }
     common_1.Logger.log('Creating' + tableName + 'table');

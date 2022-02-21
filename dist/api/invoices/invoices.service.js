@@ -81,103 +81,175 @@ let InvoicesService = class InvoicesService {
                 data: {},
             };
         }
+        if (payload.clientId) {
+            const clientFnd = await this.clientsSerive.findById(payload.clientId, currentUser);
+            if (clientFnd.success) {
+                invoicePayload['clientName'] = clientFnd.data.name;
+                invoicePayload['clientEmail'] = clientFnd.data.email;
+                invoicePayload['clientLogo'] = clientFnd.data.logo;
+                invoicePayload['clientClientType'] = clientFnd.data.clientType;
+                invoicePayload['clientBusinessType'] = clientFnd.data.businessType;
+                invoicePayload['clientAddress'] = clientFnd.data.address;
+                invoicePayload['clientPhoneNumbers'] = clientFnd.data.phoneNumbers;
+                invoicePayload['clientWebsite'] = clientFnd.data.website;
+                if (payload.clientContactId) {
+                    const clientContactFnd = await this.clientContactsSerive.findById(payload.clientId, currentUser);
+                    if (clientContactFnd.success) {
+                        invoicePayload['clientContactName'] = clientContactFnd.data.name;
+                        invoicePayload['clientContactPosition'] = clientContactFnd.data.position;
+                        invoicePayload['clientContactEmail'] = clientContactFnd.data.email;
+                        invoicePayload['clientContactBusinessPhoneNumber1'] = clientContactFnd.data.businessPhoneNumber1;
+                        invoicePayload['clientContactBusinessPhoneNumber2'] = clientContactFnd.data.businessPhoneNumber2;
+                        invoicePayload['clientContactDescription'] = clientContactFnd.data.description;
+                        invoicePayload['clientContactDepartment'] = clientContactFnd.data.department;
+                    }
+                    else {
+                        return {
+                            success: false,
+                            message: 'Client not found',
+                            data: {}
+                        };
+                    }
+                }
+            }
+            else {
+                return {
+                    success: false,
+                    message: 'Client not found',
+                    data: {}
+                };
+            }
+        }
+        invoicePayload['taxName'] = payload.taxName;
         let result;
         const trx = await this.modelClass.startTransaction();
         invoicePayload.invoiceNumber = `INVOICE_${Number(new Date())}`;
-        invoicePayload.date = moment(payload.date).format('YYYY-MM-DD HH:mm:ss').toString();
-        invoicePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString();
+        invoicePayload.date = payload.date;
+        invoicePayload.dueDate = payload.dueDate;
         invoicePayload.brandCode = currentUser.brandCode;
         invoicePayload.createdBy = currentUser.username;
-        invoicePayload.exchangeRate = invoicePayload.exchangeRate | 1;
+        invoicePayload.exchangeRate = invoicePayload.currencyCode === "USD" && !invoicePayload.exchangeRate ? 1 : (invoicePayload.exchangeRate || 1);
         var subTotalAmount = 0;
         const invoiceItemsPayloadFinal = [];
         for (let item of invoiceItemsPayload) {
             var finalItem = {};
             let newItem;
             let id;
-            if (item.category === "inventoryItem") {
-                const found = await this.inventoryItemsService
-                    .findById(item.itemId, currentUser);
-                if (!found.success) {
-                    return {
-                        success: false,
-                        message: "inventoryItem category not exist.",
-                        data: {},
-                    };
-                }
-                else {
-                    newItem = found.data;
-                    id = found.data.id;
-                    newItem.category = 'inventoryItem';
-                    if (typeof item.qty === "number") {
-                        newItem.qty = item.qty;
-                    }
-                    else {
+            if (item.itemId && item.category && typeof item.itemId === 'number' && typeof item.category === 'string') {
+                if (item.category === "inventoryItem") {
+                    const found = await this.inventoryItemsService
+                        .findById(item.itemId, currentUser);
+                    if (!found.success) {
                         return {
                             success: false,
-                            message: 'quantity of invoice Item is required',
+                            message: "inventoryItem category not exist.",
                             data: {},
                         };
                     }
+                    else {
+                        newItem = found.data;
+                        id = found.data.id;
+                        newItem.category = 'inventoryItem';
+                        if (typeof item.qty === "number") {
+                            newItem.qty = item.qty;
+                            newItem.supplier = item.supplier ? item.supplier : newItem.supplier;
+                        }
+                        else {
+                            return {
+                                success: false,
+                                message: 'quantity of invoice Item is required',
+                                data: {},
+                            };
+                        }
+                    }
                 }
-            }
-            else if (item.category === "nonInventoryItem") {
-                const found = await this.nonInventoryItemsService
-                    .findById(item.itemId, currentUser);
-                if (!found.success) {
-                    return {
-                        success: false,
-                        message: "nonInventoryItem category not exist.",
-                        data: {},
-                    };
+                else if (item.category === "nonInventoryItem") {
+                    const found = await this.nonInventoryItemsService
+                        .findById(item.itemId, currentUser);
+                    if (!found.success) {
+                        return {
+                            success: false,
+                            message: "nonInventoryItem category not exist.",
+                            data: {},
+                        };
+                    }
+                    else {
+                        newItem = found.data;
+                        id = found.data.id;
+                        newItem.category = 'nonInventoryItem';
+                        newItem.qty = 1;
+                        newItem.supplier = item.supplier ? item.supplier : newItem.supplier;
+                    }
+                }
+                else if (item.category === "serviceItem") {
+                    const found = await this.serviceItemsService
+                        .findById(item.itemId, currentUser);
+                    if (!found.success) {
+                        return {
+                            success: false,
+                            message: "serviceItem category not exist.",
+                            data: {},
+                        };
+                    }
+                    else {
+                        newItem = found.data;
+                        id = found.data.id;
+                        newItem.category = 'serviceItem';
+                        newItem.qty = 1;
+                        newItem.supplier = item.supplier ? item.supplier : newItem.supplier;
+                    }
+                }
+                else if (item.category === "subServiceItem") {
+                    const found = await this.subServiceItemsService
+                        .findById(item.itemId, currentUser);
+                    if (!found.success) {
+                        return {
+                            success: false,
+                            message: "subServiceItem category not exist.",
+                            data: {},
+                        };
+                    }
+                    else {
+                        newItem = found.data;
+                        id = found.data.id;
+                        newItem.category = 'subServiceItem';
+                        newItem.qty = 1;
+                        newItem.supplier = item.supplier ? item.supplier : newItem.supplier;
+                    }
                 }
                 else {
-                    newItem = found.data;
-                    id = found.data.id;
-                    newItem.category = 'nonInventoryItem';
-                    newItem.qty = 1;
-                }
-            }
-            else if (item.category === "serviceItem") {
-                const found = await this.serviceItemsService
-                    .findById(item.itemId, currentUser);
-                if (!found.success) {
                     return {
                         success: false,
-                        message: "serviceItem category not exist.",
+                        message: item.category.toString() + "item category is not valid.",
                         data: {},
                     };
-                }
-                else {
-                    newItem = found.data;
-                    id = found.data.id;
-                    newItem.category = 'serviceItem';
-                    newItem.qty = 1;
-                }
-            }
-            else if (item.category === "subServiceItem") {
-                const found = await this.subServiceItemsService
-                    .findById(item.itemId, currentUser);
-                if (!found.success) {
-                    return {
-                        success: false,
-                        message: "subServiceItem category not exist.",
-                        data: {},
-                    };
-                }
-                else {
-                    newItem = found.data;
-                    id = found.data.id;
-                    newItem.category = 'subServiceItem';
-                    newItem.qty = 1;
                 }
             }
             else {
-                return {
-                    success: false,
-                    message: item.category.toString() + "item category is not valid.",
-                    data: {},
-                };
+                if (!item.name || !item.qty || !item.unitPrice) {
+                    return {
+                        success: false,
+                        message: "Other category params not exist.",
+                        data: {},
+                    };
+                }
+                else {
+                    id = null;
+                    newItem = {
+                        invoiceId: null,
+                        brandCode: currentUser.brandCode,
+                        itemId: null,
+                        name: item.name,
+                        category: 'other',
+                        description: item.description,
+                        unitPrice: item.unitPrice,
+                        qty: item.qty,
+                        purchasedAt: new Date(),
+                        expireDate: new Date(),
+                        supplier: item.supplier ? item.supplier : '',
+                    };
+                    console.log('items:  --  ', newItem);
+                }
             }
             finalItem['itemId'] = id;
             finalItem['name'] = newItem.name;
@@ -217,7 +289,7 @@ let InvoicesService = class InvoicesService {
                 else {
                     return {
                         success: false,
-                        message: "couldnt insert invoiceItem on incoice",
+                        message: "couldnt insert invoiceItem on invoice",
                         data: insertedInvoiceItem,
                     };
                 }
@@ -256,14 +328,12 @@ let InvoicesService = class InvoicesService {
                 data: {},
             };
         }
-        console.log(invoicePayload);
         const invoice = await this.modelClass.query()
             .where({ brandCode: currentUser.brandCode })
             .findById(invoicePayload.id);
         if (invoice) {
             if (invoicePayload.clientId) {
                 const clientFnd = await this.clientsSerive.findById(invoicePayload.clientId, currentUser);
-                console.log(clientFnd);
                 if (!clientFnd.success) {
                     return {
                         success: false,
@@ -274,7 +344,6 @@ let InvoicesService = class InvoicesService {
             }
             if (invoicePayload.clientContactId) {
                 const clientContactFnd = await this.clientContactsSerive.findById(invoicePayload.clientContactId, currentUser);
-                console.log(clientContactFnd);
                 if (!clientContactFnd.success) {
                     return {
                         success: false,
@@ -295,7 +364,7 @@ let InvoicesService = class InvoicesService {
                     var finalItem = {};
                     let newItem;
                     let id;
-                    let foundReslt;
+                    let foundErrReslt;
                     if (item.category === "inventoryItem") {
                         const found = await this.inventoryItemsService
                             .findById(item.itemId, currentUser);
@@ -311,7 +380,7 @@ let InvoicesService = class InvoicesService {
                             }
                         }
                         else {
-                            foundReslt = found;
+                            foundErrReslt = found;
                         }
                     }
                     else if (item.category === "nonInventoryItem") {
@@ -324,7 +393,7 @@ let InvoicesService = class InvoicesService {
                             newItem.qty = 1;
                         }
                         else {
-                            foundReslt = found;
+                            foundErrReslt = found;
                         }
                     }
                     else if (item.category === "serviceItem") {
@@ -337,7 +406,7 @@ let InvoicesService = class InvoicesService {
                             newItem.qty = 1;
                         }
                         else {
-                            foundReslt = found;
+                            foundErrReslt = found;
                         }
                     }
                     else if (item.category === "subServiceItem") {
@@ -350,14 +419,28 @@ let InvoicesService = class InvoicesService {
                             newItem.qty = 1;
                         }
                         else {
-                            foundReslt = found;
+                            foundErrReslt = found;
                         }
                     }
                     else {
-                        throw item.category.toString() + "item category or subCategory is not valid.";
+                        id = null;
+                        newItem = {
+                            'invoiceId': invoice.id,
+                            'itemId': null,
+                            'name': item === null || item === void 0 ? void 0 : item.name,
+                            'description': item === null || item === void 0 ? void 0 : item.description,
+                            'category': 'other',
+                            'qty': (item === null || item === void 0 ? void 0 : item.qty) ? item === null || item === void 0 ? void 0 : item.qty : 1,
+                            'purchasedAt': new Date(),
+                            'expireDate': new Date(),
+                            'supplier': '',
+                            "brandCode": currentUser.brandCode,
+                            "unitPrice": item.unitPrice,
+                        };
                     }
-                    if (foundReslt)
-                        throw foundReslt + " category not exist.";
+                    if (foundErrReslt)
+                        throw (foundErrReslt === null || foundErrReslt === void 0 ? void 0 : foundErrReslt.message) + " category not exist.";
+                    console.log('stage-throwCategory completed ', deletedInvoiceItems);
                     finalItem['itemId'] = id;
                     finalItem['name'] = newItem.name;
                     finalItem['category'] = newItem.category;
@@ -387,20 +470,20 @@ let InvoicesService = class InvoicesService {
                         subTotalAmount = subTotalAmount + Number(finalItem['qty'] * finalItem['unitPrice']);
                     }
                 }
+                console.log('stage-items completed ', subTotalAmount);
                 const prepTaxRate = invoicePayload.taxRate ? invoicePayload.taxRate : invoice.taxRate;
                 const prepDiscount = invoicePayload.discount ? invoicePayload.discount : invoice.discount;
                 const taxRate = subTotalAmount * prepTaxRate;
                 const discount = subTotalAmount * prepDiscount;
-                console.log(subTotalAmount, taxRate, discount);
                 let grandTotal = Number(subTotalAmount) + Number(taxRate);
                 grandTotal = Number(grandTotal) - Number(discount);
-                console.log(grandTotal);
                 const newTotalAmount = Number(parseFloat(grandTotal.toString()).toFixed(2));
-                console.log(newTotalAmount);
+                console.log('stage-calculation completed ', newTotalAmount);
                 const updatedInvoice = await this.modelClass.query(trx)
                     .update({
                     date: invoicePayload.date ? invoicePayload.date : invoice.date,
                     dueDate: invoicePayload.dueDate ? invoicePayload.dueDate : invoice.dueDate,
+                    bankFee: invoicePayload.bankFee ? invoicePayload.bankFee : invoice.bankFee,
                     exchangeRate: invoicePayload.exchangeRate ? invoicePayload.exchangeRate : invoice.exchangeRate,
                     taxRate: prepTaxRate,
                     discount: prepDiscount,
@@ -410,13 +493,14 @@ let InvoicesService = class InvoicesService {
                     clientId: invoicePayload.clientId ? invoicePayload.clientId : invoice.clientId,
                     clientContactId: invoicePayload.clientContactId ? invoicePayload.clientContactId : invoice.clientContactId,
                     description: invoicePayload.description ? invoicePayload.description : invoice.description,
-                    paymentMethod: invoicePayload.paymentMethod ? invoicePayload.paymentMethod : invoice.paymentMethod,
+                    paymentMethodId: invoicePayload.paymentMethodId ? invoicePayload.paymentMethodId : invoice.paymentMethodId,
                     currencyCode: invoicePayload.currencyCode ? invoicePayload.currencyCode : invoice.currencyCode,
                     status: invoicePayload.status ? invoicePayload.status : invoice.status,
                     deleted: invoicePayload.deleted ? invoicePayload.deleted : invoice.deleted,
                     updatedBy: currentUser.username,
                 })
                     .where({ id: invoicePayload.id });
+                console.log('stage-update completed ', updatedInvoice);
                 await trx.commit();
                 result = updatedInvoice;
                 return {

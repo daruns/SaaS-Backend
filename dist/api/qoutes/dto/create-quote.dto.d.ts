@@ -3,9 +3,11 @@ export declare class CreateQuoteDto {
     dueDate: Date;
     billingAddress: string;
     description: string;
-    paymentMethod: string;
+    paymentMethodId: number;
+    taxId: number;
     discount: number;
     taxRate: number;
+    bankFee: number;
     exchangeRate: number;
     currencyCode: string;
     clientContactId: number;

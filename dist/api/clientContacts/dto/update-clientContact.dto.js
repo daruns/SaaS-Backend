@@ -29,14 +29,11 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateClientContactDto.prototype, "name", void 0);
 __decorate([
-    class_validator_1.IsString(),
-    class_validator_1.IsNotEmpty(),
     class_validator_1.Matches(app_service_1.PhoneNumberRegex.reg),
     class_validator_1.IsOptional(),
     __metadata("design:type", String)
 ], UpdateClientContactDto.prototype, "businessPhoneNumber1", void 0);
 __decorate([
-    class_validator_1.IsString(),
     class_validator_1.Matches(app_service_1.PhoneNumberRegex.reg),
     class_validator_1.IsOptional(),
     __metadata("design:type", String)

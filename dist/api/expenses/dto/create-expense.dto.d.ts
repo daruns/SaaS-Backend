@@ -6,9 +6,11 @@ export declare class CreateExpenseDto {
     category: string;
     discount: number;
     currencyCode: string;
+    exchangeRate: number;
     paymentMethodId: number;
     taxId: number;
     supplierId: number;
+    bankFee: number;
 }
 export declare class CreateExpenseItemDto {
     expenseId: number;

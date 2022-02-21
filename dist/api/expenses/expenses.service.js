@@ -76,6 +76,26 @@ let ExpensesService = class ExpensesService {
     async create(payload, items, currentUser) {
         const expensePayload = { ...payload };
         const expenseItemsPayload = items;
+        if (payload.supplierId) {
+            const supplierFnd = await this.supplierService.findById(expensePayload.supplierId, currentUser);
+            if (supplierFnd.success) {
+                expensePayload['supplierName'] = supplierFnd.data.name;
+                expensePayload['supplierLogo'] = supplierFnd.data.logo;
+                expensePayload['supplierPhoneNumbers'] = supplierFnd.data.phoneNumbers;
+                expensePayload['supplierSupplierType'] = supplierFnd.data.supplierType;
+                expensePayload['supplierBusinessType'] = supplierFnd.data.businessType;
+                expensePayload['supplierEmail'] = supplierFnd.data.email;
+                expensePayload['supplierWebsite'] = supplierFnd.data.website;
+                expensePayload['supplierAddress'] = supplierFnd.data.address;
+            }
+            else {
+                return {
+                    success: false,
+                    message: 'Supplier doesnt exist.',
+                    data: {},
+                };
+            }
+        }
         if (!expenseItemsPayload.length) {
             return {
                 success: false,
@@ -83,30 +103,37 @@ let ExpensesService = class ExpensesService {
                 data: {},
             };
         }
-        const taxFnd = await this.taxService.findById(expensePayload.taxId, currentUser);
-        if (!taxFnd.success) {
-            return {
-                success: false,
-                message: 'Tax doesnt exist.',
-                data: {},
-            };
+        if (payload.taxId) {
+            const taxFnd = await this.taxService.findById(expensePayload.taxId, currentUser);
+            if (taxFnd.success) {
+                if (!expensePayload.taxRate)
+                    expensePayload.taxRate = taxFnd.data.rate ? taxFnd.data.rate : 1;
+                expensePayload['taxName'] = taxFnd.data.name;
+            }
+            else {
+                return {
+                    success: false,
+                    message: 'Tax doesnt exist.',
+                    data: {},
+                };
+            }
         }
-        console.log(taxFnd);
-        const supplierFnd = await this.supplierService.findById(expensePayload.supplierId, currentUser);
-        if (!supplierFnd.success) {
-            return {
-                success: false,
-                message: 'Supplier doesnt exist.',
-                data: {},
-            };
+        else {
+            expensePayload.taxId = null;
         }
-        const paymentMethodFnd = await this.paymentMethodService.findById(expensePayload.paymentMethodId, currentUser);
-        if (!paymentMethodFnd.success) {
-            return {
-                success: false,
-                message: 'PaymentMethod doesnt exist.',
-                data: {},
-            };
+        console.log("expensepayloadpaymenthmethodid: ", expensePayload.paymentMethodId);
+        if (expensePayload.paymentMethodId) {
+            const paymentMethodFnd = await this.paymentMethodService.findById(expensePayload.paymentMethodId, currentUser);
+            if (!paymentMethodFnd.success) {
+                return {
+                    success: false,
+                    message: 'PaymentMethod doesnt exist.',
+                    data: {},
+                };
+            }
+        }
+        else {
+            expensePayload.paymentMethodId = null;
         }
         let result;
         const trx = await this.modelClass.startTransaction();
@@ -115,11 +142,12 @@ let ExpensesService = class ExpensesService {
         expensePayload.dueDate = moment(payload.dueDate).format('YYYY-MM-DD HH:mm:ss').toString();
         expensePayload.brandCode = currentUser.brandCode;
         expensePayload.createdBy = currentUser.username;
+        expensePayload.exchangeRate = expensePayload.currencyCode === "USD" && !expensePayload.exchangeRate ? 1 : expensePayload.exchangeRate;
         var subTotalAmount = 0;
         const expenseItemsPayloadFinal = [];
         for (let item of expenseItemsPayload) {
             var finalItem = {};
-            finalItem['itemId'] = null;
+            finalItem['itemId'] = item.itemId ? item.itemId : null;
             finalItem['name'] = item.name;
             finalItem['category'] = item.category;
             finalItem['description'] = item.description;
@@ -132,9 +160,7 @@ let ExpensesService = class ExpensesService {
             }
             expenseItemsPayloadFinal.push(finalItem);
         }
-        expensePayload.taxRate = taxFnd.data.rate;
-        let prepTaxRate = taxFnd.data.rate;
-        var taxRate = subTotalAmount * prepTaxRate;
+        var taxRate = subTotalAmount * expensePayload.taxRate;
         var discount = subTotalAmount * expensePayload.discount;
         expensePayload.subTotalAmount = subTotalAmount;
         let grandTotal = Number(subTotalAmount) + Number(taxRate);
@@ -358,14 +384,17 @@ let ExpensesService = class ExpensesService {
         if (expense) {
             if (expensePayload.taxId) {
                 const taxFnd = await this.taxService.findById(expensePayload.taxId, currentUser);
-                if (!taxFnd.success) {
+                if (taxFnd.success) {
+                    if (expensePayload.taxRate === '' && expensePayload.taxRate !== null)
+                        expensePayload.taxRate = taxFnd.data.rate ? taxFnd.data.rate : 1;
+                }
+                else {
                     return {
                         success: false,
                         message: 'Tax doesnt exist.',
                         data: {},
                     };
                 }
-                expensePayload.taxRate = taxFnd.data.rate;
             }
             if (expensePayload.supplierId) {
                 const supplierFnd = await this.supplierService.findById(expensePayload.supplierId, currentUser);
@@ -423,7 +452,7 @@ let ExpensesService = class ExpensesService {
                 };
             }
             const subTotalAmount = newSubTotalAmount;
-            let prepTaxRate = expensePayload.taxId ? expensePayload.taxRate : expense.taxRate;
+            let prepTaxRate = expensePayload.taxRate ? expensePayload.taxRate : expense.taxRate;
             let prepDiscount = expensePayload.discount ? expensePayload.discount : expense.discount;
             var taxRate = subTotalAmount * prepTaxRate;
             var discount = subTotalAmount * prepDiscount;
@@ -435,6 +464,7 @@ let ExpensesService = class ExpensesService {
                 dueDate: expensePayload.dueDate ? expensePayload.dueDate : expense.dueDate,
                 exchangeRate: expensePayload.exchangeRate ? expensePayload.exchangeRate : expense.exchangeRate,
                 taxRate: prepTaxRate,
+                bankFee: expensePayload.bankFee ? expensePayload.bankFee : expense.bankFee,
                 discount: prepDiscount,
                 totalAmount: newTotalAmount,
                 subTotalAmount: subTotalAmount,

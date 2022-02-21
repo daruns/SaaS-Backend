@@ -12,43 +12,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateExpenseItemDto = exports.CreateExpenseDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const app_service_1 = require("../../../app/app.service");
+const defaults_1 = require("../../../lib/defaults");
 class CreateExpenseDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { date: { required: true, type: () => Date }, dueDate: { required: true, type: () => Date }, billingAddress: { required: true, type: () => String }, description: { required: true, type: () => String }, category: { required: true, type: () => String }, discount: { required: true, type: () => Number }, currencyCode: { required: true, type: () => String }, paymentMethodId: { required: true, type: () => Number }, taxId: { required: true, type: () => Number }, supplierId: { required: true, type: () => Number } };
+        return { date: { required: true, type: () => Date }, dueDate: { required: true, type: () => Date }, billingAddress: { required: true, type: () => String }, description: { required: true, type: () => String }, category: { required: true, type: () => String }, discount: { required: true, type: () => Number }, currencyCode: { required: true, type: () => String }, exchangeRate: { required: true, type: () => Number }, paymentMethodId: { required: true, type: () => Number }, taxId: { required: true, type: () => Number }, supplierId: { required: true, type: () => Number }, bankFee: { required: true, type: () => Number } };
     }
 }
 __decorate([
+    app_service_1.DefaultToNow,
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", Date)
 ], CreateExpenseDto.prototype, "date", void 0);
 __decorate([
+    app_service_1.DefaultToNow,
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", Date)
 ], CreateExpenseDto.prototype, "dueDate", void 0);
-__decorate([
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", String)
-], CreateExpenseDto.prototype, "category", void 0);
 __decorate([
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", Number)
 ], CreateExpenseDto.prototype, "discount", void 0);
 __decorate([
     class_validator_1.IsNotEmpty(),
+    class_validator_1.IsIn(defaults_1.CURRENCY_CODES),
     __metadata("design:type", String)
 ], CreateExpenseDto.prototype, "currencyCode", void 0);
-__decorate([
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", Number)
-], CreateExpenseDto.prototype, "paymentMethodId", void 0);
-__decorate([
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", Number)
-], CreateExpenseDto.prototype, "taxId", void 0);
-__decorate([
-    class_validator_1.IsNotEmpty(),
-    __metadata("design:type", Number)
-], CreateExpenseDto.prototype, "supplierId", void 0);
 exports.CreateExpenseDto = CreateExpenseDto;
 class CreateExpenseItemDto {
     static _OPENAPI_METADATA_FACTORY() {

@@ -30,6 +30,8 @@ export interface ResponseData {
 }
 export declare const ToPhone: (target: any, key: string) => void;
 export declare const DefaultToNow: (target: any, key: string) => void;
+export declare const DefaultTo: (param: any) => (target: any, key: string) => void;
+export declare const DefaultToEmpty: (target: any, key: string) => void;
 export declare const ToInteger: (target: any, key: string) => void;
 export declare const ToLower: (target: any, key: string) => void;
 export declare const DefaultToFalse: (target: any, key: string) => void;

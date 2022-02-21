@@ -22,7 +22,9 @@ let ExpenseCategoriesService = class ExpenseCategoriesService {
         const expenseCategories = await this.modelClass.query()
             .where({ brandCode: currentUser.brandCode })
             .withGraphFetched({
-            expenseSubCategories: {}
+            expenseSubCategories: {
+                expenseChildSubCategories: {}
+            }
         });
         return {
             success: true,

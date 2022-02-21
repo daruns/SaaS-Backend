@@ -88,19 +88,24 @@ let JoinedItemsService = class JoinedItemsService {
         const expenseCategories = await this.expenseCategoryModelClass.query()
             .select('id', 'name')
             .where({ brandCode: currentUser.brandCode })
-            .withGraphFetched('expenseSubCategories(selectName)')
+            .withGraphFetched('expenseSubCategories(selectName).[expenseChildSubCategories(selectName)]')
             .modifiers({
             selectName(builder) {
                 builder.select('name');
             },
         });
-        expenseCategories.forEach(serv => {
+        expenseCategories.forEach(cat => {
             result.push({
-                name: serv.name,
+                name: cat.name,
             });
-            serv.expenseSubCategories.forEach(subServ => {
+            cat.expenseSubCategories.forEach(subCat => {
                 result.push({
-                    name: serv.name + ", " + subServ.name,
+                    name: cat.name + ", " + subCat.name,
+                });
+                subCat.expenseChildSubCategories.forEach(childSubCat => {
+                    result.push({
+                        name: cat.name + ", " + subCat.name + ", " + childSubCat.name,
+                    });
                 });
             });
         });

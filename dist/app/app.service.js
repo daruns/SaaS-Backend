@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FileUploadService = exports.AppService = exports.ToRate = exports.DefaultToFalse = exports.ToLower = exports.ToInteger = exports.DefaultToNow = exports.ToPhone = exports.AddFileDto = exports.linkAddressRegex = exports.PhoneNumberRegex = exports.documentFileFilter = exports.editFileName = exports.SkipEmpty = exports.ToExstName = exports.imageFileFilter = void 0;
+exports.FileUploadService = exports.AppService = exports.ToRate = exports.DefaultToFalse = exports.ToLower = exports.ToInteger = exports.DefaultToEmpty = exports.DefaultTo = exports.DefaultToNow = exports.ToPhone = exports.AddFileDto = exports.linkAddressRegex = exports.PhoneNumberRegex = exports.documentFileFilter = exports.editFileName = exports.SkipEmpty = exports.ToExstName = exports.imageFileFilter = void 0;
 const common_1 = require("@nestjs/common");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
@@ -102,6 +102,37 @@ exports.DefaultToNow = class_transformer_1.Transform((value) => {
     else {
         const finVal = moment(new Date()).format('YYYY-MM-DD HH:mm:ss').toString();
         return finVal;
+    }
+}, { toClassOnly: true });
+exports.DefaultTo = (param) => class_transformer_1.Transform((value) => {
+    if (value === null) {
+        return param;
+    }
+    if (value === '') {
+        return param;
+    }
+    return value;
+}, { toClassOnly: true });
+exports.DefaultToEmpty = class_transformer_1.Transform((value) => {
+    console.log("Date -type: ", typeof value, "|| value: ", value);
+    if (value === '' || value === null)
+        return '';
+    if (moment(value).isValid()) {
+        value = moment(value).format('YYYY-MM-DD HH:mm:ss').toString();
+    }
+    else {
+        value = '';
+    }
+    if (!moment(value, 'YYYY-MM-DD HH:mm', true).isValid()) {
+        const finVal = moment(value, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss').toString();
+        return finVal;
+    }
+    else if (!moment(value, 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
+        const finVal = moment(value, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss').toString();
+        return finVal;
+    }
+    else {
+        return value;
     }
 }, { toClassOnly: true });
 exports.ToInteger = class_transformer_1.Transform((value) => {

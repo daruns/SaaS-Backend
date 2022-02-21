@@ -3,13 +3,19 @@ export declare class PassCreateQuoteDto {
     quoteNumber: string;
     date: any;
     dueDate: any;
+    clientId: number;
+    clientContactId: number;
     brandCode: string;
+    paymentMethodId: number;
+    taxId: number;
     subTotalAmount: number;
     createdBy: string;
     taxRate: number;
     exchangeRate: number;
     totalAmount: number;
+    bankFee: number;
     discount: number;
+    currencyCode: string;
 }
 export declare class PassCreateQuoteItemDto extends CreateQuoteItemDto {
     quoteId: number;
@@ -17,7 +23,6 @@ export declare class PassCreateQuoteItemDto extends CreateQuoteItemDto {
     category: string;
     description: string;
     billingAddress: string;
-    paymentMethod: string;
     brandCode: string;
     itemId: number;
     unitPrice: number;

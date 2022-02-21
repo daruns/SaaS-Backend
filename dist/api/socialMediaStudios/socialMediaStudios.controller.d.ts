@@ -1,5 +1,4 @@
 import { FileParamDto } from 'src/app/app.service';
-import { AddSocialMediaUsersDto } from './dto/add-socialMediaUsers.dto';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { CreateSocialMediaStudioDto } from './dto/create-socialMediaStudio.dto';
 import { RemoveMediaAttachmentDto } from './dto/remove-mediaAttachment.dto';
@@ -17,7 +16,7 @@ export declare class SocialMediaStudiosController {
     findOne(id: number, req: any): Promise<import("../../app/app.service").ResponseData>;
     createMedia(attachments: Array<FileParamDto>, media: CreateMediaDto, req: any): Promise<import("../../app/app.service").ResponseData>;
     create(socialMedia: CreateSocialMediaStudioDto, req: any): Promise<import("../../app/app.service").ResponseData>;
-    addUsers(payload: AddSocialMediaUsersDto, req: any): Promise<import("../../app/app.service").ResponseData>;
+    addUsers(payload: any, req: any): Promise<any>;
     removeUsers(payload: RemoveSocialMediaStudioUsersDto, req: any): Promise<import("../../app/app.service").ResponseData>;
     addAttachments(id: number, files: any, req: any): Promise<import("../../app/app.service").ResponseData>;
     removeAttachment(payload: RemoveMediaAttachmentDto, req: any): Promise<import("../../app/app.service").ResponseData>;

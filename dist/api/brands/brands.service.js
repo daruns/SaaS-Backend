@@ -16,9 +16,11 @@ exports.BrandsService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const _ = require("lodash");
+const app_service_1 = require("../../app/app.service");
 let BrandsService = class BrandsService {
-    constructor(modelClass) {
+    constructor(modelClass, fileUploadService) {
         this.modelClass = modelClass;
+        this.fileUploadService = fileUploadService;
     }
     async findAll() {
         const users = await this.modelClass.query().withGraphFetched({
@@ -106,18 +108,28 @@ let BrandsService = class BrandsService {
             };
         }
     }
-    async update(payload) {
-        const brand = await this.modelClass.query().findById(payload.id);
+    async update(payload, currentUser) {
+        console.log(currentUser.brandCode);
+        const brand = await this.modelClass.query().where({ brandCode: currentUser.brandCode }).findById(payload.id);
+        if (payload.logo) {
+            const logoUploaded = payload.logo;
+            const fileUploaded = await this.fileUploadService.addFile(logoUploaded, "logos", currentUser);
+            if (fileUploaded.success) {
+                console.log(fileUploaded.data);
+                payload.logo = fileUploaded.data.url;
+            }
+            else
+                return fileUploaded;
+        }
         if (brand) {
             const updatedBrand = await this.modelClass
                 .query()
+                .where({ brandCode: currentUser.brandCode })
                 .update({
-                brandCode: payload.brandCode ? payload.brandCode : brand.brandCode,
-                subdomain: payload.subdomain ? payload.subdomain : brand.subdomain,
                 name: payload.name ? payload.name : brand.name,
-                logo: payload.logo ? payload.logo : brand.logo,
                 companySize: payload.companySize ? payload.companySize : brand.companySize,
                 address: payload.address ? payload.address : brand.address,
+                logo: payload.logo ? payload.logo : brand.logo,
                 announcedAt: payload.announcedAt ? payload.announcedAt : brand.announcedAt,
                 branches: payload.branches ? payload.branches : brand.branches,
                 occupation: payload.occupation ? payload.occupation : brand.occupation,
@@ -165,7 +177,7 @@ BrandsService = __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Injectable(),
     __param(0, common_1.Inject('BrandModel')),
-    __metadata("design:paramtypes", [Object])
+    __metadata("design:paramtypes", [Object, app_service_1.FileUploadService])
 ], BrandsService);
 exports.BrandsService = BrandsService;
 //# sourceMappingURL=brands.service.js.map

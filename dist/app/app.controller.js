@@ -15,16 +15,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
+const jwt_auth_guard_1 = require("../api/auth/guards/jwt-auth.guard");
+const defaults_1 = require("../lib/defaults");
 const app_service_1 = require("./app.service");
 let AppController = class AppController {
     constructor(appService, fileUploadService) {
         this.appService = appService;
         this.fileUploadService = fileUploadService;
     }
+    async getCurrencyCodes(req) {
+        return {
+            success: true,
+            message: "fetch currency codes successful",
+            data: { currencyCodes: defaults_1.CURRENCY_CODES },
+        };
+    }
     async getHello(req) {
         return "sss";
     }
 };
+__decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    common_1.Get('currencyCodes'),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getCurrencyCodes", null);
 __decorate([
     common_1.Get(''),
     openapi.ApiResponse({ status: 200, type: String }),

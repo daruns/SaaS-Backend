@@ -25,6 +25,7 @@ let BoardsService = class BoardsService {
             .modifiers({
             selectTaskMemberNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
                 builder.select('taskMemberUsers.id as memberId');
             },
@@ -33,8 +34,9 @@ let BoardsService = class BoardsService {
         [
           boardAttribute,
           tasks.[
+            attachments,
             memberUsers(selectTaskMemberNameAndId),
-            project.[leaders,members]
+            project.[leaders,members],
           ]
         ]
       `);
@@ -50,8 +52,13 @@ let BoardsService = class BoardsService {
             .where({ brandCode: currentUser.brandCode })
             .findById(id)
             .modifiers({
+            selectAttachmentParams(builder) {
+                builder.select('attachments.id as attachId');
+                builder.select('url');
+            },
             selectTaskMemberNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
                 builder.select('taskMemberUsers.id as memberId');
             },
@@ -60,8 +67,10 @@ let BoardsService = class BoardsService {
           [
             boardAttribute,
             tasks.[
+              attachments,
               memberUsers(selectTaskMemberNameAndId),
-              project.[leaders,members]
+              attachments(selectTaskAttachmentParams),
+              project.[leaders,members],
             ]
           ]
         `);

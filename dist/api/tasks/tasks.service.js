@@ -16,13 +16,16 @@ exports.TasksService = void 0;
 const common_1 = require("@nestjs/common");
 const rxjs_1 = require("rxjs");
 const boards_service_1 = require("../boards/boards.service");
+const app_service_1 = require("../../app/app.service");
 let TasksService = class TasksService {
-    constructor(modelClass, memberModelClass, userModel, boardModel, boardsService) {
+    constructor(modelClass, memberModelClass, userModel, boardModel, taskAttachmentModel, boardsService, fileUploadService) {
         this.modelClass = modelClass;
         this.memberModelClass = memberModelClass;
         this.userModel = userModel;
         this.boardModel = boardModel;
+        this.taskAttachmentModel = taskAttachmentModel;
         this.boardsService = boardsService;
+        this.fileUploadService = fileUploadService;
     }
     async findAll(currentUser) {
         const tasks = await this.modelClass.query()
@@ -31,16 +34,19 @@ let TasksService = class TasksService {
             board: {
                 boardAttribute: {}
             },
-            project: {}
+            project: {},
+            attachments: {}
         })
             .withGraphFetched('memberUsers(selectNameAndId)')
             .modifiers({
             selectNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
                 builder.select('taskMemberUsers.id as memberId');
             },
         });
+        console.log(tasks);
         return {
             success: true,
             message: 'Task details fetch successfully.',
@@ -56,12 +62,14 @@ let TasksService = class TasksService {
             board: {
                 boardAttribute: {}
             },
-            project: {}
+            project: {},
+            attachments: {}
         })
             .withGraphFetched('memberUsers(selectNameAndId)')
             .modifiers({
             selectNameAndId(builder) {
                 builder.select('name');
+                builder.select('avatar');
                 builder.select('users.id as userId');
                 builder.select('taskMemberUsers.id as memberId');
             },
@@ -267,6 +275,101 @@ let TasksService = class TasksService {
             };
         }
     }
+    async removeFile(payload, currentUser) {
+        const task = await this.modelClass.query()
+            .where({ brandCode: currentUser.brandCode })
+            .findById(payload.id)
+            .withGraphFetched({ attachments: {} });
+        if (!task) {
+            return {
+                success: false,
+                message: "Task not found",
+                data: {},
+            };
+        }
+        const taskAttachment = await this.taskAttachmentModel.query()
+            .findOne({ taskId: task.id, attachmentId: payload.attachId });
+        if (!taskAttachment) {
+            return {
+                success: false,
+                message: "attachment on this Task not found",
+                data: {},
+            };
+        }
+        await this.taskAttachmentModel.query()
+            .delete()
+            .where({ attachmentId: payload.attachId, taskId: payload.id });
+        const deletedFileService = await this.fileUploadService.removeFile(payload.attachId, currentUser);
+        if (!deletedFileService.success) {
+            return deletedFileService;
+        }
+        return {
+            success: true,
+            message: 'Task Attachments removed successfully.',
+            data: {},
+        };
+    }
+    async addFile(payload, currentUser) {
+        const { files, id } = payload;
+        const task = await this.modelClass.query()
+            .where({ brandCode: currentUser.brandCode })
+            .findById(id);
+        if (!task) {
+            return {
+                success: false,
+                message: "Task not found",
+                data: {},
+            };
+        }
+        const allFileIds = [];
+        for (let file of files) {
+            const prepFile = {
+                originalname: file.originalname,
+                buffer: file.buffer,
+                mimetype: file.mimetype,
+                size: file.size,
+            };
+            const uploadedFileService = await this.fileUploadService.addFile(prepFile, "tasks", currentUser);
+            if (!uploadedFileService.success) {
+                return {
+                    success: false,
+                    message: uploadedFileService.message,
+                    data: uploadedFileService.data,
+                };
+            }
+            allFileIds.push(uploadedFileService.data.id);
+        }
+        const trx = await this.modelClass.startTransaction();
+        try {
+            for (let attachId of allFileIds) {
+                const insertedAttach = await this.taskAttachmentModel.query(trx)
+                    .insert({
+                    attachmentId: attachId,
+                    taskId: task.id
+                });
+                if (!insertedAttach) {
+                    throw {
+                        message: "couldnt insert taskAttachment on task",
+                        data: insertedAttach,
+                    };
+                }
+            }
+            await trx.commit();
+            return {
+                success: true,
+                message: 'Task Attachments added successfully.',
+                data: {},
+            };
+        }
+        catch (err) {
+            await trx.rollback();
+            return {
+                success: false,
+                message: `Something went wrong. TaskAttachments were not inserted.`,
+                data: err,
+            };
+        }
+    }
     async addMembers(payload, currentUser) {
         const taskPayload = payload;
         console.log(payload);
@@ -336,7 +439,7 @@ let TasksService = class TasksService {
         else {
             return {
                 success: false,
-                message: 'Members doesnt exist on this project.',
+                message: 'Members doesnt exist on this Task.',
                 data: {},
             };
         }
@@ -368,7 +471,9 @@ TasksService = __decorate([
     __param(1, common_1.Inject('TaskMemberModel')),
     __param(2, common_1.Inject('UserModel')),
     __param(3, common_1.Inject('BoardModel')),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, boards_service_1.BoardsService])
+    __param(4, common_1.Inject('TaskAttachmentModel')),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, boards_service_1.BoardsService,
+        app_service_1.FileUploadService])
 ], TasksService);
 exports.TasksService = TasksService;
 //# sourceMappingURL=tasks.service.js.map
