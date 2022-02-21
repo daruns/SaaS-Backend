@@ -3,6 +3,7 @@ import { BrandModel } from 'src/database/models/brand.model';
 import { ModelClass } from 'objection';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 import * as _ from "lodash";
+import { FileUploadService, FileParamDto } from 'src/app/app.service';
 export interface ResponseData {
   readonly success: boolean;
   readonly message: string;
@@ -14,6 +15,7 @@ export interface ResponseData {
 export class BrandsService {
   constructor(
     @Inject('BrandModel') private modelClass: ModelClass<BrandModel>,
+    private fileUploadService: FileUploadService,
     ) {}
 
   // brand list with list of posts and comments on post
@@ -108,18 +110,28 @@ export class BrandsService {
   }
 
   // Update brand before save encrypt password
-  async update(payload): Promise<ResponseData> {
-    const brand = await this.modelClass.query().findById(payload.id);
+  async update(payload, currentUser): Promise<ResponseData> {
+    console.log(currentUser.brandCode)
+    const brand = await this.modelClass.query().where({brandCode: currentUser.brandCode}).findById(payload.id);
+    if (payload.logo) {
+      const logoUploaded = payload.logo
+      const fileUploaded = await this.fileUploadService.addFile(logoUploaded, "logos", currentUser)
+      if (fileUploaded.success) {
+        console.log(fileUploaded.data)
+        payload.logo = fileUploaded.data.url
+      } else return fileUploaded
+    }
     if (brand) {
       const updatedBrand = await this.modelClass
         .query()
+        .where({brandCode: currentUser.brandCode})
         .update({
-          brandCode: payload.brandCode ? payload.brandCode : brand.brandCode,
-          subdomain: payload.subdomain ? payload.subdomain : brand.subdomain,
+          // brandCode: payload.brandCode ? payload.brandCode : brand.brandCode,
+          // subdomain: payload.subdomain ? payload.subdomain : brand.subdomain,
           name: payload.name ? payload.name : brand.name,
-          logo: payload.logo ? payload.logo : brand.logo,
           companySize: payload.companySize ? payload.companySize : brand.companySize,
           address: payload.address ? payload.address : brand.address,
+          logo: payload.logo ? payload.logo : brand.logo,
           announcedAt: payload.announcedAt ? payload.announcedAt : brand.announcedAt,
           branches: payload.branches ? payload.branches : brand.branches,
           occupation: payload.occupation ? payload.occupation : brand.occupation,

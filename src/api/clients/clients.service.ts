@@ -24,12 +24,54 @@ export class ClientsService {
     const clients = await this.modelClass
       .query()
       .where({ brandCode: currentUser.brandCode })
-      .withGraphFetched({
-        user: {},
-        clientContacts: {},
-        meetings: {},
-        socialMedias: {},
-      });
+      .modifiers({
+        selectMemberNameAndId(builder) {
+          builder.select('name');
+          builder.select('avatar')
+          builder.select('users.id as userId');
+        },
+        selectLeaderNameAndId(builder) {
+          builder.select('name');
+          builder.select('avatar')
+          builder.select('users.id as userId');
+        },
+        selectTaskMemberNameAndId(builder) {
+          builder.select('name');
+          builder.select('avatar')
+          builder.select('users.id as userId');
+        },
+        selectAttachUrl(builder) {
+          builder.select('attachments.id as attachId');
+          builder.select('url');
+        },
+      })
+      .withGraphFetched(
+        `
+          [
+            user,
+            clientContacts,
+            meetings,
+            socialMedias,
+            projects.[
+              client,
+              memberUsers(selectMemberNameAndId),
+              leaderUsers(selectLeaderNameAndId),
+              tasks.[attachments(selectAttachUrl), memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
+              attachments(selectAttachUrl)
+            ],
+            invoices.[
+              client,
+              clientContact,
+              invoiceItems,
+            ],
+            quotes.[
+              client,
+              clientContact,
+              quoteItems,
+            ]
+          ]
+        `
+      )
     clients.map(e => {if (e.user) delete e.user.password })
     if (clients.length) {
       return {
@@ -52,12 +94,54 @@ export class ClientsService {
       .query()
       .where({ brandCode: currentUser.brandCode })
       .findById(id)
-      .withGraphFetched({
-        user: {},
-        clientContacts: {},
-        meetings: {},
-        socialMedias: {},
-      });
+      .modifiers({
+        selectMemberNameAndId(builder) {
+          builder.select('name');
+          builder.select('avatar')
+          builder.select('users.id as userId');
+        },
+        selectLeaderNameAndId(builder) {
+          builder.select('name');
+          builder.select('avatar')
+          builder.select('users.id as userId');
+        },
+        selectTaskMemberNameAndId(builder) {
+          builder.select('name');
+          builder.select('avatar')
+          builder.select('users.id as userId');
+        },
+        selectAttachUrl(builder) {
+          builder.select('attachments.id as attachId');
+          builder.select('url');
+        },
+      })
+      .withGraphFetched(
+        `
+          [
+            user,
+            clientContacts,
+            meetings,
+            socialMedias,
+            projects.[
+              client,
+              memberUsers(selectMemberNameAndId),
+              leaderUsers(selectLeaderNameAndId),
+              tasks.[attachments(selectAttachUrl), memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
+              attachments(selectAttachUrl)
+            ],
+            invoices.[
+              client,
+              clientContact,
+              invoiceItems,
+            ],
+            quotes.[
+              client,
+              clientContact,
+              quoteItems,
+            ]
+          ]
+        `
+      )
     if (client) {
       delete client.user?.password
       return {
@@ -89,6 +173,13 @@ export class ClientsService {
     }
 
     payload.clientType = payload.clientType?.toLowerCase()
+    if (!['lead','client','blacklist'].includes(payload.clientType)) {
+      return {
+        success: false,
+        message: "client Type must be one of [lead, client, blacklist]",
+        data: {},
+      }
+    }
     if (!newClient) {
       let preplogo: string = ""
       if (payload.logo) {
@@ -152,6 +243,15 @@ export class ClientsService {
     const client = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findById(payload.id);
+    payload.clientType = payload.clientType?.toLowerCase()
+    if (!['lead','client','blacklist'].includes(payload.clientType)) {
+      return {
+        success: false,
+        message: "client Type must be one of [lead, client, blacklist]",
+        data: {},
+      }
+    }
+
     if (client) {
       let preplogo: string = client.logo
       if (payload.logo) {

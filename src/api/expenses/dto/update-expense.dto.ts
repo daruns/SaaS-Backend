@@ -16,6 +16,7 @@ export class UpdateExpenseDto {
   discount: number
   @IsOptional()
   taxRate: number
+  bankFee: number
   @IsOptional()
   exchangeRate: number
   @IsOptional()

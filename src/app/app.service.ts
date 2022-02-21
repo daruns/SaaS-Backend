@@ -111,6 +111,41 @@ export const DefaultToNow = Transform(
   {toClassOnly: true}
 )
 
+export const DefaultTo = (param) => Transform(
+  (value: any) => {
+    if (value === null) {
+      return param
+    }
+    if (value === '' ) {
+      return param
+    }
+    return value
+  },
+  { toClassOnly: true }
+)
+
+export const DefaultToEmpty = Transform(
+  (value: any) => {
+    console.log("Date -type: ",typeof value, "|| value: ", value)
+    if (value === '' || value === null) return ''
+    if (moment(value).isValid()) {
+      value = moment(value).format('YYYY-MM-DD HH:mm:ss').toString()
+    } else {
+      value = ''
+    }
+    if (!moment(value,'YYYY-MM-DD HH:mm', true).isValid()) {
+      const finVal = moment(value,'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss').toString()
+      return finVal
+    } else if (!moment(value,'YYYY-MM-DD HH:mm:ss',true).isValid()) {
+      const finVal = moment(value,'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss').toString()
+      return finVal
+    } else {
+      return value
+    }
+  },
+  { toClassOnly: true},
+)
+
 export const ToInteger = Transform(
   (value: any) => {
     if (typeof value !== 'number') {

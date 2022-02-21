@@ -20,13 +20,11 @@ export class JoinedItemsController {
   constructor(
     private readonly joinedItemsService: JoinedItemsService,
     ) {}
-
   @Get()
   async findAll(@Request() req) {
     const joinedItems = await this.joinedItemsService.findAll(req.user);
     return joinedItems;
   }
-
   @Get('joinedExpenseCategories')
   async findAllExpenseCategories(@Request() req) {
     const joinedItems = await this.joinedItemsService.findAllExpenseCategories(req.user);

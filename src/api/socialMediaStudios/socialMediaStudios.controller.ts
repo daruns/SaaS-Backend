@@ -83,9 +83,11 @@ export class SocialMediaStudiosController {
   }
 
   @Post('addUsers')
-  async addUsers(@Body() payload: AddSocialMediaUsersDto, @Request() req) {
-    const createdSocialMedia = await this.socialMediaStudiosService.addUsers(payload, req.user);
-    return createdSocialMedia
+  async addUsers(@Body() payload, @Request() req) {
+    console.log("payload addusers: ", payload);
+    return payload
+    // const createdSocialMedia = await this.socialMediaStudiosService.addUsers(payload, req.user);
+    // return createdSocialMedia
   }
 
   @Post('removeUsers')

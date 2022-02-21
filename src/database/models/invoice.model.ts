@@ -16,13 +16,37 @@ export class InvoiceModel extends BaseModel {
   currencyCode: string
   exchangeRate: number
   billingAddress: string
-  paymentMethod: string
   taxRate: number
   discount: number
   subTotalAmount: number
   totalAmount: number
+  //clients Columns
+  clientName: string
+  clientEmail: string
+  clientLogo: string
+  clientClientType: string
+  clientBusinessType: string
+  clientAddress: string
+  clientPhoneNumbers: string
+  clientWebsite: string
+  //clientContacts Columns
+  clientContactName: string
+  clientContactPosition: string
+  clientContactEmail: string
+  clientContactBusinessPhoneNumber1: string
+  clientContactBusinessPhoneNumber2: string
+  clientContactDescription: string
+  clientContactDepartment: string
+  //PaymentMethod Columns
+  paymentMethodName: string
+  //tax Columns
+  taxName: string
+  bankFee: number
   clientId: number
   clientContactId: number
+  paymentMethodId: number
+  taxId: number
+
 
   clientContact: ClientContactModel;
   client: ClientModel;

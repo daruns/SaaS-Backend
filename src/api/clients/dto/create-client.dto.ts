@@ -1,45 +1,42 @@
-import { IsEmail, IsNotEmpty, IsString, IsInt, Max, Min, IsOptional } from 'class-validator';
-import { FileParamDto, ToPhone, ToRate } from 'src/app/app.service';
+import { IsEmail, IsNotEmpty, IsString, IsInt, Max, Min, IsOptional, IsIn } from 'class-validator';
+import { DefaultTo, FileParamDto, ToPhone, ToRate } from 'src/app/app.service';
 
 export class CreateClientDto {
   @IsNotEmpty()
   name: string
   logo: FileParamDto
-  @IsNotEmpty()
+
   @ToPhone
-  @IsString()
+  @IsOptional()
   phoneNumbers: string
 
-  @IsOptional()
   @IsString()
+  @DefaultTo('lead')
   clientType: string
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   businessType: string
 
-  @IsOptional()
   @IsString()
   @IsEmail({})
   email: string;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   website: string
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   address: string
+
   @ToRate
   @Min(0)
   @Max(10)
+  @IsOptional()
   rate: number
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   zipCode: string
-
-  @IsOptional()
-  @IsString()
-  status: string
 }

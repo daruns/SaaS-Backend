@@ -5,6 +5,7 @@ import { NonInventoryItemModel } from 'src/database/models/nonInventoryItem.mode
 import { ModelClass } from 'objection';
 import { ExpenseCategoryModel } from 'src/database/models/expenseCategory.model';
 import { ExpenseSubCategoryModel } from 'src/database/models/expenseSubCategory.model';
+import { ExpenseChildSubCategoriesController } from '../expenseChildSubCategories/expenseChildSubCategories.controller';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -95,7 +96,7 @@ export class JoinedItemsService {
     .select('id','name')
     .where({ brandCode: currentUser.brandCode })
     .withGraphFetched(
-      'expenseSubCategories(selectName)'
+      'expenseSubCategories(selectName).[expenseChildSubCategories(selectName)]'
     )
     .modifiers({
       selectName(builder) {
@@ -103,13 +104,18 @@ export class JoinedItemsService {
       },
     });
 
-    expenseCategories.forEach(serv => {
+    expenseCategories.forEach(cat => {
       result.push({
-        name: serv.name,
+        name: cat.name,
       })
-      serv.expenseSubCategories.forEach(subServ => {
+      cat.expenseSubCategories.forEach(subCat => {
         result.push({
-          name: serv.name + ", " + subServ.name,
+          name: cat.name + ", " + subCat.name,
+        })
+        subCat.expenseChildSubCategories.forEach(childSubCat => {
+          result.push({
+            name: cat.name + ", " + subCat.name + ", " + childSubCat.name,
+          })            
         })
       })
     })

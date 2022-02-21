@@ -2,6 +2,7 @@ import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import { ProjectModel } from './project.model';
 import { BoardModel } from './board.model';
+import AttachmentModel from './attachment.model';
 
 const tableName = 'tasks'
 export class TaskModel extends BaseModel {
@@ -19,6 +20,7 @@ export class TaskModel extends BaseModel {
 
   board: BoardModel;
   project: ProjectModel;
+  attachments: AttachmentModel[];
 
   static relationMappings = {
     // list of all board on current user
@@ -45,6 +47,18 @@ export class TaskModel extends BaseModel {
       join: {
         from: `${tableName}.id`,
         to: 'taskMemberUsers.taskId'
+      },
+    },
+    attachments: {
+      modelClass: `${__dirname}/attachment.model`,
+      relation: Model.ManyToManyRelation,
+      join: {
+        from: `${tableName}.id`,
+        through: {
+          from: 'taskAttachments.taskId',
+          to: 'taskAttachments.attachmentId'
+        },
+        to: 'attachments.id',
       },
     },
     // list of all leaders on current project

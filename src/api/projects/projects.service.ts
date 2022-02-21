@@ -14,6 +14,8 @@ import { AddMembersToProjectDto } from './dto/add-membersToProject.dto';
 import { ProjectAttachmentModel } from 'src/database/models/projectAttachment.model';
 import { AddFileDto, FileParamDto, FileUploadService } from 'src/app/app.service';
 import { AttachmentModel } from 'src/database/models/attachment.model';
+import TaskMemberModel from 'src/database/models/taskMember.model';
+import TaskModel from 'src/database/models/task.model';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -29,25 +31,39 @@ export class ProjectsService {
     @Inject('UserModel') private userModel: ModelClass<UserModel>,
     @Inject('ProjectAttachmentModel') private projectAttachmentModel: ModelClass<ProjectAttachmentModel>,
     @Inject('AttachmentModel') private attachmentModel: ModelClass<AttachmentModel>,
+    @Inject('TaskMemberModel') private taskMemberModelClass: ModelClass<TaskMemberModel>,
+    @Inject('TaskModel') private taskModelClass: ModelClass<TaskModel>,
     private readonly clientsSerive: ClientsService,
     private readonly fileUploadService: FileUploadService,
   ) {}
 
   // project list
   async findAll(currentUser): Promise<ResponseData> {
+    const assignedLeaders = await this.leaderModelClass.query().where({leaderId: currentUser.id})
+    const assignedMembers = await this.memberModelClass.query().where({memberId: currentUser.id})
+    const assignedTaskMembers = await this.taskMemberModelClass.query().where('memberId', currentUser.id)
+    const assignedTasks = await this.taskModelClass.query().findByIds(assignedTaskMembers.map(e => e.taskId))
+    const proIds = await this.modelClass.query().select('id')
+    .whereIn('id',assignedLeaders.map(e => e.projectId))
+    .orWhereIn('id', assignedMembers.map(e => e.projectId))
+    .orWhereIn('id', assignedTasks.map(e => e.projectId))
     const projects = await this.modelClass.query()
     .where({brandCode: currentUser.brandCode})
+    .whereIn('id',proIds.map(e => e.id))
     .modifiers({
       selectMemberNameAndId(builder) {
         builder.select('name');
+        builder.select('avatar')
         builder.select('users.id as userId');
       },
       selectLeaderNameAndId(builder) {
         builder.select('name');
+        builder.select('avatar')
         builder.select('users.id as userId');
       },
       selectTaskMemberNameAndId(builder) {
         builder.select('name');
+        builder.select('avatar')
         builder.select('users.id as userId');
       },
       selectAttachUrl(builder) {
@@ -61,8 +77,8 @@ export class ProjectsService {
           client,
           memberUsers(selectMemberNameAndId),
           leaderUsers(selectLeaderNameAndId),
-          tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
-          attachments
+          tasks.[attachments(selectAttachUrl), memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
+          attachments(selectAttachUrl)
         ]
       `
     )
@@ -76,6 +92,18 @@ export class ProjectsService {
 
   // find one project info by projectId
   async findById(id: number, currentUser): Promise<ResponseData> {
+    const assignedLeaders = await this.leaderModelClass.query().where({leaderId: currentUser.id, projectId: id})
+    const assignedMembers = await this.memberModelClass.query().where({memberId: currentUser.id, projectId: id})
+    const assignedTasks = await this.taskModelClass.query().where({projectId: id})
+    const assignedTaskMembers = await this.taskMemberModelClass.query().where('memberId', currentUser.id).whereIn('taskId',assignedTasks.map(e => e.id))
+    let fillTaskIds = []
+    if (assignedTaskMembers.length > 0) {
+      fillTaskIds = await this.taskModelClass.query().where({projectId: id}).findByIds( assignedTaskMembers.map(e => e.taskId) )
+    }
+    let passNext = false
+    if (assignedLeaders.length > 0 || assignedMembers.length > 0 || fillTaskIds.length > 0) {
+      passNext = true
+    }
     const project = await this.modelClass
       .query()
       .where({brandCode: currentUser.brandCode})  
@@ -83,14 +111,17 @@ export class ProjectsService {
       .modifiers({
         selectMemberNameAndId(builder) {
           builder.select('name');
+          builder.select('avatar');
           builder.select('users.id as userId');
         },
         selectLeaderNameAndId(builder) {
           builder.select('name');
+          builder.select('avatar');
           builder.select('users.id as userId');
         },
         selectTaskMemberNameAndId(builder) {
           builder.select('name');
+          builder.select('avatar');
           builder.select('users.id as userId');
         },
         selectAttachUrl(builder) {
@@ -104,12 +135,12 @@ export class ProjectsService {
             client,
             memberUsers(selectMemberNameAndId),
             leaderUsers(selectLeaderNameAndId),
-            tasks.[memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
-            attachments
+            tasks.[attachments(selectAttachUrl), memberUsers(selectTaskMemberNameAndId), board.[boardAttribute]],
+            attachments(selectAttachUrl)
           ]
         `
       )
-      if (project) {
+    if (project && passNext) {
       return {
         success: true,
         message: 'Project details fetch successfully.',
@@ -156,9 +187,6 @@ export class ProjectsService {
     projectPayload['brandCode'] = currentUser.brandCode
     projectPayload['createdBy'] = currentUser.username
     const {leaders, members, ...projectParams} = projectPayload
-    console.log(leaders)
-    console.log(members)
-    console.log(projectParams)
 
     var result : any
     const trx = await this.modelClass.startTransaction()

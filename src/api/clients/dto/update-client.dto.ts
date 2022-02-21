@@ -1,5 +1,5 @@
 import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsOptional, Min, Max } from 'class-validator';
-import { FileParamDto, PhoneNumberRegex, ToRate } from 'src/app/app.service'
+import { DefaultTo, FileParamDto, PhoneNumberRegex, ToPhone, ToRate } from 'src/app/app.service'
 import { CreateClientUserDto } from './create-client-user.dto';
 
 export class UpdateClientDto {
@@ -9,12 +9,12 @@ export class UpdateClientDto {
   @IsString()
   name: string
   logo: FileParamDto
-  @IsString()
+  @ToPhone
   @IsOptional()
-  @Matches(PhoneNumberRegex.reg)
   phoneNumbers: string
   @IsOptional()
   @IsString()
+  @DefaultTo('lead')
   clientType: string
   @IsOptional()
   @IsString()

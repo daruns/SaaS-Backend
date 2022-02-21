@@ -4,13 +4,11 @@ import { PhoneNumberRegex } from 'src/app/app.service';
 export class CreateClientContactDto {
   @IsNotEmpty({ message: 'Name is required' })
   name: string
-  @IsNotEmpty()
-  @IsString()
   @Matches(PhoneNumberRegex.reg)
-  businessPhoneNumber1: string
   @IsOptional()
-  @IsString()
+  businessPhoneNumber1: string
   @Matches(PhoneNumberRegex.reg)
+  @IsOptional()
   businessPhoneNumber2: string
   @IsEmail({}, { message: 'Email address is invalid' })
   email: string;

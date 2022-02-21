@@ -8,12 +8,9 @@ export class UpdateClientContactDto {
   @IsNotEmpty({ message: 'name is required' })
   @IsOptional()
   name: string  
-  @IsString()
-  @IsNotEmpty()
   @Matches(PhoneNumberRegex.reg)
   @IsOptional()
   businessPhoneNumber1: string
-  @IsString()
   @Matches(PhoneNumberRegex.reg)
   @IsOptional()
   businessPhoneNumber2: string

@@ -7,7 +7,8 @@ export class UpdateInvoiceDto {
   id: number
   billingAddress: string
   description: string
-  paymentMethod: string
+  paymentMethodId: number
+  taxId: number
   @IsOptional()
   discount: number
   @IsOptional()

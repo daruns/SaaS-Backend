@@ -43,6 +43,7 @@ export class QuotesController {
   @Post('update')
   // update commnet on quote
   update(@Body() payload: UpdateQuoteDto, @Body('items') quoteItems: CreateQuoteItemDto[], @Request() req) {
+    delete (payload['items'])
     return this.quotesService.update(payload, quoteItems, req.user);
   }
 

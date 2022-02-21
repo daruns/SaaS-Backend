@@ -43,6 +43,7 @@ export class InvoicesController {
   @Post('update')
   // update commnet on invoice
   update(@Body() payload: UpdateInvoiceDto, @Body('items') invoiceItems: CreateInvoiceItemDto[], @Request() req) {
+    delete (payload['items'])
     return this.invoicesService.update(payload, invoiceItems, req.user);
   }
 

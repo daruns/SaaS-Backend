@@ -7,7 +7,8 @@ export class UpdateQuoteDto {
   id: number
   billingAddress: string
   description: string
-  paymentMethod: string
+  paymentMethodId: number
+  taxId: number
   @IsOptional()
   discount: number
   @IsOptional()

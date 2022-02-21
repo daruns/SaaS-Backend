@@ -24,6 +24,18 @@ export class ExpenseModel extends BaseModel {
   discount: number
   subTotalAmount: number
   totalAmount: number
+  //supplier Columns
+  supplierName: string
+  supplierLogo: string
+  supplierPhoneNumbers: string
+  supplierSupplierType: string
+  supplierBusinessType: string
+  supplierEmail: string
+  supplierWebsite: string
+  supplierAddress: string
+  //tax Columns
+  taxName: string
+  bankFee: number
   paymentMethodId: number
   supplierId: number
   taxId: number

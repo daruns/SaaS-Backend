@@ -5,6 +5,8 @@ import { ClientContactModel } from "./clientContact.model";
 import { MeetingModel } from './meeting.model';
 import { SocialMediaModel } from './socialMedia.model';
 import { InvoiceItemModel } from './invoiceItem.model';
+import ProjectModel from './project.model';
+import QuoteModel from './quote.model';
 
 const tableName = 'clients'
 export class ClientModel extends BaseModel {
@@ -28,6 +30,8 @@ export class ClientModel extends BaseModel {
   meetings: MeetingModel[];
   socialMedias: SocialMediaModel[];
   invoices: InvoiceItemModel[];
+  quotes: QuoteModel[];
+  projects: ProjectModel[];
 
   static relationMappings = {
     // list of all user on current user
@@ -71,6 +75,22 @@ export class ClientModel extends BaseModel {
       join: {
         from: `${tableName}.id`,
         to: 'invoices.clientId',
+      },
+    },
+    quotes: {
+      modelClass: `${__dirname}/quote.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `${tableName}.id`,
+        to: 'quotes.clientId',
+      },
+    },
+    projects: {
+      modelClass: `${__dirname}/project.model`,
+      relation: Model.HasManyRelation,
+      join: {
+        from: `${tableName}.id`,
+        to: 'projects.clientId',
       },
     },
   };

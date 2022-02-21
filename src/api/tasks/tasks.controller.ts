@@ -10,12 +10,16 @@ import {
   UseGuards,
   Req,
   Request,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { ChangeBoardDto, UpdateTaskDto } from './dto/update-task.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AddMembersToTaskDto } from './dto/add-membersToTask.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { AddFileDto } from 'src/app/app.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('tasks')
@@ -53,6 +57,21 @@ export class TasksController {
   async removeMembers(@Body() payload: AddMembersToTaskDto, @Request() req) {
     const createdTask = await this.tasksService.removeMembers(payload, req.user);
     return createdTask
+  }
+
+  @Post('addFile')
+  @UseInterceptors(FilesInterceptor("files", 25))
+  async addFile(@Body("id") id: number, @UploadedFiles() files, @Request() req) {
+    const payload: AddFileDto = {id: id, files: files}
+    console.log(payload)
+    const addFiledExpense = await this.tasksService.addFile(payload, req.user);
+    return addFiledExpense
+  }
+
+  @Post('removeFile')
+  async removeFile(@Body() body: {id: number, attachId: number}, @Request() req) {
+    const addFiledExpense = await this.tasksService.removeFile(body, req.user);
+    return addFiledExpense
   }
 
   @Post('changeBoard')

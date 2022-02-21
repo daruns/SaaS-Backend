@@ -1,9 +1,12 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
+function camelToUnderscore(key) {
+  return key.replace( /([A-Z])/g, "_$1" ).toLowerCase();
+}
 
 const tableName = 'subServiceItems'
 export async function up(knex: Knex): Promise<any> {
-  if (await knex.schema.hasTable(tableName)) {
+  if (await knex.schema.hasTable(camelToUnderscore(tableName))) {
     return;
   }
   Logger.log('Creating ' + tableName + ' table');

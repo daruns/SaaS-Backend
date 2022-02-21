@@ -19,14 +19,18 @@ export class HttpErrorHandler implements ExceptionFilter {
     // create message for logging in console
     const message = `[HttpErrorHandler] ${request.method} ${request.url}`;
     Logger.error(message);
-    response.status(404).json({
-      success: false,
-      message: get(
-        exception,
-        'message.message',
-        get(exception, 'message.error', 'Invalid url!'),
-      ),
-      data: {exception: exception},
-    });
+    if (exception && exception.message && exception.message.error === 'Unauthorized') {
+      response.status(401).json(exception.message);
+    } else {
+      response.status(400).json({
+        success: false,
+        message: get(
+          exception,
+          'message.message',
+          get(exception, 'message.error', 'Invalid url!'),
+        ),
+        data: {exception: exception},
+      });
+    }
   }
 }

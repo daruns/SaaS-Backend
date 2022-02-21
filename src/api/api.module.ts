@@ -21,10 +21,10 @@ import { TaxesModule } from './taxes/taxes.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { PaymentMethodsModule } from './paymentMethods/paymentMethods.module';
 import { ExpensesModule } from './expenses/expenses.module';
-import { AppService } from 'src/app/app.service';
 import { JoinedItemsModule } from './joinedItems/joinedItems.module';
 import { ChatsModule } from './chat/chats.module';
 import { SocialMediaStudiosModule } from './socialMediaStudios/socialMediaStudios.module';
+import { ExpenseChildSubCategoriesModule } from './expenseChildSubCategories/expenseChildSubCategories.module';
 
 @Module({
   imports: [
@@ -53,6 +53,7 @@ import { SocialMediaStudiosModule } from './socialMediaStudios/socialMediaStudio
     JoinedItemsModule,
     ChatsModule,
     SocialMediaStudiosModule,
+    ExpenseChildSubCategoriesModule,
   ],
   providers: [],
 })

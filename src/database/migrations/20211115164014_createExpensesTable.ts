@@ -1,9 +1,12 @@
 import * as Knex from 'knex';
 import { Logger } from '@nestjs/common';
+function camelToUnderscore(key) {
+  return key.replace( /([A-Z])/g, "_$1" ).toLowerCase();
+}
 
 const tableName = 'expenses'
 export async function up(knex: Knex): Promise<any> {
-  if (await knex.schema.hasTable(tableName)) {
+  if (await knex.schema.hasTable(camelToUnderscore(tableName))) {
     return;
   }
   Logger.log('Creating ' + tableName + ' table');
@@ -41,6 +44,20 @@ export async function up(knex: Knex): Promise<any> {
     table.string('createdBy');
     table.string('updatedBy');
     table.timestamps(true, true);
+    //supplier Columns
+    table.string('supplierName');
+    table.string('supplierLogo');
+    table.string('supplierPhoneNumbers');
+    table.string('supplierSupplierType');
+    table.string('supplierBusinessType');
+    table.string('supplierEmail');
+    table.string('supplierWebsite');
+    table.string('supplierAddress');
+    //PaymentMethod Columns
+    table.string('paymentMethodName')
+    //tax Columns
+    table.string('taxName');
+    table.decimal(('bankFee'), 65,2).defaultTo(0)
   });
 }
 

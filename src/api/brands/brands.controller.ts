@@ -7,10 +7,15 @@ import {
   Post,
   UseGuards,
   Request,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileParamDto } from "src/app/app.service";
+import { UpdateBrandDto } from './dto/update-brand.dto';
 
 @Controller('brands')
 export class BrandsController {
@@ -22,13 +27,13 @@ export class BrandsController {
     const brands = await this.brandsService.findAll();
     return brands;
   }
-  
-  // @UseGuards(JwtAuthGuard)
-  // @Get(':id')
-  // async findOne(@Param('id', new ParseIntPipe()) id: number, @Request() req) {
-  //   const post = await this.brandsService.findById(id);
-  //   return post;
-  // }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findOne(@Param('id', new ParseIntPipe()) id: number, @Request() req) {
+    const post = await this.brandsService.findById(id);
+    return post;
+  }
   
   @UseGuards(JwtAuthGuard)
   @Get('/brandCode/:brandCode')
@@ -42,10 +47,14 @@ export class BrandsController {
     return this.brandsService.create(brand);
   }
 
-  // @Post('update')
-  // update(@Body() brand) {
-  //   return this.brandsService.update(brand);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Post('update')
+  @UseInterceptors(FileInterceptor("logo"))    
+  update(@Body() brand: UpdateBrandDto, @UploadedFile() file: Express.Multer.File, @Request() req) {
+    brand.logo = file
+    brand.id = Number(brand['id'])
+    return this.brandsService.update(brand,req.user);
+  }
 
   // @Post('delete')
   // delete(@Body() brand) {
