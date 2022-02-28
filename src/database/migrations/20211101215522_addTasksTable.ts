@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<any> {
     table.increments('id').unsigned().primary();
     table.string('name');
     table.string('brandCode');
-    table.string('description');
+    table.text('description');
     table.string('priority');
     table.dateTime('plannedStartDate');
     table.dateTime('plannedEndDate');

@@ -34,6 +34,12 @@ const joinedItems_module_1 = require("./joinedItems/joinedItems.module");
 const chats_module_1 = require("./chat/chats.module");
 const socialMediaStudios_module_1 = require("./socialMediaStudios/socialMediaStudios.module");
 const expenseChildSubCategories_module_1 = require("./expenseChildSubCategories/expenseChildSubCategories.module");
+const departments_module_1 = require("./departments/departments.module");
+const designations_module_1 = require("./designations/designations.module");
+const employees_module_1 = require("./employees/employees.module");
+const leaves_module_1 = require("./leaves/leaves.module");
+const attendances_module_1 = require("./attendances/attendances.module");
+const leaveTypes_module_1 = require("./leaveTypes/leaveTypes.module");
 let ApiModule = class ApiModule {
 };
 ApiModule = __decorate([
@@ -65,6 +71,12 @@ ApiModule = __decorate([
             chats_module_1.ChatsModule,
             socialMediaStudios_module_1.SocialMediaStudiosModule,
             expenseChildSubCategories_module_1.ExpenseChildSubCategoriesModule,
+            departments_module_1.DepartmentsModule,
+            designations_module_1.DesignationsModule,
+            employees_module_1.EmployeesModule,
+            leaves_module_1.LeavesModule,
+            leaveTypes_module_1.LeaveTypesModule,
+            attendances_module_1.AttendancesModule,
         ],
         providers: [],
     })

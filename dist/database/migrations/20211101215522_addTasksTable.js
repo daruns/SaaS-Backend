@@ -15,7 +15,7 @@ async function up(knex) {
         table.increments('id').unsigned().primary();
         table.string('name');
         table.string('brandCode');
-        table.string('description');
+        table.text('description');
         table.string('priority');
         table.dateTime('plannedStartDate');
         table.dateTime('plannedEndDate');

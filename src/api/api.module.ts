@@ -25,6 +25,12 @@ import { JoinedItemsModule } from './joinedItems/joinedItems.module';
 import { ChatsModule } from './chat/chats.module';
 import { SocialMediaStudiosModule } from './socialMediaStudios/socialMediaStudios.module';
 import { ExpenseChildSubCategoriesModule } from './expenseChildSubCategories/expenseChildSubCategories.module';
+import { DepartmentsModule } from './departments/departments.module';
+import { DesignationsModule } from './designations/designations.module';
+import { EmployeesModule } from './employees/employees.module';
+import { LeavesModule } from './leaves/leaves.module';
+import { AttendancesModule } from './attendances/attendances.module';
+import { LeaveTypesModule } from './leaveTypes/leaveTypes.module';
 
 @Module({
   imports: [
@@ -54,6 +60,12 @@ import { ExpenseChildSubCategoriesModule } from './expenseChildSubCategories/exp
     ChatsModule,
     SocialMediaStudiosModule,
     ExpenseChildSubCategoriesModule,
+    DepartmentsModule,
+    DesignationsModule,
+    EmployeesModule,
+    LeavesModule,
+    LeaveTypesModule,
+    AttendancesModule,
   ],
   providers: [],
 })
