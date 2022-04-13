@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const user_layers_dto_1 = require("../../../dto/user-layers.dto");
 const app_service_1 = require("../../../../../app/app.service");
 class CreateUserDto {
     static _OPENAPI_METADATA_FACTORY() {
@@ -45,7 +46,7 @@ __decorate([
 ], CreateUserDto.prototype, "phoneNumber", void 0);
 __decorate([
     class_validator_1.IsNotEmpty(),
-    class_validator_1.IsIn(['owner', 'admin', 'agent', 'partner']),
+    class_validator_1.IsIn(Object.values(user_layers_dto_1.UserLayers)),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "userType", void 0);
 exports.CreateUserDto = CreateUserDto;

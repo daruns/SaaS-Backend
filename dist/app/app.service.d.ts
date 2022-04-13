@@ -7,6 +7,7 @@ export declare const ToExstName: (filename: any) => string;
 export declare const SkipEmpty: (target: any, key: string) => void;
 export declare const editFileName: (req: any, file: any, callback: any) => void;
 export declare const documentFileFilter: (req: any, file: any, callback: any) => void;
+export declare const getUserType: (user: any) => any;
 export declare class PhoneNumberRegex {
     static reg: RegExp;
 }

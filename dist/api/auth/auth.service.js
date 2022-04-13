@@ -18,6 +18,7 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
 const users_service_1 = require("./apps/users/users.service");
 const brands_service_1 = require("../brands/brands.service");
+const user_layers_dto_1 = require("./dto/user-layers.dto");
 let AuthService = class AuthService {
     constructor(boardModelClass, boardAttributeClass, brandService, usersService, jwtService) {
         this.boardModelClass = boardModelClass;
@@ -38,7 +39,7 @@ let AuthService = class AuthService {
                 email: signupDto.email,
                 brandCode: createBrand.data.brandCode,
                 name: signupDto.username,
-                userType: 'owner',
+                userType: user_layers_dto_1.UserLayers.layerOne,
             };
             const createUser = await this.usersService.create(createUserDto);
             delete createUser.data.password;

@@ -4,5 +4,15 @@ export declare class AttendanceModel extends BaseModel {
     checkedIn: boolean;
     employeeId: number;
     brandCode: string;
+    static relationMappings: {
+        employee: {
+            modelClass: string;
+            relation: import("objection").RelationType;
+            join: {
+                from: string;
+                to: string;
+            };
+        };
+    };
 }
 export default AttendanceModel;

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateUserDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const user_layers_dto_1 = require("../../../dto/user-layers.dto");
 const app_service_1 = require("../../../../../app/app.service");
 class UpdateUserDto {
     static _OPENAPI_METADATA_FACTORY() {
@@ -37,8 +38,11 @@ __decorate([
 __decorate([
     class_validator_1.IsOptional(),
     app_service_1.ToPhone,
-    class_validator_1.IsString({ message: "must be a valid phonenumber" }),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "phoneNumber", void 0);
+__decorate([
+    class_validator_1.IsIn(Object.values(user_layers_dto_1.UserLayers)),
+    __metadata("design:type", String)
+], UpdateUserDto.prototype, "userType", void 0);
 exports.UpdateUserDto = UpdateUserDto;
 //# sourceMappingURL=update-user.dto.js.map

@@ -1,6 +1,7 @@
 export declare class UpdateLeaveTypeDto {
     id: number;
     name: string;
-    maxDays: number;
+    fund: number;
     days: number;
+    urgent: boolean;
 }

@@ -14,7 +14,6 @@ async function up(knex) {
     return knex.schema.createTable(tableName, (table) => {
         table.increments('id').unsigned().primary();
         table.string('name');
-        table.decimal('maxDays', 65, 2).defaultTo(0);
         table.decimal('days', 65, 2).defaultTo(0);
         table.string('brandCode');
         table.string('status');

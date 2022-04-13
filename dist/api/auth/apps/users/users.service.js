@@ -18,6 +18,7 @@ const bcrypt = require("bcrypt");
 const jwt_auth_guard_1 = require("../../guards/jwt-auth.guard");
 const brands_service_1 = require("../../../brands/brands.service");
 const app_service_1 = require("../../../../app/app.service");
+const user_layers_dto_1 = require("../../dto/user-layers.dto");
 let UsersService = class UsersService {
     constructor(modelClass, brandService, fileUploadService) {
         this.modelClass = modelClass;
@@ -40,7 +41,7 @@ let UsersService = class UsersService {
         };
     }
     async allWithBrandClients(currentUser) {
-        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode }).where({ userType: "partner" });
+        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode }).where({ userType: user_layers_dto_1.UserLayers.layerFour });
         users.map(user => {
             delete user.password;
             delete user.activationToken;
@@ -55,7 +56,7 @@ let UsersService = class UsersService {
         };
     }
     async allWithBrandNoClients(currentUser) {
-        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode }).whereNot({ userType: "partner" });
+        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode }).whereNot({ userType: user_layers_dto_1.UserLayers.layerFour });
         users.map(user => {
             delete user.password;
             delete user.activationToken;
@@ -104,7 +105,8 @@ let UsersService = class UsersService {
             roles: {
                 permissions: true
             },
-            permissions: {}
+            permissions: {},
+            myEmployeeProfile: {}
         });
         delete user.password;
         if (user) {
@@ -135,7 +137,8 @@ let UsersService = class UsersService {
             roles: {
                 permissions: {}
             },
-            permissions: {}
+            permissions: {},
+            myEmployeeProfile: {}
         });
         if (user) {
             return {
@@ -167,7 +170,8 @@ let UsersService = class UsersService {
             roles: {
                 permissions: {}
             },
-            permissions: {}
+            permissions: {},
+            myEmployeeProfile: {}
         });
         if (user) {
             return {

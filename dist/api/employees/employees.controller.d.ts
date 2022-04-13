@@ -9,6 +9,7 @@ export declare class EmployeesController {
     private readonly usersService;
     constructor(employeesService: EmployeesService, usersService: UsersService);
     findAll(req: any): Promise<import("../../app/app.service").ResponseData>;
+    findMe(req: any): Promise<import("../../app/app.service").ResponseData>;
     findOne(id: number, req: any): Promise<import("../../app/app.service").ResponseData>;
     create(payload: CreateEmployeeDto, req: any): Promise<import("../../app/app.service").ResponseData>;
     update(payload: UpdateEmployeeDto, req: any): Promise<import("../../app/app.service").ResponseData>;

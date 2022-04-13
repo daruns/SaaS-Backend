@@ -7,6 +7,7 @@ export declare class UpdateEmployeeDto {
     leaveBalance: number;
     salary: number;
     hrMember: boolean;
+    isManager: boolean;
     username: string;
     email: string;
     password: string;

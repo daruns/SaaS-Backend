@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FileUploadService = exports.AppService = exports.ToRate = exports.DefaultToFalse = exports.ToLower = exports.ToInteger = exports.DefaultToEmpty = exports.DefaultTo = exports.DefaultToNow = exports.ToPhone = exports.AddFileDto = exports.linkAddressRegex = exports.PhoneNumberRegex = exports.documentFileFilter = exports.editFileName = exports.SkipEmpty = exports.ToExstName = exports.imageFileFilter = void 0;
+exports.FileUploadService = exports.AppService = exports.ToRate = exports.DefaultToFalse = exports.ToLower = exports.ToInteger = exports.DefaultToEmpty = exports.DefaultTo = exports.DefaultToNow = exports.ToPhone = exports.AddFileDto = exports.linkAddressRegex = exports.PhoneNumberRegex = exports.getUserType = exports.documentFileFilter = exports.editFileName = exports.SkipEmpty = exports.ToExstName = exports.imageFileFilter = void 0;
 const common_1 = require("@nestjs/common");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
@@ -21,6 +21,7 @@ const path_1 = require("path");
 const AWS = require("aws-sdk");
 const uuid_1 = require("uuid");
 const moment = require("moment");
+const user_layers_dto_1 = require("../api/auth/dto/user-layers.dto");
 exports.imageFileFilter = (req, file, callback) => {
     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
         return callback(`Unsupported file type ${path_1.extname(file.originalname)}`, false);
@@ -51,6 +52,14 @@ exports.documentFileFilter = (req, file, callback) => {
         callback(`Unsupported file type ${path_1.extname(file.originalname)}`, false);
     }
     callback(null, true);
+};
+exports.getUserType = (user) => {
+    var _a;
+    if (user && typeof (user === null || user === void 0 ? void 0 : user.userType) === 'string' && Object.values(user_layers_dto_1.UserLayers).includes(user === null || user === void 0 ? void 0 : user.userType)) {
+        return `${(_a = user === null || user === void 0 ? void 0 : user.userType) === null || _a === void 0 ? void 0 : _a.toLowerCase()}`;
+    }
+    else
+        return user === null || user === void 0 ? void 0 : user.userType;
 };
 class PhoneNumberRegex {
 }

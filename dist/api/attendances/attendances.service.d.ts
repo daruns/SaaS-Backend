@@ -11,5 +11,7 @@ export declare class AttendancesService {
     private employeeClass;
     constructor(modelClass: ModelClass<AttendanceModel>, employeeClass: ModelClass<EmployeeModel>);
     findAll(currentUser: any): Promise<ResponseData>;
+    findAllByUser(currentUser: any): Promise<ResponseData>;
     create(currentUser: any): Promise<ResponseData>;
+    parseTable(data: any): any[];
 }

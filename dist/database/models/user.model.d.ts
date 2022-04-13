@@ -11,6 +11,7 @@ import { BoardAttributeModel } from './boardAttribute.model';
 import { TaskMemberModel } from './taskMember.model';
 import { TaskModel } from './task.model';
 import { BoardModel } from './board.model';
+import EmployeeModel from './employee.model';
 export declare class UserModel extends BaseModel {
     static tableName: string;
     username: string;
@@ -45,6 +46,7 @@ export declare class UserModel extends BaseModel {
     taskMembers: TaskMemberModel[];
     tasksMemberUsers: TaskModel[];
     boards: BoardModel[];
+    myEmployeeProfile: EmployeeModel;
     static relationMappings: {
         user: {
             modelClass: string;
@@ -179,6 +181,14 @@ export declare class UserModel extends BaseModel {
                     from: string;
                     to: string;
                 };
+                to: string;
+            };
+        };
+        myEmployeeProfile: {
+            modelClass: string;
+            relation: import("objection").RelationType;
+            join: {
+                from: string;
                 to: string;
             };
         };

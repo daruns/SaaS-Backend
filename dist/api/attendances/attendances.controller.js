@@ -17,13 +17,20 @@ const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const attendances_service_1 = require("./attendances.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const app_service_1 = require("../../app/app.service");
+const user_layers_dto_1 = require("../auth/dto/user-layers.dto");
 let AttendancesController = class AttendancesController {
     constructor(attendancesService) {
         this.attendancesService = attendancesService;
     }
     async findAll(req) {
-        const attendances = await this.attendancesService.findAll(req.user);
-        return attendances;
+        const curUser = req === null || req === void 0 ? void 0 : req.user;
+        if (app_service_1.getUserType(curUser) === user_layers_dto_1.UserLayers.layerOne || (curUser.myEmployeeProfile && curUser.myEmployeeProfile.hrMember === 1)) {
+            const attendances = await this.attendancesService.findAll(req.user);
+            return attendances;
+        }
+        const attendancesByUser = await this.attendancesService.findAllByUser(req.user);
+        return attendancesByUser;
     }
     async create(req) {
         const createdAttendance = await this.attendancesService.create(req.user);

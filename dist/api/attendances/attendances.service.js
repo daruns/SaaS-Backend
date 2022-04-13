@@ -14,22 +14,34 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttendancesService = void 0;
 const common_1 = require("@nestjs/common");
+const moment = require("moment");
 let AttendancesService = class AttendancesService {
     constructor(modelClass, employeeClass) {
         this.modelClass = modelClass;
         this.employeeClass = employeeClass;
     }
     async findAll(currentUser) {
+        const now = new Date();
+        const thismonthDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const daysArr = Array.from({ length: thismonthDays }, (e, i) => i + 1);
+        const attendances = await this.modelClass.query()
+            .where({ brandCode: currentUser.brandCode, checkedIn: 1 })
+            .withGraphFetched({ employee: { user: {} } });
+        console.log("got from all");
+        return {
+            success: true,
+            message: 'Attendances details fetch successfully.',
+            data: this.parseTable(attendances),
+        };
+    }
+    async findAllByUser(currentUser) {
         const currentEmployee = await this.employeeClass.query()
             .where({ brandCode: currentUser.brandCode })
             .findOne({ userId: currentUser.id })
             .withGraphFetched({ attendances: {} });
         if (currentEmployee.hrMember === true) {
             const attendances = await this.modelClass.query()
-                .where({ brandCode: currentUser.brandCode })
-                .withGraphFetched({
-                designations: {}
-            });
+                .where({ brandCode: currentUser.brandCode });
             return {
                 success: true,
                 message: 'Attendances details fetch successfully.',
@@ -45,21 +57,20 @@ let AttendancesService = class AttendancesService {
         }
     }
     async create(currentUser) {
-        const currentEmployee = await this.employeeClass.query()
-            .where({ brandCode: currentUser.brandCode })
-            .findOne({ userId: currentUser.id });
-        console.log(currentEmployee);
-        if (!currentEmployee) {
-            throw new common_1.UnauthorizedException();
+        if (!currentUser.myEmployeeProfile) {
+            return {
+                success: true,
+                message: "not allowed to perform this action",
+                data: {}
+            };
         }
         const attendancePayload = {};
-        const lastAtt = await this.modelClass.query().orderBy('createdAt', 'desc').findOne({ employeeId: currentEmployee.id });
+        const lastAtt = await this.modelClass.query().orderBy('id', 'desc').findOne({ employeeId: currentUser.myEmployeeProfile.id });
         var checkedOrNot = true;
         if (lastAtt) {
             checkedOrNot = !lastAtt.checkedIn;
         }
-        console.log("deljfnel: ", lastAtt, checkedOrNot);
-        attendancePayload['employeeId'] = currentEmployee.id;
+        attendancePayload['employeeId'] = currentUser.myEmployeeProfile.id;
         attendancePayload['checkedIn'] = checkedOrNot;
         attendancePayload['createdBy'] = currentUser.username;
         attendancePayload['brandCode'] = currentUser.brandCode;
@@ -70,6 +81,35 @@ let AttendancesService = class AttendancesService {
             message: 'Attendance created successfully.',
             data: createAttendance,
         };
+    }
+    parseTable(data) {
+        const now = new Date();
+        const thismonthDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        let finarr = [];
+        let employeesInd = {};
+        const daysArr = Array.from({ length: thismonthDays }, (e, i) => i + 1);
+        for (let item of data) {
+            let currentcheckedIn = item["checkedIn"];
+            let currenEmployeeId = item["employeeId"];
+            let parsedday = Number(moment(item["createdAt"]).format("D"));
+            if (currentcheckedIn) {
+                if (typeof employeesInd[currenEmployeeId] !== 'number') {
+                    employeesInd[currenEmployeeId] = finarr.length;
+                    finarr.push({
+                        employeeId: currenEmployeeId,
+                        employee: item['employee'],
+                        attendances: daysArr.map(dy => { return { checked: parsedday === dy ? currentcheckedIn : 0, day: dy }; })
+                    });
+                }
+                else {
+                    finarr[Number(employeesInd[currenEmployeeId])]['attendances'].forEach((elem, ind) => {
+                        if (elem['day'] === parsedday)
+                            finarr[Number(employeesInd[currenEmployeeId])]['attendances'][ind]["checked"] = currentcheckedIn;
+                    });
+                }
+            }
+        }
+        return finarr;
     }
 };
 AttendancesService = __decorate([

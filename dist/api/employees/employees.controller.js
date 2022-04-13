@@ -31,20 +31,18 @@ let EmployeesController = class EmployeesController {
         const employees = await this.employeesService.findAll(req.user);
         return employees;
     }
+    async findMe(req) {
+        const employee = await this.employeesService.findMe(req.user);
+        return employee;
+    }
     async findOne(id, req) {
         const employee = await this.employeesService.findById(id, req.user);
         return employee;
     }
     async create(payload, req) {
         console.log(payload);
-        if (['admin', 'owner'].includes(req.user.userType)) {
-            const createdEmployee = await this.employeesService.createHr(payload, req.user);
-            return createdEmployee;
-        }
-        else {
-            const createdEmployee = await this.employeesService.create(payload, req.user);
-            return createdEmployee;
-        }
+        const createdEmployee = await this.employeesService.create(payload, req.user);
+        return createdEmployee;
     }
     update(payload, req) {
         if (payload.id)
@@ -79,6 +77,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], EmployeesController.prototype, "findAll", null);
+__decorate([
+    common_1.Get('me'),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeesController.prototype, "findMe", null);
 __decorate([
     common_1.Get(':id'),
     openapi.ApiResponse({ status: 200, type: Object }),

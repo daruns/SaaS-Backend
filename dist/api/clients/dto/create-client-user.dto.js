@@ -12,13 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateClientUserDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const user_layers_dto_1 = require("../../auth/dto/user-layers.dto");
 const app_service_1 = require("../../../app/app.service");
 class CreateClientUserDto {
     constructor() {
-        this.userType = "partner";
+        this.userType = user_layers_dto_1.UserLayers.layerFour;
     }
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, username: { required: true, type: () => String, minLength: 3, maxLength: 30 }, email: { required: true, type: () => String }, password: { required: true, type: () => String, minLength: 8, maxLength: 30 }, userType: { required: true, type: () => String, default: "partner" }, phoneNumber: { required: true, type: () => String }, createdBy: { required: true, type: () => String }, avatar: { required: true, type: () => String }, reportsTo: { required: true, type: () => String }, brandCode: { required: true, type: () => String }, status: { required: true, type: () => String } };
+        return { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, username: { required: true, type: () => String, minLength: 3, maxLength: 30 }, email: { required: true, type: () => String }, password: { required: true, type: () => String, minLength: 8, maxLength: 30 }, userType: { required: true, type: () => String, default: user_layers_dto_1.UserLayers.layerFour }, phoneNumber: { required: true, type: () => String }, createdBy: { required: true, type: () => String }, avatar: { required: true, type: () => String }, reportsTo: { required: true, type: () => String }, brandCode: { required: true, type: () => String }, status: { required: true, type: () => String } };
     }
 }
 __decorate([

@@ -14,7 +14,7 @@ const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class UpdateLeaveTypeDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, maxDays: { required: true, type: () => Number }, days: { required: true, type: () => Number } };
+        return { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, fund: { required: true, type: () => Number }, days: { required: true, type: () => Number }, urgent: { required: true, type: () => Boolean } };
     }
 }
 __decorate([

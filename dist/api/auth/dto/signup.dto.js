@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", String)
 ], SignupDto.prototype, "subdomain", void 0);
 __decorate([
-    class_validator_1.IsNotEmpty({ message: 'Password is required' }),
+    class_validator_1.IsNotEmpty({ message: 'Email is required' }),
     class_validator_1.IsEmail(),
     __metadata("design:type", String)
 ], SignupDto.prototype, "email", void 0);

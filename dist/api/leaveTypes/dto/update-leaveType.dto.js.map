@@ -1,1 +1,1 @@
-{"version":3,"file":"update-leaveType.dto.js","sourceRoot":"","sources":["../../../../src/api/leaveTypes/dto/update-leaveType.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;;AAAA,qDAAiI;AAEjI,MAAa,kBAAkB;;;;CAM9B;AAJC;IADC,uBAAK,EAAE;;8CACE;AAFZ,gDAMC"}
+{"version":3,"file":"update-leaveType.dto.js","sourceRoot":"","sources":["../../../../src/api/leaveTypes/dto/update-leaveType.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;;AAAA,qDAAiI;AAEjI,MAAa,kBAAkB;;;;CAO9B;AALC;IADC,uBAAK,EAAE;;8CACE;AAFZ,gDAOC"}

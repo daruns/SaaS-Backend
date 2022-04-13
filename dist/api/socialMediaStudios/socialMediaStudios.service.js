@@ -18,6 +18,7 @@ const clients_service_1 = require("../clients/clients.service");
 const _ = require("lodash");
 const app_service_1 = require("../../app/app.service");
 const moment = require("moment");
+const user_layers_dto_1 = require("../auth/dto/user-layers.dto");
 let SocialMediaStudiosService = class SocialMediaStudiosService {
     constructor(modelClass, socialMediaStudioUserModel, mediaModel, mediaAttachmentModel, userModel, clientSerive, fileUploadService) {
         this.modelClass = modelClass;
@@ -372,7 +373,7 @@ let SocialMediaStudiosService = class SocialMediaStudiosService {
                     const userfnd = await this.userModel.query(trx)
                         .select('id')
                         .whereIn('id', userIds)
-                        .whereNot({ userType: 'partner' })
+                        .whereNot({ userType: user_layers_dto_1.UserLayers.layerFour })
                         .where({ brandCode: currentUser.brandCode });
                     if (!userfnd.length || userfnd.length !== userIds.length) {
                         throw 'User Error: A user doesnt exist.';
@@ -445,7 +446,7 @@ let SocialMediaStudiosService = class SocialMediaStudiosService {
         }
         const usersFnd = await this.userModel.query()
             .where({ brandCode: currentUser.brandCode })
-            .whereNot({ userType: 'partner' })
+            .whereNot({ userType: user_layers_dto_1.UserLayers.layerFour })
             .findByIds(usersIds);
         if (usersFnd.length !== usersIds.length) {
             return {

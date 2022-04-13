@@ -154,6 +154,14 @@ UserModel.relationMappings = {
             to: 'tasks.id'
         },
     },
+    myEmployeeProfile: {
+        modelClass: `${__dirname}/employee.model`,
+        relation: objection_1.Model.HasOneRelation,
+        join: {
+            from: `${tbName}.id`,
+            to: 'employees.userId'
+        },
+    },
 };
 __decorate([
     class_transformer_1.Exclude({ toPlainOnly: true }),

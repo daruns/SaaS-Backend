@@ -12,13 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateEmployeeDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const user_layers_dto_1 = require("../../auth/dto/user-layers.dto");
 const app_service_1 = require("../../../app/app.service");
 class CreateEmployeeDto {
     constructor() {
-        this.userType = "agent";
+        this.userType = user_layers_dto_1.UserLayers.layerThree;
     }
     static _OPENAPI_METADATA_FACTORY() {
-        return { name: { required: true, type: () => String }, leaveBalance: { required: true, type: () => Number }, salary: { required: true, type: () => Number }, designationId: { required: true, type: () => Number }, managerId: { required: true, type: () => Number }, hrMember: { required: true, type: () => Boolean }, username: { required: true, type: () => String, minLength: 3, maxLength: 30 }, email: { required: true, type: () => String }, password: { required: true, type: () => String, minLength: 8, maxLength: 30 }, userType: { required: true, type: () => String, default: "agent" }, phoneNumber: { required: true, type: () => String }, createdBy: { required: true, type: () => String }, brandCode: { required: true, type: () => String }, status: { required: true, type: () => String } };
+        return { name: { required: true, type: () => String }, leaveBalance: { required: true, type: () => Number }, salary: { required: true, type: () => Number }, designationId: { required: true, type: () => Number }, managerId: { required: true, type: () => Number }, hrMember: { required: true, type: () => Boolean }, isManager: { required: true, type: () => Boolean }, username: { required: true, type: () => String, minLength: 3, maxLength: 30 }, email: { required: true, type: () => String }, password: { required: true, type: () => String, minLength: 8, maxLength: 30 }, userType: { required: true, type: () => String, default: user_layers_dto_1.UserLayers.layerThree }, phoneNumber: { required: true, type: () => String }, createdBy: { required: true, type: () => String }, brandCode: { required: true, type: () => String }, status: { required: true, type: () => String } };
     }
 }
 __decorate([

@@ -5,6 +5,7 @@ export declare class CreateEmployeeDto {
     designationId: number;
     managerId: number;
     hrMember: boolean;
+    isManager: boolean;
     username: string;
     email: string;
     password: string;

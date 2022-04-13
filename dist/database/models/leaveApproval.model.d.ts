@@ -5,6 +5,7 @@ export declare class LeaveApprovalModel extends BaseModel {
     static tableName: string;
     leaveId: number;
     managerId: number;
+    brandCode: string;
     manager: EmployeeModel;
     leave: LeaveModel;
     static relationMappings: {

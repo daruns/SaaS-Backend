@@ -23,7 +23,7 @@ let LeaveTypesService = class LeaveTypesService {
             .where({ brandCode: currentUser.brandCode });
         return {
             success: true,
-            message: 'InventoryItem details fetch successfully.',
+            message: 'Leave Types details fetch successfully.',
             data: leaveTypes,
         };
     }
@@ -82,8 +82,9 @@ let LeaveTypesService = class LeaveTypesService {
                 .query()
                 .update({
                 name: leaveTypePayload.name ? leaveTypePayload.name : leaveType.name,
-                maxDays: leaveTypePayload.maxDays ? leaveTypePayload.maxDays : leaveType.maxDays,
+                fund: leaveTypePayload.fund ? leaveTypePayload.fund : leaveType.fund,
                 days: leaveTypePayload.days ? leaveTypePayload.days : leaveType.days,
+                urgent: typeof payload.urgent === 'boolean' ? payload.urgent : leaveType.urgent,
                 updatedBy: currentUser.username,
             })
                 .where({ id: leaveTypePayload.id });

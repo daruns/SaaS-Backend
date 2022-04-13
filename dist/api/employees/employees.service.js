@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("../auth/apps/users/users.service");
 const app_service_1 = require("../../app/app.service");
 const bcrypt = require("bcrypt");
+const user_layers_dto_1 = require("../auth/dto/user-layers.dto");
 let EmployeesService = class EmployeesService {
     constructor(modelClass, userClass, designationClass, usersService, fileUploadService) {
         this.modelClass = modelClass;
@@ -41,13 +42,14 @@ let EmployeesService = class EmployeesService {
                 builder.select('phoneNumber');
                 builder.select('username');
                 builder.select('email');
+                builder.select('userType');
             },
         })
             .withGraphFetched(`
           [
             designation(selectDepartmentParams).[department(selectDepartmentParams)],
             user(selectUserParams),
-            manager
+            manager.[user(selectUserParams)]
           ]
         `);
         if (employees.length) {
@@ -82,13 +84,56 @@ let EmployeesService = class EmployeesService {
                 builder.select('phoneNumber');
                 builder.select('username');
                 builder.select('email');
+                builder.select('userType');
             },
         })
             .withGraphFetched(`
           [
             designation(selectDepartmentParams).[department(selectDepartmentParams)],
             user(selectUserParams),
-            manager
+            manager.[user(selectUserParams)]
+          ]
+        `);
+        if (employee) {
+            return {
+                success: true,
+                message: 'Employee details fetch successfully.',
+                data: employee,
+            };
+        }
+        else {
+            return {
+                success: false,
+                message: 'No employee details found.',
+                data: {},
+            };
+        }
+    }
+    async findMe(currentUser) {
+        const employee = await this.modelClass
+            .query()
+            .where({ brandCode: currentUser.brandCode })
+            .findOne({ userId: currentUser.id })
+            .modifiers({
+            selectDepartmentParams(builder) {
+                builder.select('id');
+                builder.select('name');
+            },
+            selectUserParams(builder) {
+                builder.select('id');
+                builder.select('name');
+                builder.select('avatar');
+                builder.select('phoneNumber');
+                builder.select('username');
+                builder.select('email');
+                builder.select('userType');
+            },
+        })
+            .withGraphFetched(`
+          [
+            designation(selectDepartmentParams).[department(selectDepartmentParams)],
+            user(selectUserParams),
+            manager.[user(selectUserParams)]
           ]
         `);
         if (employee) {
@@ -107,7 +152,10 @@ let EmployeesService = class EmployeesService {
         }
     }
     async createHr(payload, currentUser) {
-        var _a;
+        var _a, _b;
+        if (app_service_1.getUserType(currentUser.userType) !== user_layers_dto_1.UserLayers.layerOne || !((_a = currentUser.myEmployeeProfile) === null || _a === void 0 ? void 0 : _a.hrMember)) {
+            throw new common_1.UnauthorizedException();
+        }
         const newEmployee = await this.modelClass.query()
             .where({ brandCode: currentUser.brandCode })
             .findOne({ name: payload.name });
@@ -153,7 +201,7 @@ let EmployeesService = class EmployeesService {
             };
         }
         const randomUsernameSuffix = Math.floor(Math.random() * 100000);
-        let fixedUsername = payload.username ? payload.username : `${(_a = payload.name) === null || _a === void 0 ? void 0 : _a.toLowerCase().replace(' ', '')}_${randomUsernameSuffix}`;
+        let fixedUsername = payload.username ? payload.username : `${(_b = payload.name) === null || _b === void 0 ? void 0 : _b.toLowerCase().replace(' ', '')}_${randomUsernameSuffix}`;
         if (payload.password) {
             const hashedPassword = await bcrypt.hash(payload.password ? payload.password : fixedUsername, 10);
             newUserParamsCust['password'] = hashedPassword;
@@ -162,7 +210,7 @@ let EmployeesService = class EmployeesService {
         newUserParamsCust['email'] = payload.email;
         newUserParamsCust['username'] = fixedUsername;
         newUserParamsCust['phoneNumber'] = payload.phoneNumber ? payload.phoneNumber : '';
-        newUserParamsCust['userType'] = 'agent';
+        newUserParamsCust['userType'] = (payload.isManager || payload.hrMember) ? user_layers_dto_1.UserLayers.layerTwo : user_layers_dto_1.UserLayers.layerThree;
         newUserParamsCust['createdBy'] = currentUser.username;
         newUserParamsCust['brandCode'] = currentUser.brandCode;
         newUserParamsCust['status'] = 'active';
@@ -183,7 +231,7 @@ let EmployeesService = class EmployeesService {
                 salary: payload.salary,
                 status: "active",
                 userId: newUserParams['id'],
-                hrMember: true,
+                hrMember: payload.hrMember,
                 createdBy: currentUser.username,
                 brandCode: currentUser.brandCode,
                 designationId: payload.designationId,
@@ -212,9 +260,7 @@ let EmployeesService = class EmployeesService {
     }
     async create(payload, currentUser) {
         var _a;
-        const currentEMployee = await this.modelClass.query()
-            .findOne({ userId: currentUser.id, hrMember: true });
-        if (!currentEMployee) {
+        if ((app_service_1.getUserType(currentUser.userType) !== user_layers_dto_1.UserLayers.layerOne) && (!currentUser.myEmployeeProfile || currentUser.myEmployeeProfile.hrMember != true)) {
             throw new common_1.UnauthorizedException();
         }
         const newEmployee = await this.modelClass.query()
@@ -230,6 +276,7 @@ let EmployeesService = class EmployeesService {
         var newUserParams = {};
         var newUserParamsCust = {};
         var newParams = {};
+        var newParamsmanagerId;
         if (payload.managerId) {
             const managerFnd = await this.modelClass.query().findById(payload.managerId);
             if (!managerFnd) {
@@ -239,7 +286,12 @@ let EmployeesService = class EmployeesService {
                     data: {}
                 };
             }
-            newParams['managerId'] = managerFnd.id;
+            const managerUserFnd = await this.userClass.query()
+                .where({ id: managerFnd.userId, userType: user_layers_dto_1.UserLayers.layerThree })
+                .update({
+                userType: user_layers_dto_1.UserLayers.layerTwo
+            });
+            newParamsmanagerId = managerFnd.id;
         }
         const designationFnd = await this.designationClass.query().findById(payload.designationId);
         if (!designationFnd) {
@@ -282,30 +334,27 @@ let EmployeesService = class EmployeesService {
         newUserParamsCust['email'] = payload.email;
         newUserParamsCust['username'] = fixedUsername;
         newUserParamsCust['phoneNumber'] = payload.phoneNumber ? payload.phoneNumber : '';
-        newUserParamsCust['userType'] = 'agent';
+        newUserParamsCust['userType'] = (payload.isManager || payload.hrMember) ? user_layers_dto_1.UserLayers.layerTwo : user_layers_dto_1.UserLayers.layerThree;
         newUserParamsCust['createdBy'] = currentUser.username;
         newUserParamsCust['brandCode'] = currentUser.brandCode;
         newUserParamsCust['status'] = 'active';
         const trx = await this.modelClass.startTransaction();
         var result;
         try {
-            if (!newUserParams['id']) {
-                console.log("195---------------------", newUserParamsCust);
-                const userInstd = await this.userClass.query(trx).insert(newUserParamsCust);
-                console.log("197---------------------", userInstd);
-                if (!userInstd)
-                    return {
-                        success: false,
-                        message: 'user didnt insert',
-                        data: userInstd
-                    };
-                newUserParams = userInstd;
-            }
+            const userInstd = await this.userClass.query(trx).insert(newUserParamsCust);
+            if (!userInstd)
+                return {
+                    success: false,
+                    message: 'user didnt insert',
+                    data: userInstd
+                };
+            newUserParams = userInstd;
             newParams = {
+                managerId: newParamsmanagerId ? newParamsmanagerId : null,
                 name: payload.name,
                 leaveBalance: payload.leaveBalance,
                 salary: payload.salary,
-                hrMember: false,
+                hrMember: payload.hrMember,
                 status: "active",
                 userId: newUserParams['id'],
                 createdBy: currentUser.username,
@@ -314,7 +363,6 @@ let EmployeesService = class EmployeesService {
             };
             var createdEmployee = await this.modelClass.query(trx).insert(newParams);
             const identifier = await this.modelClass.query(trx).findById(createdEmployee.id);
-            console.log("219---------------------", createdEmployee.id, identifier);
             await trx.commit();
             result = identifier;
             console.log('Employee and User created successfully');
@@ -339,15 +387,40 @@ let EmployeesService = class EmployeesService {
         const employee = await this.modelClass.query()
             .where({ brandCode: currentUser.brandCode })
             .findById(payload.id);
+        var newParamsmanagerId;
+        if (payload.managerId && payload.managerId !== employee.managerId) {
+            const managerFnd = await this.modelClass.query().findById(payload.managerId);
+            if (!managerFnd) {
+                return {
+                    success: false,
+                    message: "manager not found!",
+                    data: {}
+                };
+            }
+            const managerUserFnd = await this.userClass.query()
+                .where({ id: managerFnd.userId, userType: user_layers_dto_1.UserLayers.layerThree })
+                .update({
+                userType: user_layers_dto_1.UserLayers.layerTwo
+            });
+            newParamsmanagerId = managerFnd.id;
+        }
+        const designationFnd = await this.designationClass.query().findById(payload.designationId);
+        if (!designationFnd) {
+            return {
+                success: false,
+                message: "designation not found!",
+                data: {}
+            };
+        }
         if (employee) {
             const updatedEmployee = await this.modelClass
                 .query()
                 .update({
-                managerId: payload.managerId ? payload.managerId : employee.managerId,
+                managerId: newParamsmanagerId ? newParamsmanagerId : employee.managerId,
                 leaveBalance: payload.leaveBalance ? payload.leaveBalance : employee.leaveBalance,
                 salary: payload.salary ? payload.salary : employee.salary,
                 designationId: payload.designationId ? payload.designationId : employee.designationId,
-                userId: payload.userId ? payload.userId : employee.userId,
+                hrMember: typeof payload.hrMember === 'boolean' ? payload.hrMember : employee.hrMember,
                 name: payload.name ? payload.name : employee.name,
                 updatedBy: currentUser.username,
             })

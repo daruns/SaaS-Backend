@@ -17,6 +17,22 @@ LeaveModel.relationMappings = {
             to: 'employees.id',
         },
     },
+    leaveType: {
+        modelClass: `${__dirname}/leaveType.model`,
+        relation: objection_1.Model.BelongsToOneRelation,
+        join: {
+            from: `${tableName}.leaveTypeId`,
+            to: 'leaveTypes.id',
+        },
+    },
+    leaveApprovals: {
+        modelClass: `${__dirname}/leaveApproval.model`,
+        relation: objection_1.Model.HasManyRelation,
+        join: {
+            from: `${tableName}.id`,
+            to: 'leaveApprovals.leaveId',
+        },
+    }
 };
 exports.default = LeaveModel;
 //# sourceMappingURL=leave.model.js.map

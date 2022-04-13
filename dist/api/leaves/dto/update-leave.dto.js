@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", Number)
 ], UpdateApprovalDto.prototype, "id", void 0);
 __decorate([
-    class_validator_1.IsIn(['approved', 'declined']),
+    class_validator_1.IsIn(['completed', 'rejected']),
     __metadata("design:type", String)
 ], UpdateApprovalDto.prototype, "status", void 0);
 exports.UpdateApprovalDto = UpdateApprovalDto;

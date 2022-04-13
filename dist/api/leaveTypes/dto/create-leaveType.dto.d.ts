@@ -1,5 +1,6 @@
 export declare class CreateLeaveTypeDto {
     name: string;
-    maxDays: number;
+    fund: number;
     days: number;
+    urgent: boolean;
 }
