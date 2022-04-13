@@ -13,7 +13,6 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable(tableName, (table: Knex.TableBuilder) => {
     table.increments('id').unsigned().primary();
     table.string('name');
-    table.decimal('maxDays', 65,2).defaultTo(0);
     table.decimal('days', 65,2).defaultTo(0);
     table.string('brandCode');
 

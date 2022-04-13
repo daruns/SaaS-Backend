@@ -18,10 +18,7 @@ export class DepartmentsService {
   // department list
   async findAll(currentUser): Promise<ResponseData> {
     const departments = await this.modelClass.query()
-    .where({ brandCode: currentUser.brandCode })
-    .withGraphFetched({
-      designations: {}
-    })
+    .where({ brandCode: currentUser.brandCode });
     return {
       success: true,
       message: 'InventoryItem details fetch successfully.',
@@ -34,9 +31,6 @@ export class DepartmentsService {
     const department = await this.modelClass.query()
       .where({ brandCode: currentUser.brandCode })
       .findById(id)
-      .withGraphFetched({
-        designations: {}
-      })
     if (department) {
       return {
         success: true,

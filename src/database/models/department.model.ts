@@ -2,9 +2,9 @@ import { BaseModel } from './base.model';
 import { Model } from 'objection';
 import DesignationModel from './designation.model';
 
-const tbName = 'departments';
+const tableName = 'departments';
 export class DepartmentModel extends BaseModel {
-  static tableName = tbName;
+  static tableName = tableName;
   name: string
   brandCode: string
 
@@ -15,7 +15,7 @@ export class DepartmentModel extends BaseModel {
       modelClass: `${__dirname}/designation.model`,
       relation: Model.HasManyRelation,
       join: {
-        from: `${tbName}.id`,
+        from: `${tableName}.id`,
         to: 'designations.departmentId',
       },
     },

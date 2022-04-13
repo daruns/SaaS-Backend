@@ -5,6 +5,7 @@ import { SignupDto } from 'src/api/auth/dto/signup.dto';
 import { UsersService } from 'src/api/auth/apps/users/users.service';
 import { QueryAuthUser } from './dto/query-auth-user.dto';
 import { BrandsService } from '../brands/brands.service';
+import { UserLayers } from './dto/user-layers.dto'
 import { CreateBrandDto } from 'src/api/brands/dto/create-brand.dto';
 import { CreateUserDto } from './apps/users/dto/create-user.dto';
 import { query } from 'express';
@@ -42,7 +43,7 @@ export class AuthService {
         email: signupDto.email,
         brandCode: createBrand.data.brandCode,
         name: signupDto.username,
-        userType: 'owner',
+        userType: UserLayers.layerOne,
       }
         const createUser  = await this.usersService.create(createUserDto)
         delete createUser.data.password

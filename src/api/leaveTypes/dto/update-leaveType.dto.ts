@@ -4,6 +4,7 @@ export class UpdateLeaveTypeDto {
   @IsInt()
   id: number
   name: string
-  maxDays: number
+  fund: number
   days: number
+  urgent: boolean
 }

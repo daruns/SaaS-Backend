@@ -13,6 +13,7 @@ import { BoardAttributeModel } from './boardAttribute.model';
 import { TaskMemberModel } from './taskMember.model';
 import { TaskModel } from './task.model';
 import { BoardModel } from './board.model';
+import EmployeeModel from './employee.model';
 
 const tbName = 'users'
 export class UserModel extends BaseModel {
@@ -51,7 +52,7 @@ export class UserModel extends BaseModel {
   taskMembers: TaskMemberModel[];
   tasksMemberUsers: TaskModel[];
   boards: BoardModel[];
-
+  myEmployeeProfile: EmployeeModel;
   static relationMappings = {
     user: {
       modelClass: `${__dirname}/user.model`,
@@ -187,6 +188,14 @@ export class UserModel extends BaseModel {
           to: `taskMemberUsers.taskId`,
         },
         to: 'tasks.id'
+      },
+    },
+    myEmployeeProfile: {
+      modelClass: `${__dirname}/employee.model`,
+      relation: Model.HasOneRelation,
+      join: {
+        from: `${tbName}.id`,
+        to: 'employees.userId'
       },
     },
   };

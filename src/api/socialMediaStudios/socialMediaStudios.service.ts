@@ -17,6 +17,7 @@ import { SocialMediaStudioUserDto } from './dto/socialMediaStudioUser.dto';
 import { CreateSocialMediaStudioUserDto } from './dto/create-socialMediaStudioUser.dto';
 import { AddSocialMediaUsersDto } from './dto/add-socialMediaUsers.dto';
 import { RemoveMediaAttachmentDto } from './dto/remove-mediaAttachment.dto';
+import { UserLayers } from '../auth/dto/user-layers.dto';
 
 @Injectable()
 export class SocialMediaStudiosService {
@@ -392,7 +393,7 @@ export class SocialMediaStudiosService {
           const userfnd = await this.userModel.query(trx)
           .select('id')
           .whereIn('id', userIds)
-          .whereNot({userType: 'partner' })
+          .whereNot({userType: UserLayers.layerFour })
           .where({brandCode: currentUser.brandCode});
 
           if (!userfnd.length || userfnd.length !== userIds.length ) {
@@ -469,7 +470,7 @@ export class SocialMediaStudiosService {
     }
     const usersFnd = await this.userModel.query()
       .where({ brandCode: currentUser.brandCode})
-      .whereNot({userType: 'partner' })
+      .whereNot({userType: UserLayers.layerFour })
       .findByIds(usersIds)
     if (usersFnd.length !== usersIds.length) {
       return {

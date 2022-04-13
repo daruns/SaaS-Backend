@@ -24,6 +24,12 @@ export async function up(knex: Knex): Promise<any> {
     .references('id')
     .inTable('employees')
     .notNullable();
+    table.integer('leaveTypeId')
+    .index()
+    .unsigned()
+    .references('id')
+    .inTable('leaveTypes')
+    .notNullable();
     table.string('brandCode');
 
     table.string('status');

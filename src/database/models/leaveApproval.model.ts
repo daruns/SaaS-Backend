@@ -9,6 +9,7 @@ export class LeaveApprovalModel extends BaseModel {
 
   leaveId: number;
   managerId: number;
+  brandCode: string
 
   manager: EmployeeModel;
   leave: LeaveModel;
@@ -22,7 +23,6 @@ export class LeaveApprovalModel extends BaseModel {
         to: 'leaves.id',
       },
     },
-
     manager: {
       modelClass: `${__dirname}/employee.model`,
       relation: Model.BelongsToOneRelation,

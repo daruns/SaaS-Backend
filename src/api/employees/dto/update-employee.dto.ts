@@ -1,4 +1,5 @@
 import { IsNotEmpty, MinLength, MaxLength, IsInt, IsString, Matches, IsOptional, Min, Max, IsEmail } from 'class-validator';
+import { UserLayers } from 'src/api/auth/dto/user-layers.dto';
 import { DefaultTo, FileParamDto, PhoneNumberRegex, ToPhone, ToRate } from 'src/app/app.service'
 
 export class UpdateEmployeeDto {
@@ -16,6 +17,7 @@ export class UpdateEmployeeDto {
   leaveBalance: number
   salary: number
   hrMember: boolean
+  isManager: boolean
 
   //user params
   @MinLength(3, { message: 'username must more than 3 chars' })
@@ -30,7 +32,7 @@ export class UpdateEmployeeDto {
   @MaxLength(30, { message: 'Password is too long. only 30 chars allow.' })
   @IsOptional()
   password: string;
-  readonly userType:string = "agent"
+  readonly userType:string = UserLayers.layerThree
   @ToPhone
   @IsString({message: "must be a valid phonenumber"})
   @IsOptional()

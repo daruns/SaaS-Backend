@@ -1,4 +1,5 @@
 import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Matches, IsIn } from 'class-validator';
+import { UserLayers } from 'src/api/auth/dto/user-layers.dto';
 import { FileParamDto, PhoneNumberRegex, ToPhone } from 'src/app/app.service'
 
 export class CreateUserDto {
@@ -18,7 +19,7 @@ export class CreateUserDto {
   @ToPhone
   phoneNumber: string
   @IsNotEmpty()
-  @IsIn(['owner','admin','agent','partner'])
+  @IsIn(Object.values(UserLayers))
   userType: string
   avatar: string|FileParamDto
   department: string

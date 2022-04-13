@@ -10,6 +10,7 @@ import  { v4 as uuid} from "uuid"
 import { AttachmentModel } from 'src/database/models/attachment.model';
 import { ModelClass } from 'objection';
 import moment = require('moment');
+import { UserLayers } from 'src/api/auth/dto/user-layers.dto';
 
 export const imageFileFilter = (req, file, callback) => {
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -47,6 +48,11 @@ export const documentFileFilter = (req, file, callback) => {
   callback(null, true);
 };
 
+export const getUserType = (user) => {
+  if (user && typeof user?.userType === 'string' && Object.values(UserLayers).includes(user?.userType)) {
+    return `${user?.userType?.toLowerCase()}`
+  } else return user?.userType
+}
 export class PhoneNumberRegex {
   static reg = /^\+964\d{1,12}$/
 }

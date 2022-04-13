@@ -9,7 +9,7 @@ export class SignupDto extends QueryAuthUser{
 	password: string;
 	@IsNotEmpty({ message: 'Company Name is required' })
 	subdomain: string
-	@IsNotEmpty({ message: 'Password is required' })
+	@IsNotEmpty({ message: 'Email is required' })
 	@IsEmail()
 	email: string;
 }

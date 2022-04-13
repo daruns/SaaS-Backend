@@ -15,6 +15,6 @@ export class UpdateLeaveDto {
 export class UpdateApprovalDto {
   @IsInt()
   id: number
-  @IsIn(['approved', 'declined'])
+  @IsIn(['completed', 'rejected'])
   status: string
 }

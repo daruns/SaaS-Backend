@@ -1,4 +1,5 @@
-import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Matches, IsInt, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Matches, IsInt, IsOptional, IsIn } from 'class-validator';
+import { UserLayers } from 'src/api/auth/dto/user-layers.dto';
 import { FileParamDto, PhoneNumberRegex, ToPhone } from 'src/app/app.service'
 
 export class UpdateUserDto {
@@ -16,8 +17,8 @@ export class UpdateUserDto {
   password: string;
   @IsOptional()
   @ToPhone
-  @IsString({message: "must be a valid phonenumber"})
   phoneNumber: string
+  @IsIn(Object.values(UserLayers))
   userType: string
   avatar: string|FileParamDto
   userId: number

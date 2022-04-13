@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileParamDto, imageFileFilter } from "src/app/app.service";
 import { UsersService } from '../auth/apps/users/users.service';
+import { UserLayers } from '../auth/dto/user-layers.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('employees')
 export class EmployeesController {
@@ -35,6 +36,12 @@ export class EmployeesController {
     return employees;
   }
 
+  @Get('me')
+  async findMe(@Request() req) {
+    const employee = await this.employeesService.findMe(req.user);
+    return employee;
+  }
+
   @Get(':id')
   async findOne(@Param('id', new ParseIntPipe()) id: number, @Request() req) {
     const employee = await this.employeesService.findById(id, req.user);
@@ -44,13 +51,8 @@ export class EmployeesController {
   @Post('create')
   async create(@Body() payload: CreateEmployeeDto, @Request() req) {
     console.log(payload)
-    if (['admin','owner'].includes(req.user.userType)) {
-      const createdEmployee = await this.employeesService.createHr(payload, req.user);
-      return createdEmployee
-    } else {
-      const createdEmployee = await this.employeesService.create(payload, req.user);
-      return createdEmployee
-    }
+    const createdEmployee = await this.employeesService.create(payload, req.user);
+    return createdEmployee
   }
 
   @Post('update')
@@ -61,7 +63,7 @@ export class EmployeesController {
     if (payload.managerId) payload.managerId = Number(payload.managerId)
     return this.employeesService.update(payload, req.user);
   }
-  
+
   @Post('updateAvatar')
   @UseInterceptors(FileInterceptor("avatar", { fileFilter: imageFileFilter}))
   async editProfile( @Body() payload: {id: number, avatar: string|FileParamDto}, @UploadedFile() file: Express.Multer.File, @Req() req) {

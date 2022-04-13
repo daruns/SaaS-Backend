@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 import { BrandsService } from 'src/api/brands/brands.service';
 import {FileParamDto, FileUploadService} from "src/app/app.service"
+import { UserLayers } from '../../dto/user-layers.dto';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -39,7 +40,7 @@ export class UsersService {
   }
 
   async allWithBrandClients(currentUser): Promise<ResponseData> {
-    const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).where({userType: "partner"})
+    const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).where({userType: UserLayers.layerFour})
     users.map(user => {
       delete user.password
       delete user.activationToken
@@ -55,7 +56,7 @@ export class UsersService {
   }
 
   async allWithBrandNoClients(currentUser): Promise<ResponseData> {
-    const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).whereNot({userType: "partner"})
+    const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).whereNot({userType: UserLayers.layerFour})
     users.map(user => {
       delete user.password
       delete user.activationToken
@@ -112,6 +113,8 @@ export class UsersService {
           permissions: true
         },
         permissions: {
+        },
+        myEmployeeProfile: {
         }
       });
     delete user.password
@@ -146,6 +149,8 @@ export class UsersService {
           }
         },
         permissions: {
+        },
+        myEmployeeProfile: {
         }
       });
     if (user) {
@@ -180,6 +185,8 @@ export class UsersService {
           }
         },
         permissions: {
+        },
+        myEmployeeProfile: {
         }
       });
     if (user) {
@@ -222,16 +229,15 @@ export class UsersService {
         // const createBrand = await this.brandService.create(createBrandDto)
         // console.log(payload)
         // if (createBrand.success){
-          const identifiers = await this.modelClass.query().insert(payload);
-          const createUser = await this.modelClass.query().findById(identifiers.id);
-          delete createUser.password
-          return {
-            success: true,
-            message: 'User created successfully.',
-            data: createUser,
-          }
-        // }else
-        // {
+        const identifiers = await this.modelClass.query().insert(payload);
+        const createUser = await this.modelClass.query().findById(identifiers.id);
+        delete createUser.password
+        return {
+          success: true,
+          message: 'User created successfully.',
+          data: createUser,
+        }
+        // } else {
         //   return createBrand
         // }
       } catch(err) {

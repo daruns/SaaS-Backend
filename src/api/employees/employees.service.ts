@@ -2,13 +2,14 @@ import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import { EmployeeModel } from 'src/database/models/employee.model';
 import { ModelClass } from 'objection';
 import { UsersService } from 'src/api/auth/apps/users/users.service';
-import { FileParamDto, FileUploadService, ResponseData } from 'src/app/app.service';
+import { FileParamDto, FileUploadService, getUserType, ResponseData } from 'src/app/app.service';
 import { UserModel } from 'src/database/models/user.model';
 import { DesignationModel } from 'src/database/models/designation.model';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { AddFileDto } from 'src/app/app.service'
 import * as bcrypt from 'bcrypt';
+import { UserLayers } from '../auth/dto/user-layers.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -37,6 +38,7 @@ export class EmployeesService {
           builder.select('phoneNumber');
           builder.select('username');
           builder.select('email');
+          builder.select('userType')
         },
       })
       .withGraphFetched(
@@ -44,7 +46,7 @@ export class EmployeesService {
           [
             designation(selectDepartmentParams).[department(selectDepartmentParams)],
             user(selectUserParams),
-            manager
+            manager.[user(selectUserParams)]
           ]
         `
       )
@@ -81,6 +83,7 @@ export class EmployeesService {
           builder.select('phoneNumber');
           builder.select('username');
           builder.select('email');
+          builder.select('userType')
         },
       })
       .withGraphFetched(
@@ -88,7 +91,52 @@ export class EmployeesService {
           [
             designation(selectDepartmentParams).[department(selectDepartmentParams)],
             user(selectUserParams),
-            manager
+            manager.[user(selectUserParams)]
+          ]
+        `
+      )
+    if (employee) {
+      return {
+        success: true,
+        message: 'Employee details fetch successfully.',
+        data: employee,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'No employee details found.',
+        data: {},
+      };
+    }
+  }
+
+  // find one employee info by id
+  async findMe(currentUser): Promise<ResponseData> {
+    const employee = await this.modelClass
+      .query()
+      .where({ brandCode: currentUser.brandCode })
+      .findOne({userId: currentUser.id})
+      .modifiers({
+        selectDepartmentParams(builder) {
+          builder.select('id');
+          builder.select('name');
+        },
+        selectUserParams(builder) {
+          builder.select('id');
+          builder.select('name');
+          builder.select('avatar');
+          builder.select('phoneNumber');
+          builder.select('username');
+          builder.select('email');
+          builder.select('userType')
+        },
+      })
+      .withGraphFetched(
+        `
+          [
+            designation(selectDepartmentParams).[department(selectDepartmentParams)],
+            user(selectUserParams),
+            manager.[user(selectUserParams)]
           ]
         `
       )
@@ -108,6 +156,9 @@ export class EmployeesService {
   }
 
   async createHr(payload: CreateEmployeeDto, currentUser): Promise<ResponseData> {
+    if (getUserType(currentUser.userType) !== UserLayers.layerOne || !currentUser.myEmployeeProfile?.hrMember) {
+      throw new UnauthorizedException()
+    }
     const newEmployee = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findOne({name: payload.name})
@@ -157,12 +208,12 @@ export class EmployeesService {
     if (payload.password) {
       const hashedPassword = await bcrypt.hash(payload.password ? payload.password : fixedUsername, 10)
       newUserParamsCust ['password'] = hashedPassword
-    }    
+    }
     newUserParamsCust ['name'] = payload.name
     newUserParamsCust ['email'] = payload.email
     newUserParamsCust ['username'] = fixedUsername
     newUserParamsCust ['phoneNumber'] = payload.phoneNumber ? payload.phoneNumber : ''
-    newUserParamsCust ['userType'] = 'agent'
+    newUserParamsCust ['userType'] = (payload.isManager || payload.hrMember) ? UserLayers.layerTwo : UserLayers.layerThree
     newUserParamsCust ['createdBy'] = currentUser.username
     newUserParamsCust ['brandCode'] = currentUser.brandCode
     newUserParamsCust ['status'] = 'active'
@@ -182,7 +233,7 @@ export class EmployeesService {
         salary: payload.salary,
         status : "active",
         userId: newUserParams['id'],
-        hrMember: true,
+        hrMember: payload.hrMember,
         createdBy : currentUser.username,
         brandCode: currentUser.brandCode,
         designationId: payload.designationId,
@@ -212,9 +263,7 @@ export class EmployeesService {
 
   // Create employee
   async create(payload:CreateEmployeeDto, currentUser): Promise<ResponseData> {
-    const currentEMployee = await this.modelClass.query()
-    .findOne({userId: currentUser.id, hrMember: true});
-    if (!currentEMployee) { 
+    if ((getUserType(currentUser.userType) !== UserLayers.layerOne) && (!currentUser.myEmployeeProfile || currentUser.myEmployeeProfile.hrMember != true)) {
       throw new UnauthorizedException()
     }
     const newEmployee = await this.modelClass.query()
@@ -230,6 +279,7 @@ export class EmployeesService {
     var newUserParams = {}
     var newUserParamsCust = {}
     var newParams = {}
+    var newParamsmanagerId
     if (payload.managerId) {
       const managerFnd = await this.modelClass.query().findById(payload.managerId)
       if (!managerFnd) {
@@ -239,7 +289,12 @@ export class EmployeesService {
           data: {}
         }
       }
-      newParams['managerId'] = managerFnd.id
+      const managerUserFnd = await this.userClass.query()
+      .where({id: managerFnd.userId, userType: UserLayers.layerThree})
+      .update({
+        userType: UserLayers.layerTwo
+      })
+      newParamsmanagerId = managerFnd.id
     }
     const designationFnd = await this.designationClass.query().findById(payload.designationId)
     if (!designationFnd) {
@@ -282,39 +337,37 @@ export class EmployeesService {
     newUserParamsCust ['email'] = payload.email
     newUserParamsCust ['username'] = fixedUsername
     newUserParamsCust ['phoneNumber'] = payload.phoneNumber ? payload.phoneNumber : ''
-    newUserParamsCust ['userType'] = 'agent'
+    newUserParamsCust ['userType'] = (payload.isManager || payload.hrMember) ? UserLayers.layerTwo : UserLayers.layerThree
     newUserParamsCust ['createdBy'] = currentUser.username
     newUserParamsCust ['brandCode'] = currentUser.brandCode
     newUserParamsCust ['status'] = 'active'
     const trx = await this.modelClass.startTransaction()
     var result : any
     try {
-      if (!newUserParams['id']) {
-        console.log("195---------------------",newUserParamsCust)
+      // if (!newUserParams['id']) { // if user credentials chosen from an old user
         const userInstd = await this.userClass.query(trx).insert(newUserParamsCust)
-        console.log("197---------------------",userInstd)
         if (!userInstd) return {
           success: false,
           message: 'user didnt insert',
           data: userInstd
         }
         newUserParams = userInstd
-      }
+      // }
       newParams = {
+        managerId: newParamsmanagerId ? newParamsmanagerId : null,
         name: payload.name,
         leaveBalance: payload.leaveBalance,
         salary: payload.salary,
-        hrMember: false,
+        hrMember: payload.hrMember,
         status : "active",
         userId: newUserParams['id'],
         createdBy : currentUser.username,
         brandCode: currentUser.brandCode,
         designationId: payload.designationId,
       }
-      
+
       var createdEmployee = await this.modelClass.query(trx).insert(newParams)
       const identifier = await this.modelClass.query(trx).findById(createdEmployee.id)
-      console.log("219---------------------",createdEmployee.id,identifier)
       await trx.commit();
 
       result = identifier
@@ -337,19 +390,45 @@ export class EmployeesService {
   }
 
   async update(payload: UpdateEmployeeDto,currentUser): Promise<ResponseData> {
-    // only HR and admin and owner can change 
+    // only layerTwo and layerOne can change
     const employee = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode })
     .findById(payload.id);
+    var newParamsmanagerId;
+    if (payload.managerId && payload.managerId !== employee.managerId) {
+      const managerFnd = await this.modelClass.query().findById(payload.managerId)
+      if (!managerFnd) {
+        return {
+          success: false,
+          message: "manager not found!",
+          data: {}
+        }
+      }
+      const managerUserFnd = await this.userClass.query()
+      .where({id: managerFnd.userId, userType: UserLayers.layerThree})
+      .update({
+        userType: UserLayers.layerTwo
+      })
+      newParamsmanagerId = managerFnd.id
+    }
+    const designationFnd = await this.designationClass.query().findById(payload.designationId)
+    if (!designationFnd) {
+      return {
+        success: false,
+        message: "designation not found!",
+        data: {}
+      }
+    }
     if (employee) {
       const updatedEmployee = await this.modelClass
       .query()
       .update({
-        managerId: payload.managerId ? payload.managerId : employee.managerId,
+        managerId: newParamsmanagerId ? newParamsmanagerId : employee.managerId,
         leaveBalance: payload.leaveBalance ? payload.leaveBalance : employee.leaveBalance,
         salary: payload.salary ? payload.salary : employee.salary,
         designationId: payload.designationId ? payload.designationId : employee.designationId,
-        userId: payload.userId ? payload.userId : employee.userId,
+        // userId: payload.userId ? payload.userId : employee.userId,
+        hrMember: typeof payload.hrMember === 'boolean' ? payload.hrMember : employee.hrMember,
         name: payload.name ? payload.name : employee.name,
         // status: payload.status ? payload.status : employee.status,
         updatedBy: currentUser.username,

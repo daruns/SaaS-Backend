@@ -2,11 +2,14 @@ import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import { AttendanceModel } from 'src/database/models/attendance.model';
 import { ModelClass } from 'objection';
 import { EmployeeModel } from 'src/database/models/employee.model'
+import * as moment from 'moment';
+
 export interface ResponseData {
   readonly success: boolean;
   readonly message: string;
   readonly data: any;
 }
+
 @Injectable()
 export class AttendancesService {
   constructor(
@@ -16,6 +19,21 @@ export class AttendancesService {
 
   // attendance list
   async findAll(currentUser): Promise<ResponseData> {
+    const now = new Date();
+    const thismonthDays = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+    const daysArr = Array.from({length: thismonthDays}, (e, i)=> i+1)
+    const attendances = await this.modelClass.query()
+    .where({ brandCode: currentUser.brandCode,checkedIn: 1 })
+    .withGraphFetched({employee: {user: {}}})
+    console.log("got from all")
+    return {
+      success: true,
+      message: 'Attendances details fetch successfully.',
+      data: this.parseTable(attendances),
+    }
+  }
+  // attendance list
+  async findAllByUser(currentUser): Promise<ResponseData> {
     const currentEmployee = await this.employeeClass.query()
     .where({ brandCode: currentUser.brandCode})
     .findOne({userId: currentUser.id})
@@ -23,9 +41,6 @@ export class AttendancesService {
     if (currentEmployee.hrMember === true) {
       const attendances = await this.modelClass.query()
       .where({ brandCode: currentUser.brandCode })
-      .withGraphFetched({
-        designations: {}
-      })
       return {
         success: true,
         message: 'Attendances details fetch successfully.',
@@ -41,21 +56,20 @@ export class AttendancesService {
   }
   // Create attendance before save encrypt password
   async create(currentUser): Promise<ResponseData> {
-    const currentEmployee = await this.employeeClass.query()
-    .where({ brandCode: currentUser.brandCode})
-    .findOne({userId: currentUser.id});
-    console.log(currentEmployee)
-    if (!currentEmployee) {
-      throw new UnauthorizedException()
+    if (!currentUser.myEmployeeProfile) {
+      return {
+        success: true,
+        message: "not allowed to perform this action",
+        data: {}
+      }
     }
     const attendancePayload = {}
-    const lastAtt = await this.modelClass.query().orderBy('createdAt','desc').findOne({employeeId: currentEmployee.id})
+    const lastAtt = await this.modelClass.query().orderBy('id','desc').findOne({employeeId: currentUser.myEmployeeProfile.id})
     var checkedOrNot = true
     if (lastAtt) {
       checkedOrNot = !lastAtt.checkedIn
     }
-    console.log("deljfnel: " ,lastAtt, checkedOrNot)
-    attendancePayload['employeeId'] = currentEmployee.id
+    attendancePayload['employeeId'] = currentUser.myEmployeeProfile.id
     attendancePayload['checkedIn'] = checkedOrNot
     attendancePayload['createdBy'] = currentUser.username
     attendancePayload['brandCode'] = currentUser.brandCode
@@ -66,5 +80,33 @@ export class AttendancesService {
       message: 'Attendance created successfully.',
       data: createAttendance,
     };
+  }
+  parseTable(data) {
+    const now = new Date();
+    const thismonthDays = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+    let finarr = []
+    let employeesInd = {}
+    const daysArr = Array.from({length: thismonthDays}, (e, i)=> i+1)
+    for (let item of data) {
+      let currentcheckedIn = item["checkedIn"]
+      let currenEmployeeId = item["employeeId"]
+      let parsedday = Number(moment(item["createdAt"]).format("D"))
+
+      if (currentcheckedIn) {
+        if (typeof employeesInd[currenEmployeeId] !== 'number') {
+          employeesInd[currenEmployeeId] = finarr.length
+          finarr.push({
+            employeeId: currenEmployeeId,
+            employee: item['employee'],
+            attendances: daysArr.map(dy => {return {checked: parsedday === dy ? currentcheckedIn : 0, day: dy}} )
+          })
+        } else {
+          finarr[Number(employeesInd[currenEmployeeId])]['attendances'].forEach((elem,ind) => {
+            if (elem['day'] === parsedday) finarr[Number(employeesInd[currenEmployeeId ]) ]['attendances'][ind]["checked"] = currentcheckedIn
+          })
+        }
+      }
+    }
+    return finarr
   }
 }
