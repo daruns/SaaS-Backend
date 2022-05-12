@@ -5,4 +5,5 @@ export declare class AppController {
     constructor(appService: AppService, fileUploadService: FileUploadService);
     getCurrencyCodes(req: any): Promise<ResponseData>;
     getHello(req: any): Promise<string>;
+    getFile(query: string, res: any): Promise<void>;
 }

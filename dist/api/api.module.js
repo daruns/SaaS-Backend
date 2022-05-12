@@ -40,6 +40,13 @@ const employees_module_1 = require("./employees/employees.module");
 const leaves_module_1 = require("./leaves/leaves.module");
 const attendances_module_1 = require("./attendances/attendances.module");
 const leaveTypes_module_1 = require("./leaveTypes/leaveTypes.module");
+const overtimes_module_1 = require("./overtimes/overtimes.module");
+const overtimeTypes_module_1 = require("./overtimeTypes/overtimeTypes.module");
+const earningTypes_module_1 = require("./earningTypes/earningTypes.module");
+const deductionTypes_module_1 = require("./deductionTypes/deductionTypes.module");
+const earnings_module_1 = require("./earnings/earnings.module");
+const deductions_module_1 = require("./deductions/deductions.module");
+const payslips_module_1 = require("./payslips/payslips.module");
 let ApiModule = class ApiModule {
 };
 ApiModule = __decorate([
@@ -77,6 +84,13 @@ ApiModule = __decorate([
             leaves_module_1.LeavesModule,
             leaveTypes_module_1.LeaveTypesModule,
             attendances_module_1.AttendancesModule,
+            overtimes_module_1.OvertimesModule,
+            overtimeTypes_module_1.OvertimeTypesModule,
+            earningTypes_module_1.EarningTypesModule,
+            earnings_module_1.EarningsModule,
+            deductionTypes_module_1.DeductionTypesModule,
+            deductions_module_1.DeductionsModule,
+            payslips_module_1.PayslipModule,
         ],
         providers: [],
     })

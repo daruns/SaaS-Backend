@@ -1,6 +1,7 @@
 export declare class CreateEmployeeDto {
     name: string;
     leaveBalance: number;
+    overtimeBalance: number;
     salary: number;
     designationId: number;
     managerId: number;

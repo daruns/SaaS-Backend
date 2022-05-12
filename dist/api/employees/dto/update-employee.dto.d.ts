@@ -5,6 +5,7 @@ export declare class UpdateEmployeeDto {
     managerId: number;
     userId: number;
     leaveBalance: number;
+    overtimeBalance: number;
     salary: number;
     hrMember: boolean;
     isManager: boolean;

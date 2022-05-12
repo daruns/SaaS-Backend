@@ -12,7 +12,7 @@ async function up(knex) {
     }
     common_1.Logger.log('Adding urgent column to ' + tableName + ' table');
     return await knex.schema.alterTable(tableName, function (table) {
-        table.boolean('urgent');
+        table.boolean('urgent').defaultTo(false);
         table.decimal('fund', 65, 2).defaultTo(0);
     });
 }

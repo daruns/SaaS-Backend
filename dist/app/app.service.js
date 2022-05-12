@@ -93,7 +93,8 @@ exports.ToPhone = class_transformer_1.Transform((value) => {
     return parsed.number;
 }, { toClassOnly: true });
 exports.DefaultToNow = class_transformer_1.Transform((value) => {
-    console.log("Date -type: ", typeof value, "|| value: ", value);
+    let valuePrsd = value.toString().split(" ").length === 1 ? value.toString().split(" ") + " 00:00:00" : value;
+    value = valuePrsd;
     if (moment(value).isValid()) {
         value = moment(value).format('YYYY-MM-DD HH:mm:ss').toString();
     }
@@ -204,6 +205,13 @@ AWS.config.update({
 let FileUploadService = class FileUploadService {
     constructor(attachmentModel) {
         this.attachmentModel = attachmentModel;
+    }
+    async getFile(filename) {
+        const params = {
+            Bucket: AWS_S3_BUCKET_NAME,
+            Key: filename,
+        };
+        return await s3.getObject(params).createReadStream();
     }
     async addFile(file, folder, currentUser) {
         const { buffer, originalname, size, mimetype } = file;

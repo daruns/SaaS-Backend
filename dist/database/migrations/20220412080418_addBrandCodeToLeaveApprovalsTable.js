@@ -12,7 +12,7 @@ async function up(knex) {
     }
     common_1.Logger.log('Adding brandCode column to ' + tableName + ' table');
     return await knex.schema.alterTable(tableName, function (table) {
-        table.boolean('brandCode');
+        table.string('brandCode');
     });
 }
 exports.up = up;

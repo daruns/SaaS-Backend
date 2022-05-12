@@ -43,6 +43,7 @@ export declare class AppService {
 export declare class FileUploadService {
     private attachmentModel;
     constructor(attachmentModel: ModelClass<AttachmentModel>);
+    getFile(filename: string): Promise<import("stream").Readable>;
     addFile(file: FileParamDto, folder: string, currentUser: any): Promise<ResponseData>;
     removeFile(id: number, currentUser: any): Promise<ResponseData>;
 }

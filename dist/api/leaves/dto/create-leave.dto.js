@@ -12,12 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateLeaveDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const app_service_1 = require("../../../app/app.service");
 class CreateLeaveDto {
     static _OPENAPI_METADATA_FACTORY() {
         return { name: { required: true, type: () => String }, description: { required: true, type: () => String }, from: { required: true, type: () => Date }, leaveTypeId: { required: true, type: () => Number }, currentBalance: { required: true, type: () => Number }, remainBalance: { required: true, type: () => Number }, to: { required: true, type: () => Date }, employeeId: { required: true, type: () => Number } };
     }
 }
 __decorate([
+    app_service_1.DefaultToNow,
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", Date)
 ], CreateLeaveDto.prototype, "from", void 0);
@@ -26,8 +28,13 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateLeaveDto.prototype, "leaveTypeId", void 0);
 __decorate([
+    app_service_1.DefaultToNow,
     class_validator_1.IsNotEmpty(),
     __metadata("design:type", Date)
 ], CreateLeaveDto.prototype, "to", void 0);
+__decorate([
+    class_validator_1.IsNotEmpty({ message: 'Employee Id is required' }),
+    __metadata("design:type", Number)
+], CreateLeaveDto.prototype, "employeeId", void 0);
 exports.CreateLeaveDto = CreateLeaveDto;
 //# sourceMappingURL=create-leave.dto.js.map

@@ -39,6 +39,8 @@ let LeavesService = class LeavesService {
                     builder.select('id');
                     builder.select('name');
                     builder.select('days');
+                    builder.select('hours');
+                    builder.select('durationType');
                     builder.select('fund');
                 },
                 leaveApprovalsParams(builder) {
@@ -70,18 +72,16 @@ let LeavesService = class LeavesService {
     }
     async findAllApprovals(currentUser) {
         if (currentUser.myEmployeeProfile && currentUser.myEmployeeProfile.hrMember === 1) {
-            const leaves = await this.leaveApprovalClass.query()
-                .where({ brandCode: currentUser.brandCode })
-                .where('status', leave_status_dto_1.LeaveStatusLayers.completed);
             const leavesFnd = await this.modelClass.query()
                 .where({ brandCode: currentUser.brandCode })
-                .whereIn('id', leaves.map(e => e.leaveId))
                 .whereIn('status', [leave_status_dto_1.LeaveStatusLayers.completed, leave_status_dto_1.LeaveStatusLayers.pending, leave_status_dto_1.LeaveStatusLayers.rejected])
                 .modifiers({
                 leaveTypeParams(builder) {
                     builder.select('id');
                     builder.select('name');
                     builder.select('days');
+                    builder.select('hours');
+                    builder.select('durationType');
                     builder.select('fund');
                 },
                 leaveApprovalsParams(builder) {
@@ -104,10 +104,26 @@ let LeavesService = class LeavesService {
             leaveApprovals(leaveApprovalsParams).[manager.[user(userParams)]]
           ]
         `);
+            const result = leavesFnd.filter(props => {
+                if (props.leaveApprovals.every(ee => ee.status !== 'rejected') && props.status === 'rejected') {
+                    return true;
+                }
+                else if (props.leaveApprovals.every(ee => ee.status === 'completed') && props.status === 'completed') {
+                    return true;
+                }
+                else if (props.leaveApprovals.every(ee => ee.status === 'completed') && props.status === 'pending') {
+                    return true;
+                }
+                else if (props.leaveApprovals.length === 0 && !props.employee.manager) {
+                    return true;
+                }
+                else
+                    return false;
+            });
             return {
                 success: true,
                 message: 'Leave details fetch successfully.',
-                data: leavesFnd.filter(ww => { return ww.leaveApprovals.every(ee => ee.status === 'completed'); }),
+                data: result,
             };
         }
         if (currentUser.myEmployeeProfile && app_service_1.getUserType(currentUser) === user_layers_dto_1.UserLayers.layerTwo) {
@@ -123,6 +139,8 @@ let LeavesService = class LeavesService {
                     builder.select('id');
                     builder.select('name');
                     builder.select('days');
+                    builder.select('hours');
+                    builder.select('durationType');
                     builder.select('fund');
                 },
                 leaveApprovalsParams(builder) {
@@ -169,6 +187,8 @@ let LeavesService = class LeavesService {
                     builder.select('id');
                     builder.select('name');
                     builder.select('days');
+                    builder.select('hours');
+                    builder.select('durationType');
                     builder.select('fund');
                 },
                 leaveApprovalsParams(builder) {
@@ -212,6 +232,8 @@ let LeavesService = class LeavesService {
                     builder.select('id');
                     builder.select('name');
                     builder.select('days');
+                    builder.select('hours');
+                    builder.select('durationType');
                     builder.select('fund');
                 },
                 leaveApprovalsParams(builder) {
@@ -248,6 +270,8 @@ let LeavesService = class LeavesService {
                     builder.select('id');
                     builder.select('name');
                     builder.select('days');
+                    builder.select('hours');
+                    builder.select('durationType');
                     builder.select('fund');
                 },
                 leaveApprovalsParams(builder) {
@@ -369,11 +393,11 @@ let LeavesService = class LeavesService {
         if (Number(new Date(leavePayload.from)) > Number(new Date(leavePayload.to))) {
             return {
                 success: false,
-                message: "The to is bigger than from!",
+                message: "The from is bigger than from!",
                 data: {},
             };
         }
-        const leaveDurationInDays = Number(new Date(leavePayload.from)) - Number(new Date(leavePayload.to));
+        const leaveDurationInDays = Number(new Date(leavePayload.to)) - Number(new Date(leavePayload.from)) / 86400000;
         if (leaveDurationInDays >= currentEmployee.leaveBalance && !currentLeaveType.urgent) {
             return {
                 success: false,
@@ -388,12 +412,54 @@ let LeavesService = class LeavesService {
                 data: {},
             };
         }
-        let fromparsed = moment(leavePayload.from).add(1, 'days').format("YYYY-MM-DD 00:00:00").toString();
-        let toparsed = moment(leavePayload.to).add(1, 'days').format("YYYY-MM-DD 00:00:00").toString();
-        let fromparsedwithout = moment(leavePayload.from).format("YYYY-MM-DD 00:00:00").toString();
-        let toparsedwithout = moment(leavePayload.to).format("YYYY-MM-DD 00:00:00").toString();
-        console.log(fromparsed, toparsed);
-        console.log(fromparsedwithout, toparsedwithout);
+        let initFrom = leavePayload.from.toString().split(" ").length === 1 ? leavePayload.from + " 00:00:00" : leavePayload.from;
+        let initTo = leavePayload.to.toString().split(" ").length === 1 ? leavePayload.to + " 00:00:00" : leavePayload.to;
+        let fromparsedAfter = moment(initFrom).add(1, 'days');
+        let toparsedAfter = moment(initTo).add(1, 'days');
+        let fromparsedwithoutAfter = moment(initFrom);
+        let toparsedwithoutAfter = moment(initTo);
+        if (currentLeaveType.durationType === "hours") {
+            fromparsedAfter = fromparsedAfter.add(-1, 'days');
+            toparsedAfter = toparsedAfter.add(-1, 'days');
+            fromparsedwithoutAfter = fromparsedwithoutAfter;
+            toparsedwithoutAfter = toparsedwithoutAfter;
+            leavePayload.from = new Date(fromparsedwithoutAfter.add(3, 'hours').toString());
+            leavePayload.to = new Date(toparsedwithoutAfter.add(3, 'hours').toString());
+        }
+        console.log("leave payload:", JSON.parse(JSON.stringify([Object.values(leavePayload), fromparsedAfter, toparsedAfter])));
+        let fromparsed;
+        let toparsed;
+        let fromparsedwithout;
+        let toparsedwithout;
+        if (currentLeaveType.durationType === 'hours') {
+            let baseDayFrom = fromparsedwithoutAfter.format("YYYY-MM-DD").toString();
+            let baseDayTo = toparsedwithoutAfter.format("YYYY-MM-DD").toString();
+            console.log("base day to and from: ", baseDayTo, baseDayFrom);
+            if (baseDayFrom !== baseDayTo) {
+                return {
+                    success: false,
+                    message: "from and to dates are not matching the requirements depending on the duration type",
+                    data: {},
+                };
+            }
+            fromparsed = fromparsedAfter.format("YYYY-MM-DD HH:mm:00").toString();
+            toparsed = toparsedAfter.format('YYYY-MM-DD HH:mm:00').toString();
+            fromparsedwithout = fromparsedwithoutAfter.format('YYYY-MM-DD HH:mm:00').toString();
+            toparsedwithout = toparsedwithoutAfter.format('YYYY-MM-DD HH:mm:00').toString();
+        }
+        else if (currentLeaveType.durationType === "days") {
+            fromparsed = fromparsedAfter.format("YYYY-MM-DD 00:00:00").toString();
+            toparsed = toparsedAfter.format('YYYY-MM-DD 00:00:00').toString();
+            fromparsedwithout = fromparsedwithoutAfter.format('YYYY-MM-DD 00:00:00').toString();
+            toparsedwithout = toparsedwithoutAfter.format('YYYY-MM-DD 00:00:00').toString();
+        }
+        else {
+            return {
+                success: true,
+                message: "leaveType duration is not supported, must be on of ['hours','days'] you can update it or add new in leaveTypes controller",
+                data: {}
+            };
+        }
         const alllvs = await this.modelClass.query()
             .select('id')
             .select('from')
@@ -431,7 +497,12 @@ let LeavesService = class LeavesService {
         let newParams = { ...leavePayload };
         newParams.currentBalance = currentEmployee.leaveBalance;
         if (currentEmployee.leaveBalance !== 0) {
-            newParams.remainBalance = currentEmployee.leaveBalance - (((Number(new Date(toparsedwithout)) / 86400000) - (Number(new Date(fromparsedwithout)) / 86400000)) + 1);
+            if (currentLeaveType.durationType === 'hours') {
+                newParams.remainBalance = currentEmployee.leaveBalance - (((Number(new Date(toparsedwithout)) / 86400000) - (Number(new Date(fromparsedwithout)) / 86400000)));
+            }
+            else {
+                newParams.remainBalance = currentEmployee.leaveBalance - (((Number(new Date(toparsedwithout)) / 86400000) - (Number(new Date(fromparsedwithout)) / 86400000)) + 1);
+            }
             console.log("remain balance: ", Number(new Date(toparsedwithout)), Number(new Date(fromparsedwithout)), currentEmployee.leaveBalance, newParams.remainBalance);
         }
         const identifiersInst = await this.modelClass.query().insert(newParams);

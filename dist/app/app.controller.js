@@ -33,6 +33,22 @@ let AppController = class AppController {
     async getHello(req) {
         return "sss";
     }
+    async getFile(query, res) {
+        let key = query["key"];
+        let keyextr = key;
+        try {
+            if (key.includes("oneconnect-files.s3.eu-central-1.amazonaws.com/")) {
+                let splttd = key.split("oneconnect-files.s3.eu-central-1.amazonaws.com/");
+                splttd.shift();
+                keyextr = splttd.join();
+            }
+            let result = await this.fileUploadService.getFile(keyextr);
+            await (result).pipe(res);
+        }
+        catch (err) {
+            res.send();
+        }
+    }
 };
 __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
@@ -51,6 +67,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "getHello", null);
+__decorate([
+    common_1.Get('readAsStream'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, common_1.Query()), __param(1, common_1.Res()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getFile", null);
 AppController = __decorate([
     common_1.Controller(),
     __metadata("design:paramtypes", [app_service_1.AppService,

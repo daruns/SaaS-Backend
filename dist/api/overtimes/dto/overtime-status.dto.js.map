@@ -1,0 +1,1 @@
+{"version":3,"file":"overtime-status.dto.js","sourceRoot":"","sources":["../../../../src/api/overtimes/dto/overtime-status.dto.ts"],"names":[],"mappings":";;;;AAAa,QAAA,oBAAoB,GAAG;IAChC,OAAO,EAAE,SAAS;IAClB,SAAS,EAAE,WAAW;IACtB,QAAQ,EAAE,UAAU;IACpB,cAAc,EAAE,iBAAiB;CAClC,CAAA"}
