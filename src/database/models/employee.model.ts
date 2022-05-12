@@ -20,6 +20,8 @@ export class EmployeeModel extends BaseModel {
   hrMember: boolean
   designationId: number
   leaveBalance: number
+  overtimeBalance: number
+  workingHours: number
   salary: number
   brandCode: string
 

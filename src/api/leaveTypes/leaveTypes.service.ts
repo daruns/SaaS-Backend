@@ -86,6 +86,8 @@ export class LeaveTypesService {
           name: leaveTypePayload.name ? leaveTypePayload.name : leaveType.name,
           fund: leaveTypePayload.fund ? leaveTypePayload.fund : leaveType.fund,
           days: leaveTypePayload.days ? leaveTypePayload.days : leaveType.days,
+          hours: leaveTypePayload.hours ? leaveTypePayload.hours : leaveType.hours,
+          durationType: leaveTypePayload.durationType ? leaveTypePayload.durationType : leaveType.durationType,
           urgent: typeof payload.urgent === 'boolean' ? payload.urgent : leaveType.urgent,
           updatedBy: currentUser.username,
         })

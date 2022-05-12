@@ -256,7 +256,7 @@ export class InvoicesService {
       finalItem['brandCode'] = currentUser.brandCode
       finalItem['createdBy'] = currentUser.username
       finalItem['unitPrice'] = item.unitPrice ? item.unitPrice : newItem.unitPrice
-      finalItem['qty'] = newItem.qty | 1
+      finalItem['qty'] = newItem.qty || 1
       finalItem['purchasedAt'] = newItem.purchasedAt
       finalItem['expireDate'] = newItem.expireDate
       finalItem['supplier'] = newItem.supplier

@@ -156,7 +156,7 @@ export class ExpensesService {
       finalItem['brandCode'] = currentUser.brandCode
       finalItem['createdBy'] = currentUser.username
       finalItem['unitPrice'] = item.unitPrice ? item.unitPrice : 0
-      finalItem['qty'] = item.qty | 1
+      finalItem['qty'] = item.qty || 1
 
       if (finalItem['unitPrice'] !== 0) {
         subTotalAmount = Number(subTotalAmount) + Number(finalItem['qty'] * finalItem['unitPrice'])

@@ -6,5 +6,9 @@ export class UpdateLeaveTypeDto {
   name: string
   fund: number
   days: number
+  hours: number
+  @IsOptional()
+  @IsIn(['days','hours'])
+  durationType: string
   urgent: boolean
 }

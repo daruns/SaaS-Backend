@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post, Req, Request, Res, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { Body, Controller, Get, Param, Post, Query, Req, Request, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { createReadStream } from 'fs';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 import { CURRENCY_CODES } from 'src/lib/defaults';
-import { AppService, imageFileFilter, FileUploadService, ResponseData } from './app.service';
+import { AppService, FileUploadService, ResponseData } from './app.service';
 
 @Controller()
 export class AppController {
@@ -23,5 +23,22 @@ export class AppController {
   @Get('')
   async getHello(@Request() req) {
     return "sss";
+  }
+
+  @Get('readAsStream')
+  async getFile(@Query() query:string,@Res() res) {
+    let key:string = query["key"]
+    let keyextr:string = key;
+    try {
+      if (key.includes("oneconnect-files.s3.eu-central-1.amazonaws.com/")) {
+        let splttd = key.split("oneconnect-files.s3.eu-central-1.amazonaws.com/")
+        splttd.shift()
+        keyextr = splttd.join()
+      }
+      let result:any = await this.fileUploadService.getFile(keyextr)
+      await (result).pipe(res)
+    } catch(err) {
+      res.send()
+    }
   }
 }

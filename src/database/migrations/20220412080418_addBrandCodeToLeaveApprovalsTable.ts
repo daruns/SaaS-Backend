@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<any> {
   }
   Logger.log('Adding brandCode column to ' + tableName + ' table');
   return await knex.schema.alterTable(tableName, function (table) {
-    table.boolean('brandCode');
+    table.string('brandCode');
   });
 }
 

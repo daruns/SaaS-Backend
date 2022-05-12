@@ -15,6 +15,7 @@ export class UpdateEmployeeDto {
   @IsOptional()
   userId: number
   leaveBalance: number
+  overtimeBalance: number
   salary: number
   hrMember: boolean
   isManager: boolean

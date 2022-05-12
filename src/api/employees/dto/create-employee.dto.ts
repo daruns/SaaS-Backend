@@ -6,6 +6,7 @@ export class CreateEmployeeDto {
   @IsNotEmpty()
   name: string
   leaveBalance: number
+  overtimeBalance: number
   salary: number
   @IsNotEmpty()
   designationId: number

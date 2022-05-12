@@ -68,6 +68,7 @@ export class AddFileDto {
     @IsNotEmpty()
     files: Array<Express.Multer.File>
 }
+
 export interface FileParamDto {
   originalname: string
   mimetype: string
@@ -97,7 +98,8 @@ export const ToPhone = Transform(
 
 export const DefaultToNow = Transform(
   (value: any) => {
-    console.log("Date -type: ",typeof value, "|| value: ", value)
+    let valuePrsd = value.toString().split(" ").length === 1 ? value.toString().split(" ") + " 00:00:00" : value
+    value =  valuePrsd
     if (moment(value).isValid()) {
       value = moment(value).format('YYYY-MM-DD HH:mm:ss').toString()
     } else {
@@ -222,6 +224,14 @@ export class FileUploadService {
   constructor(
     @Inject("AttachmentModel") private attachmentModel: ModelClass<AttachmentModel>
   ) {}
+
+  async getFile(filename: string) {
+    const params = {
+      Bucket: AWS_S3_BUCKET_NAME,
+      Key: filename,
+    }
+    return await s3.getObject(params).createReadStream()
+  }
 
   async addFile(file: FileParamDto,  folder: string, currentUser): Promise<ResponseData> {
     const {buffer, originalname,size, mimetype} = file

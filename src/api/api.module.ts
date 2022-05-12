@@ -31,6 +31,13 @@ import { EmployeesModule } from './employees/employees.module';
 import { LeavesModule } from './leaves/leaves.module';
 import { AttendancesModule } from './attendances/attendances.module';
 import { LeaveTypesModule } from './leaveTypes/leaveTypes.module';
+import { OvertimesModule } from './overtimes/overtimes.module';
+import { OvertimeTypesModule } from './overtimeTypes/overtimeTypes.module';
+import { EarningTypesModule } from './earningTypes/earningTypes.module';
+import { DeductionTypesModule } from './deductionTypes/deductionTypes.module';
+import { EarningsModule } from './earnings/earnings.module';
+import { DeductionsModule } from './deductions/deductions.module';
+import { PayslipModule } from './payslips/payslips.module';
 
 @Module({
   imports: [
@@ -66,6 +73,13 @@ import { LeaveTypesModule } from './leaveTypes/leaveTypes.module';
     LeavesModule,
     LeaveTypesModule,
     AttendancesModule,
+    OvertimesModule,
+    OvertimeTypesModule,
+    EarningTypesModule,
+    EarningsModule,
+    DeductionTypesModule,
+    DeductionsModule,
+    PayslipModule,
   ],
   providers: [],
 })

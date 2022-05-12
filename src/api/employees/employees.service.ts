@@ -230,6 +230,7 @@ export class EmployeesService {
       newParams = {
         name: payload.name,
         leaveBalance: payload.leaveBalance,
+        overtimeBalance: payload.overtimeBalance,
         salary: payload.salary,
         status : "active",
         userId: newUserParams['id'],
@@ -357,6 +358,7 @@ export class EmployeesService {
         managerId: newParamsmanagerId ? newParamsmanagerId : null,
         name: payload.name,
         leaveBalance: payload.leaveBalance,
+        overtimeBalance: payload.overtimeBalance,
         salary: payload.salary,
         hrMember: payload.hrMember,
         status : "active",
@@ -425,6 +427,7 @@ export class EmployeesService {
       .update({
         managerId: newParamsmanagerId ? newParamsmanagerId : employee.managerId,
         leaveBalance: payload.leaveBalance ? payload.leaveBalance : employee.leaveBalance,
+        overtimeBalance: payload.overtimeBalance ? payload.overtimeBalance : employee.overtimeBalance,
         salary: payload.salary ? payload.salary : employee.salary,
         designationId: payload.designationId ? payload.designationId : employee.designationId,
         // userId: payload.userId ? payload.userId : employee.userId,
