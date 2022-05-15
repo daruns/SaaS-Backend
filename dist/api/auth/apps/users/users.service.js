@@ -267,7 +267,6 @@ let UsersService = class UsersService {
                 passwordResetTokenExpire: payload.passwordResetTokenExpire ? payload.passwordResetTokenExpire : user.passwordResetTokenExpire,
                 lastResetAt: payload.lastResetAt ? payload.lastResetAt : user.lastResetAt,
                 userId: payload.userId ? payload.userId : user.userId,
-                brandCode: payload.brandCode ? payload.brandCode : user.brandCode,
                 deleted: payload.deleted ? payload.deleted : user.deleted,
                 status: payload.status ? payload.status : user.status,
                 updatedBy: currentUser.username,

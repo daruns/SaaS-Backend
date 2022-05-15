@@ -224,13 +224,26 @@ export class FileUploadService {
   constructor(
     @Inject("AttachmentModel") private attachmentModel: ModelClass<AttachmentModel>
   ) {}
-
   async getFile(filename: string) {
-    const params = {
-      Bucket: AWS_S3_BUCKET_NAME,
-      Key: filename,
+    // Using async/await
+    try {
+      const params = {
+        Bucket: AWS_S3_BUCKET_NAME,
+        Key: filename,
+      }
+
+      await s3.headObject(params).promise();
+      return await s3.getObject(params).createReadStream()
+      // Do stuff with signedUrl
+    } catch (error) {
+      if (error.name === 'NotFound') {
+        return false
+      } else {
+        console.log("something went wrong please contact customer service", error)
+        // Handle other errors here....
+        return false
+      }
     }
-    return await s3.getObject(params).createReadStream()
   }
 
   async addFile(file: FileParamDto,  folder: string, currentUser): Promise<ResponseData> {

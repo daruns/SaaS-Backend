@@ -41,6 +41,7 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "phoneNumber", void 0);
 __decorate([
+    class_validator_1.IsOptional(),
     class_validator_1.IsIn(Object.values(user_layers_dto_1.UserLayers)),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "userType", void 0);

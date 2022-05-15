@@ -207,11 +207,23 @@ let FileUploadService = class FileUploadService {
         this.attachmentModel = attachmentModel;
     }
     async getFile(filename) {
-        const params = {
-            Bucket: AWS_S3_BUCKET_NAME,
-            Key: filename,
-        };
-        return await s3.getObject(params).createReadStream();
+        try {
+            const params = {
+                Bucket: AWS_S3_BUCKET_NAME,
+                Key: filename,
+            };
+            await s3.headObject(params).promise();
+            return await s3.getObject(params).createReadStream();
+        }
+        catch (error) {
+            if (error.name === 'NotFound') {
+                return false;
+            }
+            else {
+                console.log("something went wrong please contact customer service", error);
+                return false;
+            }
+        }
     }
     async addFile(file, folder, currentUser) {
         const { buffer, originalname, size, mimetype } = file;

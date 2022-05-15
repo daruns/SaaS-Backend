@@ -255,7 +255,7 @@ export class UsersService {
       };
     }
   }
-
+  // implement permission for owner and other users to not be able change the user
   // Update user before save encrypt password
   async update(payload, currentUser): Promise<ResponseData> {
     const user = await this.modelClass.query().findById(payload.id);
@@ -290,7 +290,6 @@ export class UsersService {
           passwordResetTokenExpire: payload.passwordResetTokenExpire ? payload.passwordResetTokenExpire : user.passwordResetTokenExpire,
           lastResetAt: payload.lastResetAt ? payload.lastResetAt : user.lastResetAt,
           userId: payload.userId ? payload.userId : user.userId,
-          brandCode: payload.brandCode ? payload.brandCode : user.brandCode,
           deleted: payload.deleted ? payload.deleted : user.deleted,
           status: payload.status ? payload.status : user.status,
           updatedBy: currentUser.username,

@@ -18,6 +18,7 @@ export class UpdateUserDto {
   @IsOptional()
   @ToPhone
   phoneNumber: string
+  @IsOptional()
   @IsIn(Object.values(UserLayers))
   userType: string
   avatar: string|FileParamDto

@@ -17,6 +17,7 @@ const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const jwt_auth_guard_1 = require("../api/auth/guards/jwt-auth.guard");
 const defaults_1 = require("../lib/defaults");
+const regex_1 = require("../lib/regex");
 const app_service_1 = require("./app.service");
 let AppController = class AppController {
     constructor(appService, fileUploadService) {
@@ -35,18 +36,41 @@ let AppController = class AppController {
     }
     async getFile(query, res) {
         let key = query["key"];
-        let keyextr = key;
-        try {
-            if (key.includes("oneconnect-files.s3.eu-central-1.amazonaws.com/")) {
-                let splttd = key.split("oneconnect-files.s3.eu-central-1.amazonaws.com/");
-                splttd.shift();
-                keyextr = splttd.join();
-            }
-            let result = await this.fileUploadService.getFile(keyextr);
-            await (result).pipe(res);
+        let firstmatch = key.match(regex_1.AWS_S3_KEY_NAME);
+        let keyextr = (regex_1.AWS_S3_KEY_NAME).test(key);
+        console.log("key: ", key);
+        if (!keyextr) {
+            res.status(common_1.HttpStatus.OK).json({
+                success: false,
+                message: 'file not found',
+                data: {},
+            });
         }
-        catch (err) {
-            res.send();
+        else {
+            try {
+                let secmtch = firstmatch[0];
+                keyextr = secmtch;
+                let result = await this.fileUploadService.getFile(`${keyextr}`);
+                if (result) {
+                    await (result).pipe(res);
+                }
+                else {
+                    console.log("Error: keyext: ", keyextr);
+                    res.status(common_1.HttpStatus.OK).json({
+                        success: false,
+                        message: 'file not found',
+                        data: {},
+                    });
+                }
+            }
+            catch (err) {
+                console.log("Something else went wrong while reading aws file!!!", firstmatch, err);
+                res.status(common_1.HttpStatus.OK).json({
+                    success: false,
+                    message: 'something went wrong in reading file!',
+                    data: err,
+                });
+            }
         }
     }
 };
@@ -72,7 +96,7 @@ __decorate([
     openapi.ApiResponse({ status: 200 }),
     __param(0, common_1.Query()), __param(1, common_1.Res()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "getFile", null);
 AppController = __decorate([
