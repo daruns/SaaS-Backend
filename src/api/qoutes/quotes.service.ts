@@ -97,7 +97,7 @@ export class QuotesService {
         quotePayload['clientWebsite'] = clientFnd.data.website
         //clientContacts Columns
         if( payload.clientContactId ) {
-          const clientContactFnd = await this.clientContactsSerive.findById(payload.clientId, currentUser)
+          const clientContactFnd = await this.clientContactsSerive.findById(payload.clientContactId, currentUser)
           if (clientContactFnd.success) {
             quotePayload['clientContactName'] = clientContactFnd.data.name
             quotePayload['clientContactPosition'] = clientContactFnd.data.position
@@ -107,11 +107,7 @@ export class QuotesService {
             quotePayload['clientContactDescription'] = clientContactFnd.data.description
             quotePayload['clientContactDepartment'] = clientContactFnd.data.department
           } else {
-            return {
-              success: false,
-              message: 'Client not found',
-              data: {}
-            }
+            return {...clientContactFnd}
           }
         }  
       } else {

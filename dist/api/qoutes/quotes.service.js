@@ -93,7 +93,7 @@ let QuotesService = class QuotesService {
                 quotePayload['clientPhoneNumbers'] = clientFnd.data.phoneNumbers;
                 quotePayload['clientWebsite'] = clientFnd.data.website;
                 if (payload.clientContactId) {
-                    const clientContactFnd = await this.clientContactsSerive.findById(payload.clientId, currentUser);
+                    const clientContactFnd = await this.clientContactsSerive.findById(payload.clientContactId, currentUser);
                     if (clientContactFnd.success) {
                         quotePayload['clientContactName'] = clientContactFnd.data.name;
                         quotePayload['clientContactPosition'] = clientContactFnd.data.position;
@@ -104,11 +104,7 @@ let QuotesService = class QuotesService {
                         quotePayload['clientContactDepartment'] = clientContactFnd.data.department;
                     }
                     else {
-                        return {
-                            success: false,
-                            message: 'Client not found',
-                            data: {}
-                        };
+                        return { ...clientContactFnd };
                     }
                 }
             }

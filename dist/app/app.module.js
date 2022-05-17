@@ -10,6 +10,10 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const core_1 = require("@nestjs/core");
+const http_error_handler_1 = require("../shared/Handlers/http-error.handler");
+const logging_interceptor_1 = require("../shared/Interceptors/logging.interceptor");
+const timeout_interceptor_1 = require("../shared/Interceptors/timeout.interceptor");
 const api_module_1 = require("../api/api.module");
 const database_module_1 = require("../database/database.module");
 let AppModule = class AppModule {
@@ -21,6 +25,18 @@ AppModule = __decorate([
         providers: [
             app_service_1.AppService,
             app_service_1.FileUploadService,
+            {
+                provide: core_1.APP_FILTER,
+                useClass: http_error_handler_1.HttpErrorHandler,
+            },
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: logging_interceptor_1.LoggingInterceptor,
+            },
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: timeout_interceptor_1.TimeoutInterceptor,
+            },
         ],
     })
 ], AppModule);
