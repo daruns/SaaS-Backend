@@ -19,14 +19,18 @@ const jwt_auth_guard_1 = require("../../guards/jwt-auth.guard");
 const brands_service_1 = require("../../../brands/brands.service");
 const app_service_1 = require("../../../../app/app.service");
 const user_layers_dto_1 = require("../../dto/user-layers.dto");
+const subjects_enum_1 = require("../../can/enums/subjects.enum");
+const actions_enum_1 = require("../../can/enums/actions.enum");
 let UsersService = class UsersService {
-    constructor(modelClass, brandService, fileUploadService) {
+    constructor(modelClass, permissionClass, brandService, fileUploadService) {
         this.modelClass = modelClass;
+        this.permissionClass = permissionClass;
         this.brandService = brandService;
         this.fileUploadService = fileUploadService;
     }
     async allWithBrand(currentUser) {
-        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode });
+        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode })
+            .withGraphFetched({ permissions: true, myEmployeeProfile: true });
         users.map(user => {
             delete user.password;
             delete user.activationToken;
@@ -41,7 +45,8 @@ let UsersService = class UsersService {
         };
     }
     async allWithBrandClients(currentUser) {
-        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode }).where({ userType: user_layers_dto_1.UserLayers.layerFour });
+        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode }).where({ userType: user_layers_dto_1.UserLayers.layerFour })
+            .withGraphFetched({ permissions: true, myEmployeeProfile: true });
         users.map(user => {
             delete user.password;
             delete user.activationToken;
@@ -56,7 +61,8 @@ let UsersService = class UsersService {
         };
     }
     async allWithBrandNoClients(currentUser) {
-        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode }).whereNot({ userType: user_layers_dto_1.UserLayers.layerFour });
+        const users = await this.modelClass.query().where({ brandCode: currentUser.brandCode }).whereNot({ userType: user_layers_dto_1.UserLayers.layerFour })
+            .withGraphFetched({ permissions: true, myEmployeeProfile: true });
         users.map(user => {
             delete user.password;
             delete user.activationToken;
@@ -108,8 +114,8 @@ let UsersService = class UsersService {
             permissions: {},
             myEmployeeProfile: {}
         });
-        delete user.password;
         if (user) {
+            delete user.password;
             return {
                 success: true,
                 message: 'User details fetch successfully.',
@@ -188,7 +194,8 @@ let UsersService = class UsersService {
             };
         }
     }
-    async create(payload) {
+    async create(payload, currentUser = null) {
+        const { permissions } = payload;
         const newUser = await this.modelClass.query().where({
             email: payload.email
         }).orWhere({
@@ -207,10 +214,82 @@ let UsersService = class UsersService {
                 else
                     return fileUploaded;
             }
+            const trx = await this.modelClass.startTransaction();
             try {
-                const identifiers = await this.modelClass.query().insert(payload);
-                const createUser = await this.modelClass.query().findById(identifiers.id);
+                const identifiers = await this.modelClass.query(trx).insert(payload);
+                const createUser = await this.modelClass.query(trx).findById(identifiers.id);
                 delete createUser.password;
+                if (permissions && Array.isArray(permissions)) {
+                    console.log("permissions: ", permissions);
+                    const permissionsParam = payload.permissions;
+                    if (!permissionsParam
+                        ||
+                            permissionsParam.some(ee => {
+                                return ee.subjects.some(er => {
+                                    return !Object.values(subjects_enum_1.Subjects).includes(er);
+                                });
+                            })) {
+                        return {
+                            success: false,
+                            message: `unexpected subjects inserted doesnt match the make sure its matching the following array.`,
+                            data: subjects_enum_1.SubjectsDto,
+                        };
+                    }
+                    for (let eachperm of permissionsParam) {
+                        if ((eachperm === null || eachperm === void 0 ? void 0 : eachperm.all) === true || (eachperm.create && eachperm.update && eachperm.delete)) {
+                            for (let sbjct of eachperm.subjects) {
+                                await this.permissionClass.query(trx).insert({
+                                    subject: sbjct,
+                                    action: `${actions_enum_1.Action.All}`,
+                                    userId: createUser.id,
+                                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                });
+                            }
+                        }
+                        else {
+                            for (let sbjct of eachperm.subjects) {
+                                if (eachperm.read || eachperm.create || eachperm.update || eachperm.delete) {
+                                    await this.permissionClass.query(trx).insert({
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Read}`,
+                                        userId: createUser.id,
+                                        brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                        createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                    });
+                                }
+                                if (eachperm.create) {
+                                    await this.permissionClass.query(trx).insert({
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Create}`,
+                                        userId: createUser.id,
+                                        brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                        createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                    });
+                                }
+                                if (eachperm.update) {
+                                    await this.permissionClass.query(trx).insert({
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Update}`,
+                                        userId: createUser.id,
+                                        brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                        createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                    });
+                                }
+                                if (eachperm.delete) {
+                                    await this.permissionClass.query(trx).insert({
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Delete}`,
+                                        userId: createUser.id,
+                                        brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                        createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                await trx.commit();
                 return {
                     success: true,
                     message: 'User created successfully.',
@@ -218,6 +297,7 @@ let UsersService = class UsersService {
                 };
             }
             catch (err) {
+                await trx.rollback();
                 return {
                     success: false,
                     message: 'User didnt created',
@@ -234,11 +314,25 @@ let UsersService = class UsersService {
         }
     }
     async update(payload, currentUser) {
+        const { permissions } = payload;
         const user = await this.modelClass.query().findById(payload.id);
         if (user) {
             if (payload.password) {
                 const hashedPassword = await bcrypt.hash(payload.password, 10);
                 payload.password = hashedPassword;
+            }
+            if (permissions
+                &&
+                    permissions.some(ee => {
+                        return ee.subjects.some(er => {
+                            return !Object.values(subjects_enum_1.Subjects).includes(er);
+                        });
+                    })) {
+                return {
+                    success: false,
+                    message: `unexpected subjects inserted doesnt match the make sure its matching the following array.`,
+                    data: subjects_enum_1.SubjectsDto,
+                };
             }
             if (payload.avatar) {
                 const avatarUploaded = payload.avatar;
@@ -250,33 +344,147 @@ let UsersService = class UsersService {
                 else
                     return fileUploaded;
             }
-            const updatedUser = await this.modelClass
-                .query()
-                .update({
-                password: payload.password ? payload.password : user.password,
-                name: payload.name ? payload.name : user.name,
-                phoneNumber: payload.phoneNumber ? payload.phoneNumber : user.phoneNumber,
-                avatar: payload.avatar ? payload.avatar : user.avatar,
-                userType: payload.userType ? payload.userType : user.userType,
-                department: payload.department ? payload.department : user.department,
-                reportsTo: payload.reportsTo ? payload.reportsTo : user.reportsTo,
-                activationToken: payload.activationToken ? payload.activationToken : user.activationToken,
-                activationTokenExpire: payload.activationTokenExpire ? payload.activationTokenExpire : user.activationTokenExpire,
-                activatedAt: payload.activatedAt ? payload.activatedAt : user.activatedAt,
-                passwordResetToken: payload.passwordResetToken ? payload.passwordResetToken : user.passwordResetToken,
-                passwordResetTokenExpire: payload.passwordResetTokenExpire ? payload.passwordResetTokenExpire : user.passwordResetTokenExpire,
-                lastResetAt: payload.lastResetAt ? payload.lastResetAt : user.lastResetAt,
-                userId: payload.userId ? payload.userId : user.userId,
-                deleted: payload.deleted ? payload.deleted : user.deleted,
-                status: payload.status ? payload.status : user.status,
-                updatedBy: currentUser.username,
-            })
-                .where({ id: payload.id });
-            return {
-                success: true,
-                message: 'User details updated successfully.',
-                data: updatedUser,
-            };
+            const trx = await this.modelClass.startTransaction();
+            try {
+                if (permissions && Array.isArray(permissions)) {
+                    const permissionsParam = permissions;
+                    await this.permissionClass.query(trx).where({ userId: payload.id, brandCode: user.brandCode }).delete();
+                    for (let eachperm of permissionsParam) {
+                        if ((eachperm === null || eachperm === void 0 ? void 0 : eachperm.all) === true || (eachperm.create && eachperm.update && eachperm.delete)) {
+                            for (let sbjct of eachperm.subjects) {
+                                const permFND = await this.permissionClass.query(trx).findOne({
+                                    userId: payload.id,
+                                    brandCode: currentUser === null || currentUser === void 0 ? void 0 : currentUser.brandCode,
+                                    subject: sbjct,
+                                    action: `${actions_enum_1.Action.All}`,
+                                });
+                                if (permFND) {
+                                    throw ['permission already exist!', permFND];
+                                }
+                                await this.permissionClass.query(trx).insert({
+                                    subject: sbjct,
+                                    action: `${actions_enum_1.Action.All}`,
+                                    userId: payload.id,
+                                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                });
+                            }
+                        }
+                        else {
+                            for (let sbjct of eachperm.subjects) {
+                                if (eachperm.read || eachperm.create || eachperm.update || eachperm.delete) {
+                                    const permFND = await this.permissionClass.query(trx).findOne({
+                                        userId: payload.id,
+                                        brandCode: currentUser === null || currentUser === void 0 ? void 0 : currentUser.brandCode,
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Read}`,
+                                    });
+                                    if (permFND) {
+                                        throw ['permission already exist!', permFND];
+                                    }
+                                    await this.permissionClass.query(trx).insert({
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Read}`,
+                                        userId: payload.id,
+                                        brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                        createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                    });
+                                }
+                                if (eachperm.create) {
+                                    const permFND = await this.permissionClass.query(trx).findOne({
+                                        userId: payload.id,
+                                        brandCode: currentUser === null || currentUser === void 0 ? void 0 : currentUser.brandCode,
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Create}`,
+                                    });
+                                    if (permFND) {
+                                        throw ['permission already exist!', permFND];
+                                    }
+                                    await this.permissionClass.query(trx).insert({
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Create}`,
+                                        userId: payload.id,
+                                        brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                        createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                    });
+                                }
+                                if (eachperm.update) {
+                                    const permFND = await this.permissionClass.query(trx).findOne({
+                                        userId: payload.id,
+                                        brandCode: currentUser === null || currentUser === void 0 ? void 0 : currentUser.brandCode,
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Update}`,
+                                    });
+                                    if (permFND) {
+                                        throw ['permission already exist!', permFND];
+                                    }
+                                    await this.permissionClass.query(trx).insert({
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Update}`,
+                                        userId: payload.id,
+                                        brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                        createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                    });
+                                }
+                                if (eachperm.delete) {
+                                    const permFND = await this.permissionClass.query(trx).findOne({
+                                        userId: payload.id,
+                                        brandCode: currentUser === null || currentUser === void 0 ? void 0 : currentUser.brandCode,
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Delete}`,
+                                    });
+                                    if (permFND) {
+                                        throw ['permission already exist!', permFND];
+                                    }
+                                    await this.permissionClass.query(trx).insert({
+                                        subject: sbjct,
+                                        action: `${actions_enum_1.Action.Delete}`,
+                                        userId: payload.id,
+                                        brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                                        createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                const updatedUser = await this.modelClass
+                    .query(trx)
+                    .update({
+                    password: payload.password ? payload.password : user.password,
+                    name: payload.name ? payload.name : user.name,
+                    phoneNumber: payload.phoneNumber ? payload.phoneNumber : user.phoneNumber,
+                    avatar: payload.avatar ? payload.avatar : user.avatar,
+                    userType: payload.userType ? payload.userType : user.userType,
+                    department: payload.department ? payload.department : user.department,
+                    reportsTo: payload.reportsTo ? payload.reportsTo : user.reportsTo,
+                    activationToken: payload.activationToken ? payload.activationToken : user.activationToken,
+                    activationTokenExpire: payload.activationTokenExpire ? payload.activationTokenExpire : user.activationTokenExpire,
+                    activatedAt: payload.activatedAt ? payload.activatedAt : user.activatedAt,
+                    passwordResetToken: payload.passwordResetToken ? payload.passwordResetToken : user.passwordResetToken,
+                    passwordResetTokenExpire: payload.passwordResetTokenExpire ? payload.passwordResetTokenExpire : user.passwordResetTokenExpire,
+                    lastResetAt: payload.lastResetAt ? payload.lastResetAt : user.lastResetAt,
+                    userId: payload.userId ? payload.userId : user.userId,
+                    deleted: payload.deleted ? payload.deleted : user.deleted,
+                    status: payload.status ? payload.status : user.status,
+                    updatedBy: currentUser.username,
+                })
+                    .where({ id: payload.id });
+                await trx.commit();
+                return {
+                    success: true,
+                    message: 'User details updated successfully.',
+                    data: updatedUser,
+                };
+            }
+            catch (err) {
+                await trx.rollback();
+                return {
+                    success: false,
+                    message: "something wnet wrong!",
+                    data: err,
+                };
+            }
         }
         else {
             return {
@@ -287,22 +495,31 @@ let UsersService = class UsersService {
         }
     }
     async delete(payload, currentUser) {
-        const user = await this.modelClass
-            .query()
-            .delete()
-            .where({ id: payload.id, brandCode: currentUser.brandCode });
-        if (user) {
-            return {
-                success: true,
-                message: 'User deleted successfully.',
-                data: user,
-            };
+        try {
+            const user = await this.modelClass
+                .query()
+                .delete()
+                .where({ id: payload.id, brandCode: currentUser.brandCode });
+            if (user) {
+                return {
+                    success: true,
+                    message: 'User deleted successfully.',
+                    data: user,
+                };
+            }
+            else {
+                return {
+                    success: false,
+                    message: 'No user found.',
+                    data: {},
+                };
+            }
         }
-        else {
+        catch (err) {
             return {
                 success: false,
-                message: 'No user found.',
-                data: {},
+                message: 'something went wrong! while deleting user.',
+                data: err,
             };
         }
     }
@@ -311,7 +528,8 @@ UsersService = __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Injectable(),
     __param(0, common_1.Inject('UserModel')),
-    __metadata("design:paramtypes", [Object, brands_service_1.BrandsService,
+    __param(1, common_1.Inject('PermissionModel')),
+    __metadata("design:paramtypes", [Object, Object, brands_service_1.BrandsService,
         app_service_1.FileUploadService])
 ], UsersService);
 exports.UsersService = UsersService;

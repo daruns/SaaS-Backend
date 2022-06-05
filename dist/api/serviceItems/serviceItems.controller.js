@@ -19,6 +19,9 @@ const update_serviceItem_dto_1 = require("./dto/update-serviceItem.dto");
 const serviceItems_service_1 = require("./serviceItems.service");
 const create_serviceItem_dto_1 = require("./dto/create-serviceItem.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
 let ServiceItemsController = class ServiceItemsController {
     constructor(serviceItemsService) {
         this.serviceItemsService = serviceItemsService;
@@ -44,6 +47,7 @@ let ServiceItemsController = class ServiceItemsController {
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeServiceItems, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -52,6 +56,7 @@ __decorate([
 ], ServiceItemsController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeServiceItems, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -60,6 +65,7 @@ __decorate([
 ], ServiceItemsController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeServiceItems, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -68,6 +74,7 @@ __decorate([
 ], ServiceItemsController.prototype, "create", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeServiceItems, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -76,6 +83,7 @@ __decorate([
 ], ServiceItemsController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeServiceItems, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

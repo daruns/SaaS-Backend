@@ -19,6 +19,9 @@ const update_expenseSubCategory_dto_1 = require("./dto/update-expenseSubCategory
 const expenseSubCategories_service_1 = require("./expenseSubCategories.service");
 const create_expenseSubCategory_dto_1 = require("./dto/create-expenseSubCategory.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
 let ExpenseSubCategoriesController = class ExpenseSubCategoriesController {
     constructor(expenseSubCategoriesService) {
         this.expenseSubCategoriesService = expenseSubCategoriesService;
@@ -44,6 +47,7 @@ let ExpenseSubCategoriesController = class ExpenseSubCategoriesController {
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpensesCategories, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -52,6 +56,7 @@ __decorate([
 ], ExpenseSubCategoriesController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpensesCategories, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -60,6 +65,7 @@ __decorate([
 ], ExpenseSubCategoriesController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpensesCategories, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -68,6 +74,7 @@ __decorate([
 ], ExpenseSubCategoriesController.prototype, "create", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpensesCategories, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -76,6 +83,7 @@ __decorate([
 ], ExpenseSubCategoriesController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpensesCategories, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

@@ -21,6 +21,10 @@ const local_auth_guard_1 = require("./guards/local-auth.guard");
 const editProfile_dto_1 = require("./dto/editProfile.dto");
 const platform_express_1 = require("@nestjs/platform-express");
 const app_service_1 = require("../../app/app.service");
+const edit_brand_dto_1 = require("./dto/edit-brand.dto");
+const can_decorator_1 = require("./can/decorators/can.decorator");
+const subjects_enum_1 = require("./can/enums/subjects.enum");
+const actions_enum_1 = require("./can/enums/actions.enum");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -31,6 +35,10 @@ let AuthController = class AuthController {
     }
     async signIn(req) {
         return await this.authService.signIn(req.user);
+    }
+    update(brand, file, req) {
+        brand.logo = file;
+        return this.authService.editBrand(brand, req.user);
     }
     async editProfile(editProfileDto, file, req) {
         if (!req.user.id)
@@ -50,6 +58,7 @@ let AuthController = class AuthController {
 };
 __decorate([
     common_1.Post('/signup'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.EveryoneAllowed, actions_enum_1.Action.All),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body(common_1.ValidationPipe)),
     __metadata("design:type", Function),
@@ -67,7 +76,19 @@ __decorate([
 ], AuthController.prototype, "signIn", null);
 __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    common_1.Post('editBrand'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.OwnerAllowed, actions_enum_1.Action.Update),
+    common_1.UseInterceptors(platform_express_1.FileInterceptor("logo")),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, common_1.Body()), __param(1, common_1.UploadedFile()), __param(2, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [edit_brand_dto_1.EditBrandDto, Object, Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "update", null);
+__decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Post('editProfile'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.EveryoneAllowed, actions_enum_1.Action.All),
     common_1.UseInterceptors(platform_express_1.FileInterceptor("avatar", { fileFilter: app_service_1.imageFileFilter })),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body(common_1.ValidationPipe)), __param(1, common_1.UploadedFile()), __param(2, common_1.Req()),
@@ -78,6 +99,7 @@ __decorate([
 __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get('me'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.EveryoneAllowed, actions_enum_1.Action.All),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),

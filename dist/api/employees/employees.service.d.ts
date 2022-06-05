@@ -14,9 +14,9 @@ export declare class EmployeesService {
     private readonly fileUploadService;
     constructor(modelClass: ModelClass<EmployeeModel>, userClass: ModelClass<UserModel>, designationClass: ModelClass<DesignationModel>, usersService: UsersService, fileUploadService: FileUploadService);
     findAll(currentUser: any): Promise<ResponseData>;
+    findUsers(currentUser: any): Promise<ResponseData>;
     findById(id: number, currentUser: any): Promise<ResponseData>;
     findMe(currentUser: any): Promise<ResponseData>;
-    createHr(payload: CreateEmployeeDto, currentUser: any): Promise<ResponseData>;
     create(payload: CreateEmployeeDto, currentUser: any): Promise<ResponseData>;
     update(payload: UpdateEmployeeDto, currentUser: any): Promise<ResponseData>;
     deleteById(payload: {

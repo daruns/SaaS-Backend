@@ -19,6 +19,9 @@ const attendances_service_1 = require("./attendances.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const app_service_1 = require("../../app/app.service");
 const user_layers_dto_1 = require("../auth/dto/user-layers.dto");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
 let AttendancesController = class AttendancesController {
     constructor(attendancesService) {
         this.attendancesService = attendancesService;
@@ -39,6 +42,7 @@ let AttendancesController = class AttendancesController {
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmAttendances, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -47,6 +51,7 @@ __decorate([
 ], AttendancesController.prototype, "findAll", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmAttendances, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),

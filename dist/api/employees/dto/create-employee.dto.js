@@ -12,14 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateEmployeeDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-const user_layers_dto_1 = require("../../auth/dto/user-layers.dto");
 const app_service_1 = require("../../../app/app.service");
 class CreateEmployeeDto {
-    constructor() {
-        this.userType = user_layers_dto_1.UserLayers.layerThree;
-    }
     static _OPENAPI_METADATA_FACTORY() {
-        return { name: { required: true, type: () => String }, leaveBalance: { required: true, type: () => Number }, overtimeBalance: { required: true, type: () => Number }, salary: { required: true, type: () => Number }, designationId: { required: true, type: () => Number }, managerId: { required: true, type: () => Number }, hrMember: { required: true, type: () => Boolean }, isManager: { required: true, type: () => Boolean }, username: { required: true, type: () => String, minLength: 3, maxLength: 30 }, email: { required: true, type: () => String }, password: { required: true, type: () => String, minLength: 8, maxLength: 30 }, userType: { required: true, type: () => String, default: user_layers_dto_1.UserLayers.layerThree }, phoneNumber: { required: true, type: () => String }, createdBy: { required: true, type: () => String }, brandCode: { required: true, type: () => String }, status: { required: true, type: () => String } };
+        return { name: { required: true, type: () => String }, leaveBalance: { required: true, type: () => Number }, overtimeBalance: { required: true, type: () => Number }, salary: { required: true, type: () => Number }, designationId: { required: true, type: () => Number }, managerId: { required: true, type: () => Number }, hrMember: { required: true, type: () => Boolean }, isManager: { required: true, type: () => Boolean }, userId: { required: true, type: () => Number }, phoneNumber: { required: true, type: () => String }, createdBy: { required: true, type: () => String }, brandCode: { required: true, type: () => String }, status: { required: true, type: () => String } };
     }
 }
 __decorate([
@@ -34,24 +30,6 @@ __decorate([
     class_validator_1.IsOptional(),
     __metadata("design:type", Number)
 ], CreateEmployeeDto.prototype, "managerId", void 0);
-__decorate([
-    class_validator_1.MinLength(3, { message: 'username must more than 3 chars' }),
-    class_validator_1.MaxLength(30, { message: 'username is too long. only 30 chars allowed.' }),
-    class_validator_1.IsOptional(),
-    __metadata("design:type", String)
-], CreateEmployeeDto.prototype, "username", void 0);
-__decorate([
-    class_validator_1.IsString(),
-    class_validator_1.IsEmail({}),
-    class_validator_1.IsOptional(),
-    __metadata("design:type", String)
-], CreateEmployeeDto.prototype, "email", void 0);
-__decorate([
-    class_validator_1.MinLength(8, { message: 'Password must have 8 chars' }),
-    class_validator_1.MaxLength(30, { message: 'Password is too long. only 30 chars allow.' }),
-    class_validator_1.IsOptional(),
-    __metadata("design:type", String)
-], CreateEmployeeDto.prototype, "password", void 0);
 __decorate([
     app_service_1.ToPhone,
     class_validator_1.IsString({ message: "must be a valid phonenumber" }),

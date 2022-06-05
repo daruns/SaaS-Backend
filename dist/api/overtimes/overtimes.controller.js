@@ -21,6 +21,9 @@ const create_overtime_dto_1 = require("./dto/create-overtime.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const app_service_1 = require("../../app/app.service");
 const user_layers_dto_1 = require("../auth/dto/user-layers.dto");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
 let OvertimesController = class OvertimesController {
     constructor(overtimesService) {
         this.overtimesService = overtimesService;
@@ -70,6 +73,7 @@ let OvertimesController = class OvertimesController {
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmOverTimes, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -78,6 +82,7 @@ __decorate([
 ], OvertimesController.prototype, "findAll", null);
 __decorate([
     common_1.Get('allApprovals'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmOverTimes, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -86,6 +91,7 @@ __decorate([
 ], OvertimesController.prototype, "findApprovals", null);
 __decorate([
     common_1.Get('myOvertimes'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmOverTimes, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -94,6 +100,7 @@ __decorate([
 ], OvertimesController.prototype, "findMyOvertimes", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmOverTimes, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -102,6 +109,7 @@ __decorate([
 ], OvertimesController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmOverTimes, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -110,6 +118,7 @@ __decorate([
 ], OvertimesController.prototype, "create", null);
 __decorate([
     common_1.Post('updateApproval'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmOverTimes, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -118,6 +127,7 @@ __decorate([
 ], OvertimesController.prototype, "updateApproval", null);
 __decorate([
     common_1.Post('approveOvertime'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmOverTimes, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -126,6 +136,7 @@ __decorate([
 ], OvertimesController.prototype, "approveOvertime", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmOverTimes, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -134,6 +145,7 @@ __decorate([
 ], OvertimesController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmOverTimes, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

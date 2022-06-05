@@ -20,6 +20,9 @@ const boards_service_1 = require("./boards.service");
 const create_board_dto_1 = require("./dto/create-board.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const add_attribute_dto_1 = require("./dto/add-attribute.dto");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
 let BoardsController = class BoardsController {
     constructor(boardsService) {
         this.boardsService = boardsService;
@@ -49,6 +52,7 @@ let BoardsController = class BoardsController {
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -57,6 +61,7 @@ __decorate([
 ], BoardsController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -65,6 +70,7 @@ __decorate([
 ], BoardsController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -73,6 +79,7 @@ __decorate([
 ], BoardsController.prototype, "create", null);
 __decorate([
     common_1.Post('addAttribute'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -81,6 +88,7 @@ __decorate([
 ], BoardsController.prototype, "addAttribute", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -89,6 +97,7 @@ __decorate([
 ], BoardsController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

@@ -9,11 +9,21 @@ export declare class CreateUserDto {
     avatar: string | FileParamDto;
     department: string;
     reportsTo: string;
-    activationToken: string;
-    activationTokenExpire: Date;
-    activatedAt: Date;
-    passwordResetToken: string;
-    passwordResetTokenExpire: Date;
-    lastResetAt: Date;
     brandCode: string;
+    permissions: Array<{
+        subjects: string[];
+        all: boolean;
+        read: boolean;
+        create: boolean;
+        update: boolean;
+        delete: boolean;
+    }>;
 }
+export declare type PermissionType = Array<{
+    subjects: string[];
+    all: boolean;
+    read: boolean;
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+}>;

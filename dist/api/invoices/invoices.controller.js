@@ -19,6 +19,9 @@ const update_invoice_dto_1 = require("./dto/update-invoice.dto");
 const invoices_service_1 = require("./invoices.service");
 const create_invoice_dto_1 = require("./dto/create-invoice.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
 let InvoicesController = class InvoicesController {
     constructor(invoicesService) {
         this.invoicesService = invoicesService;
@@ -47,6 +50,7 @@ let InvoicesController = class InvoicesController {
 __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeInvoices, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -55,6 +59,7 @@ __decorate([
 ], InvoicesController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeInvoices, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -63,6 +68,7 @@ __decorate([
 ], InvoicesController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeInvoices, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Body('items')), __param(2, common_1.Request()),
     __metadata("design:type", Function),
@@ -71,6 +77,7 @@ __decorate([
 ], InvoicesController.prototype, "create", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeInvoices, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Body('items')), __param(2, common_1.Request()),
     __metadata("design:type", Function),
@@ -79,6 +86,7 @@ __decorate([
 ], InvoicesController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeInvoices, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

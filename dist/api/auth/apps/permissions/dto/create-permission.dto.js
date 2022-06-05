@@ -12,27 +12,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreatePermissionDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const actions_enum_1 = require("../../../can/enums/actions.enum");
+const subjects_enum_1 = require("../../../can/enums/subjects.enum");
 class CreatePermissionDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { subject: { required: true, type: () => String }, action: { required: true, type: () => String }, resource: { required: true, type: () => String }, weight: { required: true, type: () => Number }, userId: { required: true, type: () => Number }, roleId: { required: true, type: () => Number } };
+        return { subject: { required: true, type: () => String }, action: { required: true, type: () => String }, userId: { required: true, type: () => Number } };
     }
 }
 __decorate([
     class_validator_1.IsNotEmpty({ message: 'subject is required' }),
+    class_validator_1.IsIn(subjects_enum_1.SubjectsDto),
     __metadata("design:type", String)
 ], CreatePermissionDto.prototype, "subject", void 0);
 __decorate([
     class_validator_1.IsNotEmpty({ message: 'action is required' }),
+    class_validator_1.IsIn(actions_enum_1.ActionsDto),
     __metadata("design:type", String)
 ], CreatePermissionDto.prototype, "action", void 0);
-__decorate([
-    class_validator_1.IsNotEmpty({ message: 'resource is required' }),
-    __metadata("design:type", String)
-], CreatePermissionDto.prototype, "resource", void 0);
 __decorate([
     class_validator_1.IsNotEmpty(),
     class_validator_1.IsInt(),
     __metadata("design:type", Number)
-], CreatePermissionDto.prototype, "weight", void 0);
+], CreatePermissionDto.prototype, "userId", void 0);
 exports.CreatePermissionDto = CreatePermissionDto;
 //# sourceMappingURL=create-permission.dto.js.map

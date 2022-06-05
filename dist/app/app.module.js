@@ -16,15 +16,23 @@ const logging_interceptor_1 = require("../shared/Interceptors/logging.intercepto
 const timeout_interceptor_1 = require("../shared/Interceptors/timeout.interceptor");
 const api_module_1 = require("../api/api.module");
 const database_module_1 = require("../database/database.module");
+const can_guard_1 = require("../api/auth/guards/can.guard");
+const can_service_1 = require("../api/auth/can/can.service");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     common_1.Module({
-        imports: [api_module_1.ApiModule, database_module_1.DatabaseModule],
+        imports: [api_module_1.ApiModule, can_service_1.CanService, database_module_1.DatabaseModule],
         controllers: [app_controller_1.AppController],
         providers: [
             app_service_1.AppService,
             app_service_1.FileUploadService,
+            can_service_1.CanService,
+            {
+                provide: core_1.APP_GUARD,
+                useFactory: (ref, can) => new can_guard_1.CanGuard(ref, can),
+                inject: [core_1.Reflector, can_service_1.CanService],
+            },
             {
                 provide: core_1.APP_FILTER,
                 useClass: http_error_handler_1.HttpErrorHandler,

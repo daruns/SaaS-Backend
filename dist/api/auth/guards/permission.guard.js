@@ -14,21 +14,30 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RolesGuard = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_auth_guard_1 = require("./jwt-auth.guard");
+const core_1 = require("@nestjs/core");
 let RolesGuard = class RolesGuard {
-    constructor(userModelClass) {
+    constructor(userModelClass, reflector) {
         this.userModelClass = userModelClass;
+        this.reflector = reflector;
     }
     async canActivate(context) {
-        console.log("permission can activate: ", context);
+        const roles = this.reflector.get('roles', context.getHandler());
+        const request = context.switchToHttp().getRequest();
+        const user = request.user;
+        try {
+            let somfn = user;
+            console.log("permission can activate: ---------", user);
+        }
+        catch (errr) {
+            console.log("permission can error: ", errr);
+        }
         return true;
     }
 };
 RolesGuard = __decorate([
-    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Injectable(),
     __param(0, common_1.Inject('UserModel')),
-    __metadata("design:paramtypes", [Object])
+    __metadata("design:paramtypes", [Object, core_1.Reflector])
 ], RolesGuard);
 exports.RolesGuard = RolesGuard;
 //# sourceMappingURL=permission.guard.js.map

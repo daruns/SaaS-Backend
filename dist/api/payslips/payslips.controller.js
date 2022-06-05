@@ -18,6 +18,9 @@ const common_1 = require("@nestjs/common");
 const payslips_service_1 = require("./payslips.service");
 const create_payslip_dto_1 = require("./dto/create-payslip.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
 let PayslipsController = class PayslipsController {
     constructor(payslipsService) {
         this.payslipsService = payslipsService;
@@ -40,6 +43,7 @@ let PayslipsController = class PayslipsController {
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.payrollPayslips, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -48,6 +52,7 @@ __decorate([
 ], PayslipsController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.payrollPayslips, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -56,6 +61,7 @@ __decorate([
 ], PayslipsController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.payrollPayslips, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -64,6 +70,7 @@ __decorate([
 ], PayslipsController.prototype, "create", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.payrollPayslips, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

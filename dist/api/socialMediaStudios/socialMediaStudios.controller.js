@@ -16,6 +16,9 @@ exports.SocialMediaStudiosController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const create_media_dto_1 = require("./dto/create-media.dto");
 const create_socialMediaStudio_dto_1 = require("./dto/create-socialMediaStudio.dto");
@@ -91,6 +94,7 @@ let SocialMediaStudiosController = class SocialMediaStudiosController {
 };
 __decorate([
     common_1.Get(''),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -99,6 +103,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "findAll", null);
 __decorate([
     common_1.Get('drafts'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -107,6 +112,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "drafts", null);
 __decorate([
     common_1.Get('productions'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -123,6 +129,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "inReviews", null);
 __decorate([
     common_1.Get('completeds'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -131,6 +138,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "Completeds", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -139,6 +147,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "findOne", null);
 __decorate([
     common_1.Post('createMedia'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Create),
     common_1.UseInterceptors(platform_express_1.FilesInterceptor("attachments", 30)),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.UploadedFiles()), __param(1, common_1.Body()), __param(2, common_1.Request()),
@@ -148,6 +157,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "createMedia", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -156,6 +166,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "create", null);
 __decorate([
     common_1.Post('addUsers'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -164,6 +175,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "addUsers", null);
 __decorate([
     common_1.Post('removeUsers'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -172,6 +184,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "removeUsers", null);
 __decorate([
     common_1.Post('addAttachments'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Update),
     common_1.UseInterceptors(platform_express_1.FilesInterceptor("files", 1)),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body("id")), __param(1, common_1.UploadedFiles()), __param(2, common_1.Request()),
@@ -181,6 +194,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "addAttachments", null);
 __decorate([
     common_1.Post('removeAttachment'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -189,6 +203,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "removeAttachment", null);
 __decorate([
     common_1.Post('approve'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -197,6 +212,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "approve", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -205,6 +221,7 @@ __decorate([
 ], SocialMediaStudiosController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.socialMediaStudios, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

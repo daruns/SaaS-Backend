@@ -16,15 +16,15 @@ exports.PermissionsService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_auth_guard_1 = require("../../guards/jwt-auth.guard");
 let PermissionsService = class PermissionsService {
-    constructor(modelClass) {
+    constructor(modelClass, userModel) {
         this.modelClass = modelClass;
+        this.userModel = userModel;
     }
-    async findAll() {
-        const permissions = await this.modelClass.query().withGraphFetched({
+    async findAll(currentUser) {
+        const permissions = await this.modelClass.query()
+            .where({ brandCode: currentUser.brandCode })
+            .withGraphFetched({
             user: {},
-            role: {
-                users: true
-            },
         });
         if (permissions.length) {
             return {
@@ -41,15 +41,13 @@ let PermissionsService = class PermissionsService {
             };
         }
     }
-    async findById(id) {
+    async findById(id, currentUser) {
         const permission = await this.modelClass
             .query()
+            .where({ brandCode: currentUser.brandCode })
             .findById(id)
             .withGraphFetched({
             user: {},
-            role: {
-                users: true
-            },
         });
         if (permission) {
             return {
@@ -66,37 +64,11 @@ let PermissionsService = class PermissionsService {
             };
         }
     }
-    async findByRoleId(roleId) {
+    async findByUser(userId, currentUser) {
         const permissions = await this.modelClass
             .query()
-            .where({ roleId: roleId })
-            .withGraphFetched({
-            user: {}
-        });
-        if (permissions.length) {
-            return {
-                success: true,
-                message: 'Permissions details by roleId fetch successfully.',
-                data: permissions,
-            };
-        }
-        else {
-            return {
-                success: false,
-                message: 'No permissions details found for roleId:' + roleId,
-                data: {},
-            };
-        }
-    }
-    async findByUser(userId) {
-        const permissions = await this.modelClass
-            .query()
-            .where({ userId: userId })
-            .withGraphFetched({
-            role: {
-                users: true,
-            },
-        });
+            .where({ userId: userId, brandCode: currentUser.brandCode })
+            .withGraphFetched({});
         if (permissions.length) {
             return {
                 success: true,
@@ -112,23 +84,28 @@ let PermissionsService = class PermissionsService {
             };
         }
     }
-    async create(payload) {
+    async create(payload, currentUser) {
+        const userFnd = await this.userModel.query()
+            .findById(payload.userId);
+        if (!userFnd) {
+            return {
+                success: false,
+                message: "user couldnt be found!",
+                data: {}
+            };
+        }
         const newPermission = await this.modelClass.query()
             .where({
             subject: payload.subject,
-            resource: payload.resource,
-            weight: payload.weight,
             action: payload.action,
-            userId: payload.userId,
-        }).orWhere({
-            subject: payload.subject,
-            resource: payload.resource,
-            weight: payload.weight,
-            action: payload.action,
-            roleId: payload.roleId,
+            userId: (payload === null || payload === void 0 ? void 0 : payload.userId) || null,
+            brandCode: currentUser.brandCode,
+            createdBy: currentUser.username
         });
         if (!newPermission.length) {
             try {
+                payload['brandCode'] = currentUser.brandCode;
+                payload['createdBy'] = currentUser.username;
                 const identifiers = await this.modelClass.query().insert(payload);
                 const createPermission = await this.modelClass.query().findById(identifiers.id);
                 return {
@@ -153,22 +130,29 @@ let PermissionsService = class PermissionsService {
             };
         }
     }
-    async update(payload) {
+    async update(payload, currentUser) {
         const permission = await this.modelClass.query().findById(payload.id);
         if (permission) {
+            if (payload.userId) {
+                const userFnd = await this.userModel.query()
+                    .findOne({ brandCode: currentUser.brandCode, id: payload.userId });
+                if (!userFnd) {
+                    return {
+                        success: false,
+                        message: "user couldnt be found!",
+                        data: {}
+                    };
+                }
+            }
             const updatedPermission = await this.modelClass
                 .query()
                 .update({
                 subject: payload.subject ? payload.subject : permission.subject,
                 action: payload.action ? payload.action : permission.action,
-                resource: payload.resource ? payload.resource : permission.resource,
-                weight: payload.weight ? payload.weight : permission.weight,
                 userId: payload.userId ? payload.userId : permission.userId,
-                roleId: payload.roleId ? payload.roleId : permission.roleId,
-                status: payload.status ? payload.status : permission.status,
-                updatedBy: '',
+                updatedBy: currentUser.username,
             })
-                .where({ id: payload.id });
+                .where({ id: payload.id, brandCode: currentUser.brandCode });
             return {
                 success: true,
                 message: 'Permission details updated successfully.',
@@ -183,11 +167,11 @@ let PermissionsService = class PermissionsService {
             };
         }
     }
-    async delete(payload) {
+    async delete(payload, currentUser) {
         const permission = await this.modelClass
             .query()
             .delete()
-            .where({ id: payload.id });
+            .where({ id: payload.id, brandCode: currentUser.brandCode });
         if (permission) {
             return {
                 success: true,
@@ -208,7 +192,8 @@ PermissionsService = __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Injectable(),
     __param(0, common_1.Inject('PermissionModel')),
-    __metadata("design:paramtypes", [Object])
+    __param(1, common_1.Inject('UserModel')),
+    __metadata("design:paramtypes", [Object, Object])
 ], PermissionsService);
 exports.PermissionsService = PermissionsService;
 //# sourceMappingURL=permissions.service.js.map

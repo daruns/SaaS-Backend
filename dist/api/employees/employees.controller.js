@@ -22,6 +22,9 @@ const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const platform_express_1 = require("@nestjs/platform-express");
 const app_service_1 = require("../../app/app.service");
 const users_service_1 = require("../auth/apps/users/users.service");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
 let EmployeesController = class EmployeesController {
     constructor(employeesService, usersService) {
         this.employeesService = employeesService;
@@ -30,6 +33,10 @@ let EmployeesController = class EmployeesController {
     async findAll(req) {
         const employees = await this.employeesService.findAll(req.user);
         return employees;
+    }
+    async findUsers(req) {
+        const users = await this.employeesService.findUsers(req.user);
+        return users;
     }
     async findMe(req) {
         const employee = await this.employeesService.findMe(req.user);
@@ -40,7 +47,6 @@ let EmployeesController = class EmployeesController {
         return employee;
     }
     async create(payload, req) {
-        console.log(payload);
         const createdEmployee = await this.employeesService.create(payload, req.user);
         return createdEmployee;
     }
@@ -71,6 +77,7 @@ let EmployeesController = class EmployeesController {
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmEmployees, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -78,7 +85,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], EmployeesController.prototype, "findAll", null);
 __decorate([
+    common_1.Get('users'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmEmployees, actions_enum_1.Action.Read),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeesController.prototype, "findUsers", null);
+__decorate([
     common_1.Get('me'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmEmployees, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -87,6 +104,7 @@ __decorate([
 ], EmployeesController.prototype, "findMe", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmEmployees, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -95,6 +113,7 @@ __decorate([
 ], EmployeesController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmEmployees, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -103,6 +122,7 @@ __decorate([
 ], EmployeesController.prototype, "create", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmEmployees, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -111,6 +131,7 @@ __decorate([
 ], EmployeesController.prototype, "update", null);
 __decorate([
     common_1.Post('updateAvatar'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmEmployees, actions_enum_1.Action.Update),
     common_1.UseInterceptors(platform_express_1.FileInterceptor("avatar", { fileFilter: app_service_1.imageFileFilter })),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.UploadedFile()), __param(2, common_1.Req()),
@@ -120,6 +141,7 @@ __decorate([
 ], EmployeesController.prototype, "editProfile", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.hrmEmployees, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

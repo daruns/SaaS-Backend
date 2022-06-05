@@ -20,6 +20,9 @@ const expenses_service_1 = require("./expenses.service");
 const create_expense_dto_1 = require("./dto/create-expense.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const platform_express_1 = require("@nestjs/platform-express");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
 let ExpensesController = class ExpensesController {
     constructor(expensesService) {
         this.expensesService = expensesService;
@@ -63,6 +66,7 @@ let ExpensesController = class ExpensesController {
 __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpenses, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -71,6 +75,7 @@ __decorate([
 ], ExpensesController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpenses, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -79,6 +84,7 @@ __decorate([
 ], ExpensesController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpenses, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Body('items')), __param(2, common_1.Request()),
     __metadata("design:type", Function),
@@ -88,6 +94,7 @@ __decorate([
 __decorate([
     common_1.Post('addFile'),
     common_1.UseInterceptors(platform_express_1.FilesInterceptor("files", 1)),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpenses, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body("id")), __param(1, common_1.UploadedFiles()), __param(2, common_1.Request()),
     __metadata("design:type", Function),
@@ -96,6 +103,7 @@ __decorate([
 ], ExpensesController.prototype, "addFile", null);
 __decorate([
     common_1.Post('replaceFiles'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpenses, actions_enum_1.Action.Update),
     common_1.UseInterceptors(platform_express_1.FilesInterceptor("files", 1)),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body("id")), __param(1, common_1.UploadedFiles()), __param(2, common_1.Request()),
@@ -105,6 +113,7 @@ __decorate([
 ], ExpensesController.prototype, "replaceFiles", null);
 __decorate([
     common_1.Post('removeFile'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpenses, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -113,6 +122,7 @@ __decorate([
 ], ExpensesController.prototype, "removeFile", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpenses, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Body('items')), __param(2, common_1.Request()),
     __metadata("design:type", Function),
@@ -121,6 +131,7 @@ __decorate([
 ], ExpensesController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeExpenses, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

@@ -19,6 +19,9 @@ const update_clientContact_dto_1 = require("./dto/update-clientContact.dto");
 const clientContacts_service_1 = require("./clientContacts.service");
 const create_clientContact_dto_1 = require("./dto/create-clientContact.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
 let ClientContactsController = class ClientContactsController {
     constructor(clientContactsService) {
         this.clientContactsService = clientContactsService;
@@ -35,15 +38,16 @@ let ClientContactsController = class ClientContactsController {
         const createdClientContact = await this.clientContactsService.create(clientContact, req.user);
         return createdClientContact;
     }
-    update(payload, req) {
+    async update(payload, req) {
         return this.clientContactsService.update(payload, req.user);
     }
-    deleteById(payload, req) {
+    async deleteById(payload, req) {
         return this.clientContactsService.deleteById(payload.id, req.user);
     }
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.crmClientContacts, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -52,6 +56,7 @@ __decorate([
 ], ClientContactsController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.crmClientContacts, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -60,6 +65,7 @@ __decorate([
 ], ClientContactsController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.crmClientContacts, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -68,19 +74,21 @@ __decorate([
 ], ClientContactsController.prototype, "create", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.crmClientContacts, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [update_clientContact_dto_1.UpdateClientContactDto, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ClientContactsController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.crmClientContacts, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ClientContactsController.prototype, "deleteById", null);
 ClientContactsController = __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),

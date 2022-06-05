@@ -17,6 +17,9 @@ const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const joinedItems_service_1 = require("./joinedItems.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
 let JoinedItemsController = class JoinedItemsController {
     constructor(joinedItemsService) {
         this.joinedItemsService = joinedItemsService;
@@ -32,6 +35,7 @@ let JoinedItemsController = class JoinedItemsController {
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeJoinedItems, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200 }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -40,6 +44,7 @@ __decorate([
 ], JoinedItemsController.prototype, "findAll", null);
 __decorate([
     common_1.Get('joinedExpenseCategories'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.financeJoinedExpenseCategories, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200 }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),

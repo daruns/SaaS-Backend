@@ -7,6 +7,8 @@ export declare class ProjectsController {
     private readonly projectsService;
     constructor(projectsService: ProjectsService);
     findAll(req: any): Promise<import("./projects.service").ResponseData>;
+    findAllClients(req: any): Promise<import("./projects.service").ResponseData>;
+    findAllUsers(req: any): Promise<import("./projects.service").ResponseData>;
     findOne(id: number, req: any): Promise<import("./projects.service").ResponseData>;
     create(project: CreateProjectDto, req: any): Promise<import("./projects.service").ResponseData>;
     addLeaders(payload: AddLeadersToProjectDto, req: any): Promise<import("./projects.service").ResponseData>;

@@ -9,9 +9,6 @@ export declare class UpdateEmployeeDto {
     salary: number;
     hrMember: boolean;
     isManager: boolean;
-    username: string;
-    email: string;
-    password: string;
     readonly userType: string;
     phoneNumber: string;
     createdBy: string;

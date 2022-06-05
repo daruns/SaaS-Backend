@@ -14,6 +14,7 @@ const clients_module_1 = require("./clients/clients.module");
 const meetings_module_1 = require("./meetings/meetings.module");
 const socialMedias_module_1 = require("./socialMedias/socialMedias.module");
 const users_module_1 = require("./auth/apps/users/users.module");
+const permissions_module_1 = require("./auth/apps/permissions/permissions.module");
 const brands_module_1 = require("./brands/brands.module");
 const inventoryItems_module_1 = require("./inventoryItems/inventoryItems.module");
 const nonInventoryItems_module_1 = require("./nonInventoryItems/nonInventoryItems.module");
@@ -47,14 +48,17 @@ const deductionTypes_module_1 = require("./deductionTypes/deductionTypes.module"
 const earnings_module_1 = require("./earnings/earnings.module");
 const deductions_module_1 = require("./deductions/deductions.module");
 const payslips_module_1 = require("./payslips/payslips.module");
+const can_module_1 = require("./auth/can/can.module");
 let ApiModule = class ApiModule {
 };
 ApiModule = __decorate([
     common_1.Module({
         imports: [
             users_module_1.UsersModule,
+            permissions_module_1.PermissionsModule,
             clients_module_1.ClientsModule,
             auth_module_1.AuthModule,
+            can_module_1.CanModule,
             clientContacts_module_1.ClientContactsModule,
             meetings_module_1.MeetingsModule,
             socialMedias_module_1.SocialMediasModule,

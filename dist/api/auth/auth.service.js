@@ -19,10 +19,13 @@ const bcrypt = require("bcrypt");
 const users_service_1 = require("./apps/users/users.service");
 const brands_service_1 = require("../brands/brands.service");
 const user_layers_dto_1 = require("./dto/user-layers.dto");
+const app_service_1 = require("../../app/app.service");
 let AuthService = class AuthService {
-    constructor(boardModelClass, boardAttributeClass, brandService, usersService, jwtService) {
+    constructor(boardModelClass, boardAttributeClass, brandModel, fileUploadService, brandService, usersService, jwtService) {
         this.boardModelClass = boardModelClass;
         this.boardAttributeClass = boardAttributeClass;
+        this.brandModel = brandModel;
+        this.fileUploadService = fileUploadService;
         this.brandService = brandService;
         this.usersService = usersService;
         this.jwtService = jwtService;
@@ -81,6 +84,51 @@ let AuthService = class AuthService {
             };
         }
     }
+    async editBrand(payload, currentUser) {
+        var _a;
+        const brand = await this.brandModel.query().findOne({ brandCode: currentUser.brandCode });
+        if (payload.logo) {
+            const logoUploaded = payload.logo;
+            const fileUploaded = await this.fileUploadService.addFile(logoUploaded, "logos", currentUser);
+            if (fileUploaded.success) {
+                console.log(fileUploaded.data);
+                payload.logo = fileUploaded.data.url;
+            }
+            else
+                return fileUploaded;
+        }
+        if (brand) {
+            const updatedBrand = await this.brandModel
+                .query()
+                .where({ brandCode: currentUser.brandCode })
+                .update({
+                name: payload.name ? payload.name : brand.name,
+                companySize: payload.companySize ? payload.companySize : brand.companySize,
+                address: payload.address ? payload.address : brand.address,
+                logo: payload.logo ? payload.logo : brand.logo,
+                announcedAt: payload.announcedAt ? payload.announcedAt : brand.announcedAt,
+                branches: payload.branches ? payload.branches : brand.branches,
+                occupation: payload.occupation ? payload.occupation : brand.occupation,
+                website: payload.website ? payload.website : brand.website,
+                phoneNumber: payload.phoneNumber ? payload.phoneNumber : brand.phoneNumber,
+                email: payload.email ? payload.email : brand.email,
+                updatedBy: currentUser.username,
+            })
+                .where({ id: (_a = currentUser.brand) === null || _a === void 0 ? void 0 : _a.id });
+            return {
+                success: true,
+                message: 'Brand details updated successfully.',
+                data: updatedBrand,
+            };
+        }
+        else {
+            return {
+                success: false,
+                message: 'No brand found.',
+                data: {},
+            };
+        }
+    }
     async signIn(user) {
         if (!user.id) {
             throw new common_1.UnauthorizedException();
@@ -133,7 +181,9 @@ AuthService = __decorate([
     common_1.Injectable(),
     __param(0, common_1.Inject('BoardModel')),
     __param(1, common_1.Inject('BoardAttributeModel')),
-    __metadata("design:paramtypes", [Object, Object, brands_service_1.BrandsService,
+    __param(2, common_1.Inject('BrandModel')),
+    __metadata("design:paramtypes", [Object, Object, Object, app_service_1.FileUploadService,
+        brands_service_1.BrandsService,
         users_service_1.UsersService,
         jwt_1.JwtService])
 ], AuthService);

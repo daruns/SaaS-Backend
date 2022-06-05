@@ -21,6 +21,9 @@ const update_task_dto_1 = require("./dto/update-task.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const add_membersToTask_dto_1 = require("./dto/add-membersToTask.dto");
 const platform_express_1 = require("@nestjs/platform-express");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
 let TasksController = class TasksController {
     constructor(tasksService) {
         this.tasksService = tasksService;
@@ -68,6 +71,7 @@ let TasksController = class TasksController {
 __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -76,6 +80,7 @@ __decorate([
 ], TasksController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -84,6 +89,7 @@ __decorate([
 ], TasksController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -92,6 +98,7 @@ __decorate([
 ], TasksController.prototype, "create", null);
 __decorate([
     common_1.Post('addTeamMembers'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -100,6 +107,7 @@ __decorate([
 ], TasksController.prototype, "addMembers", null);
 __decorate([
     common_1.Post('removeTeamMembers'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -108,6 +116,7 @@ __decorate([
 ], TasksController.prototype, "removeMembers", null);
 __decorate([
     common_1.Post('addFile'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Update),
     common_1.UseInterceptors(platform_express_1.FilesInterceptor("files", 25)),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body("id")), __param(1, common_1.UploadedFiles()), __param(2, common_1.Request()),
@@ -117,6 +126,7 @@ __decorate([
 ], TasksController.prototype, "addFile", null);
 __decorate([
     common_1.Post('removeFile'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -125,6 +135,7 @@ __decorate([
 ], TasksController.prototype, "removeFile", null);
 __decorate([
     common_1.Post('changeBoard'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -133,6 +144,7 @@ __decorate([
 ], TasksController.prototype, "changeBoard", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -141,6 +153,7 @@ __decorate([
 ], TasksController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projectsTasks, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
+const can_decorator_1 = require("../api/auth/can/decorators/can.decorator");
+const actions_enum_1 = require("../api/auth/can/enums/actions.enum");
+const subjects_enum_1 = require("../api/auth/can/enums/subjects.enum");
 const jwt_auth_guard_1 = require("../api/auth/guards/jwt-auth.guard");
 const defaults_1 = require("../lib/defaults");
 const regex_1 = require("../lib/regex");
@@ -30,9 +33,6 @@ let AppController = class AppController {
             message: "fetch currency codes successful",
             data: { currencyCodes: defaults_1.CURRENCY_CODES },
         };
-    }
-    async getHello(req) {
-        return "sss";
     }
     async getFile(query, res) {
         let key = query["key"];
@@ -76,6 +76,7 @@ let AppController = class AppController {
 };
 __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    can_decorator_1.Can(subjects_enum_1.Subjects.EveryoneAllowed, actions_enum_1.Action.Read),
     common_1.Get('currencyCodes'),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
@@ -84,15 +85,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "getCurrencyCodes", null);
 __decorate([
-    common_1.Get(''),
-    openapi.ApiResponse({ status: 200, type: String }),
-    __param(0, common_1.Request()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AppController.prototype, "getHello", null);
-__decorate([
     common_1.Get('readAsStream'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.EveryoneAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200 }),
     __param(0, common_1.Query()), __param(1, common_1.Res()),
     __metadata("design:type", Function),

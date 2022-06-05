@@ -5,7 +5,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
-    findAll(req: any): Promise<import("./users.service").ResponseData>;
     allWithBrand(req: any): Promise<import("./users.service").ResponseData>;
     allWithBrandClients(req: any): Promise<import("./users.service").ResponseData>;
     allWithBrandNoClients(req: any): Promise<import("./users.service").ResponseData>;

@@ -17,30 +17,36 @@ const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const permissions_service_1 = require("./permissions.service");
 const create_permission_dto_1 = require("./dto/create-permission.dto");
+const update_permission_dto_1 = require("./dto/update-permission.dto");
+const jwt_auth_guard_1 = require("../../guards/jwt-auth.guard");
+const subjects_enum_1 = require("../../can/enums/subjects.enum");
+const actions_enum_1 = require("../../can/enums/actions.enum");
+const can_decorator_1 = require("../../can/decorators/can.decorator");
 let PermissionsController = class PermissionsController {
-    constructor(usersService) {
-        this.usersService = usersService;
+    constructor(permissionsService) {
+        this.permissionsService = permissionsService;
     }
     async findAll(req) {
-        const users = await this.usersService.findAll();
-        return users;
+        const permissions = await this.permissionsService.findAll(req.user);
+        return permissions;
     }
     async findOne(id, req) {
-        const post = await this.usersService.findById(id);
+        const post = await this.permissionsService.findById(id, req.user);
         return post;
     }
-    create(user) {
-        return this.usersService.create(user);
+    create(payload, req) {
+        return this.permissionsService.create(payload, req.user);
     }
-    update(user) {
-        return this.usersService.update(user);
+    update(payload, req) {
+        return this.permissionsService.update(payload, req.user);
     }
-    delete(user) {
-        return this.usersService.delete(user);
+    delete(payload, req) {
+        return this.permissionsService.delete(payload, req.user);
     }
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.OwnerAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -49,6 +55,7 @@ __decorate([
 ], PermissionsController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.OwnerAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -57,30 +64,34 @@ __decorate([
 ], PermissionsController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.OwnerAllowed, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
-    __param(0, common_1.Body()),
+    __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_permission_dto_1.CreatePermissionDto]),
+    __metadata("design:paramtypes", [create_permission_dto_1.CreatePermissionDto, Object]),
     __metadata("design:returntype", void 0)
 ], PermissionsController.prototype, "create", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.OwnerAllowed, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
-    __param(0, common_1.Body()),
+    __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [update_permission_dto_1.UpdatePermissionDto, Object]),
     __metadata("design:returntype", void 0)
 ], PermissionsController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.OwnerAllowed, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
-    __param(0, common_1.Body()),
+    __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], PermissionsController.prototype, "delete", null);
 PermissionsController = __decorate([
-    common_1.Controller('users'),
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    common_1.Controller('permissions'),
     __metadata("design:paramtypes", [permissions_service_1.PermissionsService])
 ], PermissionsController);
 exports.PermissionsController = PermissionsController;

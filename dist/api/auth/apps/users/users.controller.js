@@ -20,13 +20,12 @@ const create_user_dto_1 = require("./dto/create-user.dto");
 const jwt_auth_guard_1 = require("../../guards/jwt-auth.guard");
 const update_user_dto_1 = require("./dto/update-user.dto");
 const platform_express_1 = require("@nestjs/platform-express");
+const can_decorator_1 = require("../../can/decorators/can.decorator");
+const subjects_enum_1 = require("../../can/enums/subjects.enum");
+const actions_enum_1 = require("../../can/enums/actions.enum");
 let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
-    }
-    async findAll(req) {
-        const users = await this.usersService.findAll();
-        return users;
     }
     async allWithBrand(req) {
         const users = await this.usersService.allWithBrand(req.user);
@@ -47,7 +46,7 @@ let UsersController = class UsersController {
     create(user, file, req) {
         user.avatar = file;
         user.brandCode = req.user.brandCode;
-        return this.usersService.create(user);
+        return this.usersService.create(user, req.user);
     }
     update(user, file, req) {
         user.avatar = file;
@@ -58,15 +57,8 @@ let UsersController = class UsersController {
     }
 };
 __decorate([
-    common_1.Get(),
-    openapi.ApiResponse({ status: 200, type: Object }),
-    __param(0, common_1.Req()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "findAll", null);
-__decorate([
     common_1.Get('allWithBrand'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.EveryoneAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Req()),
     __metadata("design:type", Function),
@@ -75,6 +67,7 @@ __decorate([
 ], UsersController.prototype, "allWithBrand", null);
 __decorate([
     common_1.Get('allWithBrandClients'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.EveryoneAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Req()),
     __metadata("design:type", Function),
@@ -83,6 +76,7 @@ __decorate([
 ], UsersController.prototype, "allWithBrandClients", null);
 __decorate([
     common_1.Get('allWithBrandNoClients'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.EveryoneAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Req()),
     __metadata("design:type", Function),
@@ -91,6 +85,7 @@ __decorate([
 ], UsersController.prototype, "allWithBrandNoClients", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.EveryoneAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Req()),
     __metadata("design:type", Function),
@@ -99,6 +94,7 @@ __decorate([
 ], UsersController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.OwnerAllowed, actions_enum_1.Action.Create),
     common_1.UseInterceptors(platform_express_1.FileInterceptor("avatar")),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.UploadedFile()), __param(2, common_1.Req()),
@@ -108,6 +104,7 @@ __decorate([
 ], UsersController.prototype, "create", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.OwnerAllowed, actions_enum_1.Action.Update),
     common_1.UseInterceptors(platform_express_1.FileInterceptor("avatar")),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.UploadedFile()), __param(2, common_1.Req()),
@@ -117,6 +114,7 @@ __decorate([
 ], UsersController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.OwnerAllowed, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Req()),
     __metadata("design:type", Function),

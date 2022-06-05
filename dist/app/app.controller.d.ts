@@ -4,7 +4,6 @@ export declare class AppController {
     private readonly fileUploadService;
     constructor(appService: AppService, fileUploadService: FileUploadService);
     getCurrencyCodes(req: any): Promise<ResponseData>;
-    getHello(req: any): Promise<string>;
     getFile(query: {
         key: string;
     }, res: any): Promise<void>;

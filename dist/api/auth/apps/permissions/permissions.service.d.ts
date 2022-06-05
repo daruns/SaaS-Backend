@@ -1,4 +1,5 @@
 import { PermissionModel } from 'src/database/models/permission.model';
+import { UserModel } from 'src/database/models/user.model';
 import { ModelClass } from 'objection';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -9,12 +10,12 @@ export interface ResponseData {
 }
 export declare class PermissionsService {
     private modelClass;
-    constructor(modelClass: ModelClass<PermissionModel>);
-    findAll(): Promise<ResponseData>;
-    findById(id: number): Promise<ResponseData>;
-    findByRoleId(roleId: number): Promise<ResponseData>;
-    findByUser(userId: number): Promise<ResponseData>;
-    create(payload: CreatePermissionDto): Promise<ResponseData>;
-    update(payload: UpdatePermissionDto): Promise<ResponseData>;
-    delete(payload: any): Promise<ResponseData>;
+    private userModel;
+    constructor(modelClass: ModelClass<PermissionModel>, userModel: ModelClass<UserModel>);
+    findAll(currentUser: any): Promise<ResponseData>;
+    findById(id: number, currentUser: any): Promise<ResponseData>;
+    findByUser(userId: number, currentUser: any): Promise<ResponseData>;
+    create(payload: CreatePermissionDto, currentUser: any): Promise<ResponseData>;
+    update(payload: UpdatePermissionDto, currentUser: any): Promise<ResponseData>;
+    delete(payload: any, currentUser: any): Promise<ResponseData>;
 }

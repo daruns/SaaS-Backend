@@ -20,6 +20,9 @@ const create_brand_dto_1 = require("./dto/create-brand.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const platform_express_1 = require("@nestjs/platform-express");
 const update_brand_dto_1 = require("./dto/update-brand.dto");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
 let BrandsController = class BrandsController {
     constructor(brandsService) {
         this.brandsService = brandsService;
@@ -47,6 +50,7 @@ let BrandsController = class BrandsController {
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.MasterAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -54,8 +58,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BrandsController.prototype, "findAll", null);
 __decorate([
-    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.MasterAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -63,8 +67,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BrandsController.prototype, "findOne", null);
 __decorate([
-    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get('/brandCode/:brandCode'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.MasterAllowed, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('brandCode', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -73,6 +77,7 @@ __decorate([
 ], BrandsController.prototype, "findByBrandCode", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.MasterAllowed, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()),
     __metadata("design:type", Function),
@@ -80,8 +85,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], BrandsController.prototype, "create", null);
 __decorate([
-    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.MasterAllowed, actions_enum_1.Action.Update),
     common_1.UseInterceptors(platform_express_1.FileInterceptor("logo")),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.UploadedFile()), __param(2, common_1.Request()),
@@ -90,6 +95,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], BrandsController.prototype, "update", null);
 BrandsController = __decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Controller('brands'),
     __metadata("design:paramtypes", [brands_service_1.BrandsService])
 ], BrandsController);

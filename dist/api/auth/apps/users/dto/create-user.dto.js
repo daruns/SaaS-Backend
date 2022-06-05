@@ -16,13 +16,9 @@ const user_layers_dto_1 = require("../../../dto/user-layers.dto");
 const app_service_1 = require("../../../../../app/app.service");
 class CreateUserDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { name: { required: true, type: () => String }, email: { required: true, type: () => String }, username: { required: true, type: () => String }, password: { required: true, type: () => String, minLength: 8, maxLength: 30 }, phoneNumber: { required: true, type: () => String }, userType: { required: true, type: () => String }, avatar: { required: true, type: () => Object }, department: { required: true, type: () => String }, reportsTo: { required: true, type: () => String }, activationToken: { required: true, type: () => String }, activationTokenExpire: { required: true, type: () => Date }, activatedAt: { required: true, type: () => Date }, passwordResetToken: { required: true, type: () => String }, passwordResetTokenExpire: { required: true, type: () => Date }, lastResetAt: { required: true, type: () => Date }, brandCode: { required: true, type: () => String } };
+        return { name: { required: true, type: () => String }, email: { required: true, type: () => String }, username: { required: true, type: () => String }, password: { required: true, type: () => String, minLength: 8, maxLength: 30 }, phoneNumber: { required: true, type: () => String }, userType: { required: true, type: () => String }, avatar: { required: true, type: () => Object }, department: { required: true, type: () => String }, reportsTo: { required: true, type: () => String }, brandCode: { required: true, type: () => String }, permissions: { required: true } };
     }
 }
-__decorate([
-    class_validator_1.IsNotEmpty({ message: 'Name is required' }),
-    __metadata("design:type", String)
-], CreateUserDto.prototype, "name", void 0);
 __decorate([
     class_validator_1.IsNotEmpty({ message: 'Email is required' }),
     class_validator_1.IsEmail({}, { message: 'Email address is invalid' }),

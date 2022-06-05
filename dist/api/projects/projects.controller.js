@@ -22,6 +22,9 @@ const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const add_leadersToProject_dto_1 = require("./dto/add-leadersToProject.dto");
 const add_membersToProject_dto_1 = require("./dto/add-membersToProject.dto");
 const platform_express_1 = require("@nestjs/platform-express");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
 let ProjectsController = class ProjectsController {
     constructor(projectsService) {
         this.projectsService = projectsService;
@@ -29,6 +32,14 @@ let ProjectsController = class ProjectsController {
     async findAll(req) {
         const projects = await this.projectsService.findAll(req.user);
         return projects;
+    }
+    async findAllClients(req) {
+        const projectsClients = await this.projectsService.findAllClients(req.user);
+        return projectsClients;
+    }
+    async findAllUsers(req) {
+        const projectsUsers = await this.projectsService.findAllUsers(req.user);
+        return projectsUsers;
     }
     async findOne(id, req) {
         const project = await this.projectsService.findById(id, req.user);
@@ -78,8 +89,8 @@ let ProjectsController = class ProjectsController {
     }
 };
 __decorate([
-    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -87,7 +98,26 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProjectsController.prototype, "findAll", null);
 __decorate([
+    common_1.Get('clients'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Read),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProjectsController.prototype, "findAllClients", null);
+__decorate([
+    common_1.Get('users'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Read),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProjectsController.prototype, "findAllUsers", null);
+__decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -96,6 +126,7 @@ __decorate([
 ], ProjectsController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -104,6 +135,7 @@ __decorate([
 ], ProjectsController.prototype, "create", null);
 __decorate([
     common_1.Post('addTeamLeaders'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -112,6 +144,7 @@ __decorate([
 ], ProjectsController.prototype, "addLeaders", null);
 __decorate([
     common_1.Post('addTeamMembers'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -120,6 +153,7 @@ __decorate([
 ], ProjectsController.prototype, "addMembers", null);
 __decorate([
     common_1.Post('removeTeamLeaders'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -128,6 +162,7 @@ __decorate([
 ], ProjectsController.prototype, "removeLeaders", null);
 __decorate([
     common_1.Post('removeTeamMembers'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -136,6 +171,7 @@ __decorate([
 ], ProjectsController.prototype, "removeMembers", null);
 __decorate([
     common_1.Post('addFile'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Create),
     common_1.UseInterceptors(platform_express_1.FilesInterceptor("files", 10)),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body("id")), __param(1, common_1.UploadedFiles()), __param(2, common_1.Request()),
@@ -145,6 +181,7 @@ __decorate([
 ], ProjectsController.prototype, "addFile", null);
 __decorate([
     common_1.Post('replaceFiles'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Update),
     common_1.UseInterceptors(platform_express_1.FilesInterceptor("files", 10)),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body("id")), __param(1, common_1.UploadedFiles()), __param(2, common_1.Request()),
@@ -154,6 +191,7 @@ __decorate([
 ], ProjectsController.prototype, "replaceFiles", null);
 __decorate([
     common_1.Post('removeFile'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -162,6 +200,7 @@ __decorate([
 ], ProjectsController.prototype, "removeFile", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -170,6 +209,7 @@ __decorate([
 ], ProjectsController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.projects, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),

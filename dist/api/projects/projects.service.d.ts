@@ -31,6 +31,8 @@ export declare class ProjectsService {
     private readonly fileUploadService;
     constructor(modelClass: ModelClass<ProjectModel>, leaderModelClass: ModelClass<ProjectLeaderModel>, memberModelClass: ModelClass<ProjectMemberModel>, userModel: ModelClass<UserModel>, projectAttachmentModel: ModelClass<ProjectAttachmentModel>, attachmentModel: ModelClass<AttachmentModel>, taskMemberModelClass: ModelClass<TaskMemberModel>, taskModelClass: ModelClass<TaskModel>, clientsSerive: ClientsService, fileUploadService: FileUploadService);
     findAll(currentUser: any): Promise<ResponseData>;
+    findAllClients(currentUser: any): Promise<ResponseData>;
+    findAllUsers(currentUser: any): Promise<ResponseData>;
     findById(id: number, currentUser: any): Promise<ResponseData>;
     create(payload: CreateProjectDto, currentUser: any): Promise<ResponseData>;
     update(payload: UpdateProjectDto, currentUser: any): Promise<ResponseData>;

@@ -19,6 +19,9 @@ const update_deduction_dto_1 = require("./dto/update-deduction.dto");
 const deductions_service_1 = require("./deductions.service");
 const create_deduction_dto_1 = require("./dto/create-deduction.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const subjects_enum_1 = require("../auth/can/enums/subjects.enum");
+const actions_enum_1 = require("../auth/can/enums/actions.enum");
+const can_decorator_1 = require("../auth/can/decorators/can.decorator");
 let DeductionsController = class DeductionsController {
     constructor(deductionsService) {
         this.deductionsService = deductionsService;
@@ -35,15 +38,16 @@ let DeductionsController = class DeductionsController {
         const createdDeduction = await this.deductionsService.create(deduction, req.user);
         return createdDeduction;
     }
-    update(payload, req) {
+    async update(payload, req) {
         return this.deductionsService.update(payload, req.user);
     }
-    deleteById(payload, req) {
+    async deleteById(payload, req) {
         return this.deductionsService.deleteById(payload.id, req.user);
     }
 };
 __decorate([
     common_1.Get(),
+    can_decorator_1.Can(subjects_enum_1.Subjects.payrollDeductions, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Request()),
     __metadata("design:type", Function),
@@ -52,6 +56,7 @@ __decorate([
 ], DeductionsController.prototype, "findAll", null);
 __decorate([
     common_1.Get(':id'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.payrollDeductions, actions_enum_1.Action.Read),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, common_1.Param('id', new common_1.ParseIntPipe())), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -60,6 +65,7 @@ __decorate([
 ], DeductionsController.prototype, "findOne", null);
 __decorate([
     common_1.Post('create'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.payrollDeductions, actions_enum_1.Action.Create),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
@@ -68,19 +74,21 @@ __decorate([
 ], DeductionsController.prototype, "create", null);
 __decorate([
     common_1.Post('update'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.payrollDeductions, actions_enum_1.Action.Update),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [update_deduction_dto_1.UpdateDeductionDto, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], DeductionsController.prototype, "update", null);
 __decorate([
     common_1.Post('delete'),
+    can_decorator_1.Can(subjects_enum_1.Subjects.payrollDeductions, actions_enum_1.Action.Delete),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], DeductionsController.prototype, "deleteById", null);
 DeductionsController = __decorate([
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
