@@ -7,4 +7,4 @@ import { PermissionsService } from './permissions.service';
   providers: [PermissionsService],
   exports: [PermissionsService],
 })
-export class UsersModule {}
+export class PermissionsModule {}

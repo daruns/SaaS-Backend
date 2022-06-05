@@ -1,5 +1,8 @@
 import { Body, Controller, Get, HttpStatus, Param, Post, Query, Req, Request, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { createReadStream } from 'fs';
+import { Can } from 'src/api/auth/can/decorators/can.decorator';
+import { Action } from 'src/api/auth/can/enums/actions.enum';
+import { Subjects } from 'src/api/auth/can/enums/subjects.enum';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 import { CURRENCY_CODES } from 'src/lib/defaults';
 import { AWS_S3_KEY_NAME } from 'src/lib/regex';
@@ -12,6 +15,7 @@ export class AppController {
     private readonly fileUploadService: FileUploadService,
   ) {}
   @UseGuards(JwtAuthGuard)
+  @Can(Subjects.EveryoneAllowed,Action.Read)
   @Get('currencyCodes')
   async getCurrencyCodes(@Request() req): Promise<ResponseData> {
     return {
@@ -21,12 +25,8 @@ export class AppController {
     }
   }
 
-  @Get('')
-  async getHello(@Request() req) {
-    return "sss";
-  }
-
   @Get('readAsStream')
+  @Can(Subjects.EveryoneAllowed,Action.Read)
   async getFile(@Query() query: {key:string},@Res() res) {
     let key:string = query["key"]
     let firstmatch: RegExpMatchArray|[]|null = key.match(AWS_S3_KEY_NAME)

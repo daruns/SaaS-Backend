@@ -19,13 +19,9 @@ export class AttendancesService {
 
   // attendance list
   async findAll(currentUser): Promise<ResponseData> {
-    const now = new Date();
-    const thismonthDays = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-    const daysArr = Array.from({length: thismonthDays}, (e, i)=> i+1)
     const attendances = await this.modelClass.query()
     .where({ brandCode: currentUser.brandCode,checkedIn: 1 })
     .withGraphFetched({employee: {user: {}}})
-    console.log("got from all")
     return {
       success: true,
       message: 'Attendances details fetch successfully.',
@@ -38,7 +34,14 @@ export class AttendancesService {
     .where({ brandCode: currentUser.brandCode})
     .findOne({userId: currentUser.id})
     .withGraphFetched({attendances: {}});
-    if (currentEmployee.hrMember === true) {
+    if (!currentEmployee) {
+      return {
+        success: false,
+        message: "You are not an employee",
+        data: []
+      }
+    }
+    if (currentEmployee?.hrMember === true) {
       const attendances = await this.modelClass.query()
       .where({ brandCode: currentUser.brandCode })
       return {

@@ -3,7 +3,6 @@ import { UserLayers } from 'src/api/auth/dto/user-layers.dto';
 import { FileParamDto, PhoneNumberRegex, ToPhone } from 'src/app/app.service'
 
 export class CreateUserDto {
-  @IsNotEmpty({ message: 'Name is required' })
   name: string;
   @IsNotEmpty({ message: 'Email is required' })
   @IsEmail({}, { message: 'Email address is invalid' })
@@ -24,11 +23,14 @@ export class CreateUserDto {
   avatar: string|FileParamDto
   department: string
   reportsTo: string
-  activationToken: string
-  activationTokenExpire: Date
-  activatedAt: Date
-  passwordResetToken: string
-  passwordResetTokenExpire: Date
-  lastResetAt: Date
+  // activationToken: string
+  // activationTokenExpire: Date
+  // activatedAt: Date
+  // passwordResetToken: string
+  // passwordResetTokenExpire: Date
+  // lastResetAt: Date
   brandCode: string
+  permissions: Array<{subjects: string[],all: boolean, read: boolean, create: boolean, update: boolean, delete: boolean }>
 }
+
+export type PermissionType = Array<{subjects: string[],all: boolean, read: boolean, create: boolean, update: boolean, delete: boolean }>

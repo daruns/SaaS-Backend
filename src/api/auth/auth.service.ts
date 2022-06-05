@@ -13,6 +13,8 @@ import { EditProfileDto } from './dto/editProfile.dto';
 import { BoardModel } from 'src/database/models/board.model';
 import { BoardAttributeModel } from 'src/database/models/boardAttribute.model';
 import { ModelClass } from 'objection';
+import { FileUploadService } from 'src/app/app.service';
+import BrandModel from 'src/database/models/brand.model';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -25,6 +27,8 @@ export class AuthService {
   constructor(
     @Inject('BoardModel') private boardModelClass: ModelClass<BoardModel>,
     @Inject('BoardAttributeModel') private boardAttributeClass: ModelClass<BoardAttributeModel>,
+    @Inject('BrandModel') private brandModel: ModelClass<BrandModel>,
+    private fileUploadService: FileUploadService,
     private brandService: BrandsService,
     private usersService: UsersService,
     private jwtService: JwtService
@@ -82,6 +86,50 @@ export class AuthService {
         message: "Your Profile Not Found!",
         data: {}
       }
+    }
+  }
+
+  // Update brand before save encrypt password
+  async editBrand(payload, currentUser): Promise<ResponseData> {
+    const brand = await this.brandModel.query().findOne({brandCode: currentUser.brandCode})
+    if (payload.logo) {
+      const logoUploaded = payload.logo
+      const fileUploaded = await this.fileUploadService.addFile(logoUploaded, "logos", currentUser)
+      if (fileUploaded.success) {
+        console.log(fileUploaded.data)
+        payload.logo = fileUploaded.data.url
+      } else return fileUploaded
+    }
+    if (brand) {
+      const updatedBrand = await this.brandModel
+        .query()
+        .where({brandCode: currentUser.brandCode})
+        .update({
+          // subdomain: payload.subdomain ? payload.subdomain : brand.subdomain,
+          name: payload.name ? payload.name : brand.name,
+          companySize: payload.companySize ? payload.companySize : brand.companySize,
+          address: payload.address ? payload.address : brand.address,
+          logo: payload.logo ? payload.logo : brand.logo,
+          announcedAt: payload.announcedAt ? payload.announcedAt : brand.announcedAt,
+          branches: payload.branches ? payload.branches : brand.branches,
+          occupation: payload.occupation ? payload.occupation : brand.occupation,
+          website: payload.website ? payload.website : brand.website,
+          phoneNumber: payload.phoneNumber ? payload.phoneNumber : brand.phoneNumber,
+          email: payload.email ? payload.email : brand.email,
+          updatedBy: currentUser.username,
+        })
+        .where({ id: currentUser.brand?.id });
+      return {
+        success: true,
+        message: 'Brand details updated successfully.',
+        data: updatedBrand,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'No brand found.',
+        data: {},
+      };
     }
   }
 

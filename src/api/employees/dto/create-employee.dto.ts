@@ -16,19 +16,7 @@ export class CreateEmployeeDto {
   isManager: boolean
 
   //user params
-  @MinLength(3, { message: 'username must more than 3 chars' })
-  @MaxLength(30, { message: 'username is too long. only 30 chars allowed.' })
-  @IsOptional()
-  username: string
-  @IsString()
-  @IsEmail({})
-  @IsOptional()
-  email: string;
-  @MinLength(8, { message: 'Password must have 8 chars' })
-  @MaxLength(30, { message: 'Password is too long. only 30 chars allow.' })
-  @IsOptional()
-  password: string;
-  readonly userType:string = UserLayers.layerThree
+  userId: number
   @ToPhone
   @IsString({message: "must be a valid phonenumber"})
   @IsOptional()

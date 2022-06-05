@@ -34,4 +34,5 @@ export class UpdateUserDto {
   brandCode: string
   status: string
   deleted: number
+  permissions: Array<{subjects: string[],all: boolean, read: boolean, create: boolean, update: boolean, delete: boolean }>
 }

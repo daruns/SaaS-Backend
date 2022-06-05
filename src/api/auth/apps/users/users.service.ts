@@ -6,6 +6,12 @@ import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 import { BrandsService } from 'src/api/brands/brands.service';
 import {FileParamDto, FileUploadService} from "src/app/app.service"
 import { UserLayers } from '../../dto/user-layers.dto';
+import { CreatePermissionDto } from '../permissions/dto/create-permission.dto';
+import { CreateUserDto, PermissionType } from './dto/create-user.dto'
+import PermissionModel from 'src/database/models/permission.model';
+import { Subjects, SubjectsDto } from '../../can/enums/subjects.enum';
+import { Action } from '../../can/enums/actions.enum';
+import { Subject } from 'rxjs';
 
 export interface ResponseData {
   readonly success: boolean;
@@ -18,6 +24,7 @@ export interface ResponseData {
 export class UsersService {
   constructor(
     @Inject('UserModel') private modelClass: ModelClass<UserModel>,
+    @Inject('PermissionModel') private permissionClass: ModelClass<PermissionModel>,
     private brandService: BrandsService,
     private fileUploadService: FileUploadService,
     ) {}
@@ -25,6 +32,7 @@ export class UsersService {
   // user list with list of posts and comments on post
   async allWithBrand(currentUser): Promise<ResponseData> {
     const users = await this.modelClass.query().where({brandCode: currentUser.brandCode})
+    .withGraphFetched({permissions: true,myEmployeeProfile: true})
     users.map(user => {
       delete user.password
       delete user.activationToken
@@ -41,6 +49,7 @@ export class UsersService {
 
   async allWithBrandClients(currentUser): Promise<ResponseData> {
     const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).where({userType: UserLayers.layerFour})
+    .withGraphFetched({permissions: true,myEmployeeProfile: true})
     users.map(user => {
       delete user.password
       delete user.activationToken
@@ -57,6 +66,7 @@ export class UsersService {
 
   async allWithBrandNoClients(currentUser): Promise<ResponseData> {
     const users = await this.modelClass.query().where({brandCode: currentUser.brandCode}).whereNot({userType: UserLayers.layerFour})
+    .withGraphFetched({permissions: true,myEmployeeProfile: true})
     users.map(user => {
       delete user.password
       delete user.activationToken
@@ -101,7 +111,7 @@ export class UsersService {
   // find one user info by userId with posts data
   async findById(id: number): Promise<ResponseData> {
     const user = await this.modelClass
-      .query()
+    .query()
       // .where({subdomain: currentUser.subdomain})
       .findById(id)
       .withGraphFetched({
@@ -117,9 +127,8 @@ export class UsersService {
         myEmployeeProfile: {
         }
       });
-    delete user.password
-  
     if (user) {
+      delete user.password
       return {
         success: true,
         message: 'User details fetch successfully.',
@@ -204,12 +213,14 @@ export class UsersService {
     }
   }
   // Create user before save encrypt password
-  async create(payload): Promise<ResponseData> {
+  async create(payload,currentUser=null): Promise<ResponseData> {
+    const { permissions } = payload
     const newUser = await this.modelClass.query().where({
       email: payload.email
     }).orWhere({
       username: payload.username
     });
+
     if (!newUser.length) {
       const hashedPassword = await bcrypt.hash(payload.password, 10);
       payload.password = hashedPassword
@@ -221,6 +232,7 @@ export class UsersService {
           payload.avatar = fileUploaded.data.url
         } else return fileUploaded
       }
+      const trx = await this.modelClass.startTransaction()
       try {
         // const createBrandDto = {
         //   name: payload.brandCode,
@@ -229,9 +241,87 @@ export class UsersService {
         // const createBrand = await this.brandService.create(createBrandDto)
         // console.log(payload)
         // if (createBrand.success){
-        const identifiers = await this.modelClass.query().insert(payload);
-        const createUser = await this.modelClass.query().findById(identifiers.id);
+        const identifiers = await this.modelClass.query(trx).insert(payload);
+        const createUser = await this.modelClass.query(trx).findById(identifiers.id);
         delete createUser.password
+        if (permissions && Array.isArray(permissions)) {
+          console.log("permissions: ", permissions)
+          const permissionsParam: PermissionType = payload.permissions
+          if (
+            !permissionsParam
+            ||
+            permissionsParam.some(ee => {
+              return ee.subjects.some(er => {
+                // @ts-ignore
+                return !Object.values(Subjects).includes(er)
+              })
+            })
+          ) {
+            return {
+              success: false,
+              message: `unexpected subjects inserted doesnt match the make sure its matching the following array.`,
+              data: SubjectsDto,
+            };
+          }
+          for (let eachperm of permissionsParam) {
+            if (eachperm?.all === true || ( eachperm.create && eachperm.update && eachperm.delete)) {
+              // @ts-ignore
+              for (let sbjct of eachperm.subjects) {
+                await this.permissionClass.query(trx).insert({
+                  subject: sbjct,
+                  action: `${Action.All}`,
+                  userId: createUser.id,
+                  brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                  createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                })
+              }
+            } else {
+              for (let sbjct of eachperm.subjects) {
+                if (eachperm.read || eachperm.create || eachperm.update || eachperm.delete) {
+                  // @ts-ignore
+                  await this.permissionClass.query(trx).insert({
+                    subject: sbjct,
+                    action: `${Action.Read}`,
+                    userId: createUser.id,
+                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                  })
+                }
+                if (eachperm.create) {
+                  // @ts-ignore
+                  await this.permissionClass.query(trx).insert({
+                    subject: sbjct,
+                    action: `${Action.Create}`,
+                    userId: createUser.id,
+                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                  })
+                }
+                if (eachperm.update) {
+                  // @ts-ignore
+                  await this.permissionClass.query(trx).insert({
+                    subject: sbjct,
+                    action: `${Action.Update}`,
+                    userId: createUser.id,
+                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                  })
+                }
+                if (eachperm.delete) {
+                  // @ts-ignore
+                  await this.permissionClass.query(trx).insert({
+                    subject: sbjct,
+                    action: `${Action.Delete}`,
+                    userId: createUser.id,
+                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                  })
+                }
+              }
+            }
+          }
+        }
+        await trx.commit()
         return {
           success: true,
           message: 'User created successfully.',
@@ -241,6 +331,7 @@ export class UsersService {
         //   return createBrand
         // }
       } catch(err) {
+        await trx.rollback()
         return {
           success: false,
           message: 'User didnt created',
@@ -258,11 +349,29 @@ export class UsersService {
   // implement permission for owner and other users to not be able change the user
   // Update user before save encrypt password
   async update(payload, currentUser): Promise<ResponseData> {
+    const { permissions } = payload
     const user = await this.modelClass.query().findById(payload.id);
     if (user) {
+      
       if (payload.password) {
         const hashedPassword = await bcrypt.hash(payload.password, 10);
         payload.password = hashedPassword
+      }
+      if (
+        permissions
+        &&
+        permissions.some(ee => {
+          return ee.subjects.some(er => {
+            // @ts-ignore
+            return !Object.values(Subjects).includes(er)
+          })
+        })
+      ) {
+        return {
+          success: false,
+          message: `unexpected subjects inserted doesnt match the make sure its matching the following array.`,
+          data: SubjectsDto,
+        };      
       }
       if (payload.avatar) {
         const avatarUploaded = payload.avatar
@@ -272,34 +381,153 @@ export class UsersService {
           payload.avatar = fileUploaded.data.url
         } else return fileUploaded
       }
+      const trx = await this.modelClass.startTransaction()
+      try {
+        if (permissions && Array.isArray(permissions)) {
+          const permissionsParam: PermissionType = permissions
+          await this.permissionClass.query(trx).where({userId: payload.id, brandCode: user.brandCode}).delete()
+          for (let eachperm of permissionsParam) {
+            if (eachperm?.all === true || ( eachperm.create && eachperm.update && eachperm.delete)) {
+              // @ts-ignore
+              for (let sbjct of eachperm.subjects) {
+                const permFND = await this.permissionClass.query(trx).findOne({
+                  userId: payload.id,
+                  brandCode: currentUser?.brandCode,
+                  subject: sbjct,
+                  action: `${Action.All}`,
+                })
+                if (permFND) {
+                  throw ['permission already exist!',permFND]
+                }
+                await this.permissionClass.query(trx).insert({
+                  subject: sbjct,
+                  action: `${Action.All}`,
+                  userId: payload.id,
+                  brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                  createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                })
+              }
+            } else {
+              for (let sbjct of eachperm.subjects) {
+                if (eachperm.read || eachperm.create || eachperm.update || eachperm.delete) {
+                  const permFND = await this.permissionClass.query(trx).findOne({
+                    userId: payload.id,
+                    brandCode: currentUser?.brandCode,
+                    subject: sbjct,
+                    action: `${Action.Read}`,
+                  })
+                  if (permFND) {
+                    throw ['permission already exist!',permFND]
+                  }  
+                  // @ts-ignore
+                  await this.permissionClass.query(trx).insert({
+                    subject: sbjct,
+                    action: `${Action.Read}`,
+                    userId: payload.id,
+                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                  })
+                }
+                if (eachperm.create) {
+                  const permFND = await this.permissionClass.query(trx).findOne({
+                    userId: payload.id,
+                    brandCode: currentUser?.brandCode,
+                    subject: sbjct,
+                    action: `${Action.Create}`,
+                  })
+                  if (permFND) {
+                    throw ['permission already exist!',permFND]
+                  }  
+                  // @ts-ignore
+                  await this.permissionClass.query(trx).insert({
+                    subject: sbjct,
+                    action: `${Action.Create}`,
+                    userId: payload.id,
+                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                  })
+                }
+                if (eachperm.update) {
+                  const permFND = await this.permissionClass.query(trx).findOne({
+                    userId: payload.id,
+                    brandCode: currentUser?.brandCode,
+                    subject: sbjct,
+                    action: `${Action.Update}`,
+                  })
+                  if (permFND) {
+                    throw ['permission already exist!',permFND]
+                  }
+  
+                  // @ts-ignore
+                  await this.permissionClass.query(trx).insert({
+                    subject: sbjct,
+                    action: `${Action.Update}`,
+                    userId: payload.id,
+                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                  })
+                }
+                if (eachperm.delete) {
+                  const permFND = await this.permissionClass.query(trx).findOne({
+                    userId: payload.id,
+                    brandCode: currentUser?.brandCode,
+                    subject: sbjct,
+                    action: `${Action.Delete}`,
+                  })
+                  if (permFND) {
+                    throw ['permission already exist!',permFND]
+                  }
+  
+                  // @ts-ignore
+                  await this.permissionClass.query(trx).insert({
+                    subject: sbjct,
+                    action: `${Action.Delete}`,
+                    userId: payload.id,
+                    brandCode: `${currentUser ? currentUser['brandCode'] : ''}`,
+                    createdBy: `${currentUser ? currentUser['username'] : ''}`,
+                  })
+                }
+              }
+            }
+          }
+        }
 
-      const updatedUser = await this.modelClass
-        .query()
-        .update({
-          password: payload.password ? payload.password : user.password,
-          name: payload.name ? payload.name : user.name,
-          phoneNumber: payload.phoneNumber ? payload.phoneNumber : user.phoneNumber,
-          avatar: payload.avatar ? payload.avatar : user.avatar,
-          userType: payload.userType ? payload.userType : user.userType,
-          department: payload.department ? payload.department : user.department,
-          reportsTo: payload.reportsTo ? payload.reportsTo : user.reportsTo,
-          activationToken: payload.activationToken ? payload.activationToken : user.activationToken,
-          activationTokenExpire: payload.activationTokenExpire ? payload.activationTokenExpire : user.activationTokenExpire,
-          activatedAt: payload.activatedAt ? payload.activatedAt : user.activatedAt,
-          passwordResetToken: payload.passwordResetToken ? payload.passwordResetToken : user.passwordResetToken,
-          passwordResetTokenExpire: payload.passwordResetTokenExpire ? payload.passwordResetTokenExpire : user.passwordResetTokenExpire,
-          lastResetAt: payload.lastResetAt ? payload.lastResetAt : user.lastResetAt,
-          userId: payload.userId ? payload.userId : user.userId,
-          deleted: payload.deleted ? payload.deleted : user.deleted,
-          status: payload.status ? payload.status : user.status,
-          updatedBy: currentUser.username,
-        })
-        .where({ id: payload.id });
-      return {
-        success: true,
-        message: 'User details updated successfully.',
-        data: updatedUser,
-      };
+        const updatedUser = await this.modelClass
+          .query(trx)
+          .update({
+            password: payload.password ? payload.password : user.password,
+            name: payload.name ? payload.name : user.name,
+            phoneNumber: payload.phoneNumber ? payload.phoneNumber : user.phoneNumber,
+            avatar: payload.avatar ? payload.avatar : user.avatar,
+            userType: payload.userType ? payload.userType : user.userType,
+            department: payload.department ? payload.department : user.department,
+            reportsTo: payload.reportsTo ? payload.reportsTo : user.reportsTo,
+            activationToken: payload.activationToken ? payload.activationToken : user.activationToken,
+            activationTokenExpire: payload.activationTokenExpire ? payload.activationTokenExpire : user.activationTokenExpire,
+            activatedAt: payload.activatedAt ? payload.activatedAt : user.activatedAt,
+            passwordResetToken: payload.passwordResetToken ? payload.passwordResetToken : user.passwordResetToken,
+            passwordResetTokenExpire: payload.passwordResetTokenExpire ? payload.passwordResetTokenExpire : user.passwordResetTokenExpire,
+            lastResetAt: payload.lastResetAt ? payload.lastResetAt : user.lastResetAt,
+            userId: payload.userId ? payload.userId : user.userId,
+            deleted: payload.deleted ? payload.deleted : user.deleted,
+            status: payload.status ? payload.status : user.status,
+            updatedBy: currentUser.username,
+          })
+          .where({ id: payload.id });
+        await trx.commit()
+        return {
+          success: true,
+          message: 'User details updated successfully.',
+          data: updatedUser,
+        };
+      } catch (err) {
+        await trx.rollback()
+        return {
+          success: false,
+          message: "something wnet wrong!",
+          data: err,
+        }
+      }
     } else {
       return {
         success: false,
@@ -311,22 +539,30 @@ export class UsersService {
 
   // Delete user before save encrypt password
   async delete(payload, currentUser): Promise<ResponseData> {
-    const user = await this.modelClass
+    try {
+      const user = await this.modelClass
       .query()
       .delete()
       .where({ id: payload.id, brandCode: currentUser.brandCode });
-    if (user) {
-      return {
-        success: true,
-        message: 'User deleted successfully.',
-        data: user,
-      };
-    } else {
+      if (user) {
+        return {
+          success: true,
+          message: 'User deleted successfully.',
+          data: user,
+        };
+      } else {
+        return {
+          success: false,
+          message: 'No user found.',
+          data: {},
+        };
+      }
+    } catch(err) {
       return {
         success: false,
-        message: 'No user found.',
-        data: {},
+        message: 'something went wrong! while deleting user.',
+        data: err,
       };
-    }
+  }
   }
 }

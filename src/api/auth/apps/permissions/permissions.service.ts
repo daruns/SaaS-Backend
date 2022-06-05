@@ -1,14 +1,10 @@
 import { Injectable, Inject, UseGuards } from '@nestjs/common';
 import { PermissionModel } from 'src/database/models/permission.model';
+import { UserModel } from 'src/database/models/user.model'
 import { ModelClass } from 'objection';
-import * as bcrypt from 'bcrypt';
-import { Exclude } from 'class-transformer';
 import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { Subject } from 'rxjs';
-import { UpdateExpression } from 'typescript';
-import moment = require('moment');
 
 export interface ResponseData {
   readonly success: boolean;
@@ -19,15 +15,17 @@ export interface ResponseData {
 @UseGuards(JwtAuthGuard)
 @Injectable()
 export class PermissionsService {
-  constructor(@Inject('PermissionModel') private modelClass: ModelClass<PermissionModel>) {}
+  constructor(
+    @Inject('PermissionModel') private modelClass: ModelClass<PermissionModel>,
+    @Inject('UserModel') private userModel: ModelClass<UserModel>
+  ) {}
 
   // permission list with list of posts and comments on post
-  async findAll(): Promise<ResponseData> {
-    const permissions = await this.modelClass.query().withGraphFetched({
+  async findAll(currentUser): Promise<ResponseData> {
+    const permissions = await this.modelClass.query()
+    .where({brandCode: currentUser.brandCode})
+    .withGraphFetched({
       user: {
-      },
-      role: {
-        users: true
       },
     });
     if (permissions.length) {
@@ -46,16 +44,13 @@ export class PermissionsService {
   }
 
   // find one permission info by permissionId with posts data
-  async findById(id: number): Promise<ResponseData> {
+  async findById(id: number, currentUser): Promise<ResponseData> {
     const permission = await this.modelClass
       .query()
-      // .where({subdomain: currentPermission.subdomain})
+      .where({brandCode: currentUser.brandCode})
       .findById(id)
       .withGraphFetched({
         user: {
-        },
-        role: {
-          users: true
         },
       });
     if (permission) {
@@ -72,37 +67,12 @@ export class PermissionsService {
       };
     }
   }
-  // find permissions info by roleId with posts data
-  async findByRoleId(roleId: number): Promise<ResponseData> {
-    const permissions = await this.modelClass
-      .query()
-      .where({roleId: roleId})
-      .withGraphFetched({
-        user: {}
-      });
-    if (permissions.length) {
-      return {
-        success: true,
-        message: 'Permissions details by roleId fetch successfully.',
-        data: permissions,
-      };
-    } else {
-      return {
-        success: false,
-        message: 'No permissions details found for roleId:' + roleId,
-        data: {},
-      };
-    }
-  }
   // find permissions info by userId with posts data
-  async findByUser(userId: number): Promise<ResponseData> {
+  async findByUser(userId: number,currentUser): Promise<ResponseData> {
     const permissions = await this.modelClass
       .query()
-      .where({userId: userId})
+      .where({userId: userId, brandCode: currentUser.brandCode})
       .withGraphFetched({
-        role: {
-          users: true,
-        },
       });
     if (permissions.length) {
       return {
@@ -118,27 +88,43 @@ export class PermissionsService {
       };
     }
   }
+
   // Create user before save encrypt password
-  async create(payload: CreatePermissionDto): Promise<ResponseData> {
-    const newPermission = await this.modelClass.query()
+  async create(payload: CreatePermissionDto, currentUser): Promise<ResponseData> {
+    const userFnd = await this.userModel.query()
+    .findById(payload.userId)
+    if (!userFnd) {
+      return {
+        success: false,
+        message: "user couldnt be found!",
+        data: {}
+      }
+    }
+
+    const newPermission:PermissionModel[] = await this.modelClass.query()
     .where({
       subject: payload.subject,
-      resource: payload.resource,
-      weight: payload.weight,
       action: payload.action,
-      userId: payload.userId,
-    }).orWhere({
-      subject: payload.subject,
-      resource: payload.resource,
-      weight: payload.weight,
-      action: payload.action,
-      roleId: payload.roleId,
-    });
+      userId: payload?.userId || null,
+      brandCode: currentUser.brandCode,
+      createdBy: currentUser.username
+    })
+    // TODO: Add Role id checking before inserting to databse
+    // let newPermissionByRoleId;
+    // if (payload.roleId) {
+    //   newPermissionByRoleId = await this.modelClass.query()
+    //   .where({
+    //     subject: payload.subject,
+    //     resource: payload.resource,
+    //     weight: payload.weight,
+    //     action: payload.action,
+    //     roleId: payload?.roleId || null
+    //   })
+    // }
     if (!newPermission.length) {
-      // const hashedPassword = (payload.password, 10);
-      // payload.password = hashedPassword
       try {
-
+        payload['brandCode'] = currentUser.brandCode
+        payload['createdBy'] = currentUser.username
         const identifiers = await this.modelClass.query().insert(payload);
         const createPermission = await this.modelClass.query().findById(identifiers.id);
         return {
@@ -163,22 +149,30 @@ export class PermissionsService {
   }
 
   // Update permission before save encrypt password
-  async update(payload: UpdatePermissionDto): Promise<ResponseData> {
+  async update(payload: UpdatePermissionDto, currentUser): Promise<ResponseData> {
     const permission = await this.modelClass.query().findById(payload.id);
     if (permission) {
+      if (payload.userId) {
+        const userFnd = await this.userModel.query()
+        .findOne({brandCode: currentUser.brandCode, id: payload.userId})
+        if (!userFnd) {
+          return {
+            success: false,
+            message: "user couldnt be found!",
+            data: {}
+          }
+        }
+      }
+
       const updatedPermission = await this.modelClass
         .query()
         .update({
           subject: payload.subject ? payload.subject : permission.subject,
           action: payload.action ? payload.action : permission.action,
-          resource: payload.resource ? payload.resource : permission.resource,
-          weight: payload.weight ? payload.weight : permission.weight,
           userId: payload.userId ? payload.userId : permission.userId,
-          roleId: payload.roleId ? payload.roleId : permission.roleId,
-          status: payload.status ? payload.status : permission.status,
-          updatedBy: '',
+          updatedBy: currentUser.username,
         })
-        .where({ id: payload.id });
+        .where({ id: payload.id, brandCode: currentUser.brandCode });
       return {
         success: true,
         message: 'Permission details updated successfully.',
@@ -194,11 +188,11 @@ export class PermissionsService {
   }
 
   // Delete user before save encrypt password
-  async delete(payload): Promise<ResponseData> {
+  async delete(payload,currentUser): Promise<ResponseData> {
     const permission = await this.modelClass
       .query()
       .delete()
-      .where({ id: payload.id });
+      .where({ id: payload.id, brandCode: currentUser.brandCode });
     if (permission) {
       return {
         success: true,

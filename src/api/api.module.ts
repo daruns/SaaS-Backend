@@ -5,6 +5,7 @@ import { ClientsModule } from './clients/clients.module';
 import { MeetingsModule } from './meetings/meetings.module';
 import { SocialMediasModule } from './socialMedias/socialMedias.module';
 import { UsersModule } from 'src/api/auth/apps/users/users.module';
+import { PermissionsModule } from 'src/api/auth/apps/permissions/permissions.module';
 import { BrandsModule } from 'src/api/brands/brands.module';
 import { InventoryItemsModule } from './inventoryItems/inventoryItems.module';
 import { NonInventoryItemsModule } from './nonInventoryItems/nonInventoryItems.module';
@@ -38,12 +39,15 @@ import { DeductionTypesModule } from './deductionTypes/deductionTypes.module';
 import { EarningsModule } from './earnings/earnings.module';
 import { DeductionsModule } from './deductions/deductions.module';
 import { PayslipModule } from './payslips/payslips.module';
+import { CanModule } from './auth/can/can.module';
 
 @Module({
   imports: [
     UsersModule,
+    PermissionsModule,
     ClientsModule,
     AuthModule,
+    CanModule,
     ClientContactsModule,
     MeetingsModule,
     SocialMediasModule,

@@ -6,18 +6,7 @@ export class UpdatePermissionDto {
   id: number
   subject: string
   action: string
-  resource: string
-  @IsInt()
-  @IsOptional()
-  weight: number
   @IsInt()
   @IsOptional()
   userId: number
-  @IsInt()
-  @IsOptional()
-  roleId: number
-  status: string
-  @IsInt()
-  @IsOptional()
-  deleted: number
 }

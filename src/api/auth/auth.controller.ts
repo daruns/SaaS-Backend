@@ -19,12 +19,17 @@ import {
 import { EditProfileDto } from './dto/editProfile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFileFilter } from 'src/app/app.service';
+import { EditBrandDto } from './dto/edit-brand.dto';
+import { Can } from './can/decorators/can.decorator';
+import { Subjects } from './can/enums/subjects.enum';
+import { Action } from './can/enums/actions.enum';
 
   @Controller('auth')
   export class AuthController {
     constructor(private authService: AuthService) {}
 
     @Post('/signup')
+    @Can(Subjects.EveryoneAllowed, Action.All)
     async signUp( @Body(ValidationPipe) signupDto ) {
         const savedUser = await this.authService.signUp(signupDto);
         return savedUser
@@ -37,7 +42,17 @@ import { imageFileFilter } from 'src/app/app.service';
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('editBrand')
+    @Can(Subjects.OwnerAllowed,Action.Update)
+    @UseInterceptors(FileInterceptor("logo"))    
+    update(@Body() brand: EditBrandDto, @UploadedFile() file: Express.Multer.File, @Request() req) {
+      brand.logo = file
+      return this.authService.editBrand(brand,req.user);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('editProfile')
+    @Can(Subjects.EveryoneAllowed, Action.All)
     @UseInterceptors(FileInterceptor("avatar", { fileFilter: imageFileFilter}))
     async editProfile( @Body(ValidationPipe) editProfileDto: EditProfileDto,@UploadedFile() file: Express.Multer.File, @Req() req) {
       if (!req.user.id) throw new UnauthorizedException()
@@ -49,6 +64,7 @@ import { imageFileFilter } from 'src/app/app.service';
 
     @UseGuards(JwtAuthGuard)
     @Get('me')
+    @Can(Subjects.EveryoneAllowed, Action.All)
     async getMe(@Request() req) {
       if (!req.user.id) throw new UnauthorizedException()
       const myUser = await this.authService.me(req.user.id);
@@ -56,4 +72,3 @@ import { imageFileFilter } from 'src/app/app.service';
       return myUser;
     }
   }
-  

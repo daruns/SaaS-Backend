@@ -91,18 +91,41 @@ export class ProjectsService {
     };
   }
 
+  async findAllClients(currentUser) :Promise<ResponseData> {
+    const ClientFnd = await this.clientsSerive.findAll(currentUser);
+    return {
+      success: true,
+      message: "clients of projects successfully fetched!",
+      data: ClientFnd
+    }
+  }
+  async findAllUsers(currentUser) :Promise<ResponseData> {
+    const ClientFnd = await this.userModel.query().select('id').select('name').select('avatar').where({brandCode: currentUser.brandCode});
+    return {
+      success: true,
+      message: "clients of projects successfully fetched!",
+      data: ClientFnd
+    }
+  }
+
   // find one project info by projectId
   async findById(id: number, currentUser): Promise<ResponseData> {
     const assignedLeaders = await this.leaderModelClass.query().where({leaderId: currentUser.id, projectId: id})
     const assignedMembers = await this.memberModelClass.query().where({memberId: currentUser.id, projectId: id})
     const assignedTasks = await this.taskModelClass.query().where({projectId: id})
     const assignedTaskMembers = await this.taskMemberModelClass.query().where('memberId', currentUser.id).whereIn('taskId',assignedTasks.map(e => e.id))
+    const proIds = await this.modelClass.query().select('id')
+    .orWhereIn('id',assignedLeaders.map(e => e.projectId))
+    .orWhereIn('id', assignedMembers.map(e => e.projectId))
+    .orWhereIn('id', assignedTasks.map(e => e.projectId))
+    .orWhere('createdBy', currentUser.username)
+    .findById(id)
     let fillTaskIds = []
     if (assignedTaskMembers.length > 0) {
       fillTaskIds = await this.taskModelClass.query().where({projectId: id}).findByIds( assignedTaskMembers.map(e => e.taskId) )
     }
     let passNext = false
-    if (assignedLeaders.length > 0 || assignedMembers.length > 0 || fillTaskIds.length > 0) {
+    if (assignedLeaders.length > 0 || assignedMembers.length > 0 || fillTaskIds.length > 0 || proIds?.id === id) {
       passNext = true
     }
     const project = await this.modelClass
@@ -128,6 +151,7 @@ export class ProjectsService {
         selectAttachUrl(builder) {
           builder.select('attachments.id as attachId');
           builder.select('url');
+          builder.select('contentType');
         },
       })
       .withGraphFetched(
