@@ -70,9 +70,13 @@ $ yarn start:dev / npm start:dev
 
 ## Stay in touch
 
-- Author - [Ashok Patidar](https://github.com/AlxPatidar)
-- Stackoverflow - [Ashok](https://stackoverflow.com/users/10893484/ashok)
-- Github - [Alx Patidar](https://github.com/AlxPatidar)
+- Author - [Darun]([https://github.com/AlxPatidar](https://www.linkedin.com/in/darun-s-4091a3176/))
+- Stackoverflow - [M1e1r0r](https://stackoverflow.com/users/9003945/m1-e1r0r)
+- Github - [Darun](https://github.com/daruns)
+
+## with the help from
+
+- Github - [Ashok Patidar](https://github.com/AlxPatidar)
 
 ## License
   Nest is [MIT licensed](LICENSE).
