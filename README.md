@@ -70,9 +70,9 @@ $ yarn start:dev / npm start:dev
 
 ## Stay in touch
 
-- Author - [Darun]([https://github.com/AlxPatidar](https://www.linkedin.com/in/darun-s-4091a3176/))
-- Stackoverflow - [M1e1r0r](https://stackoverflow.com/users/9003945/m1-e1r0r)
-- Github - [Darun](https://github.com/daruns)
+- Author - [Darun Omar]([https://github.com/AlxPatidar](https://www.linkedin.com/in/darun-s-4091a3176/))
+- Stackoverflow - [Darun Omar](https://stackoverflow.com/users/9003945/darun-omar)
+- Github - [Darun Omar](https://github.com/daruns)
 
 ## with the help from
 
