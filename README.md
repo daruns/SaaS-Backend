@@ -1,6 +1,6 @@
-# Nestjs Knex Objection js rest API
+# Nestjs SaaS Core rest API
 
- > `nest-knex` uses Typescript, Node.js and mysql with famous library objectionjs and knex.
+ > `nestjs` uses Typescript, Node.js and mysql with famous library objectionjs and knex.
 
 
 ## Quick Start
